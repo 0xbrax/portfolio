@@ -1,0 +1,197 @@
+main {
+    height: 100vh;
+}
+
+#game {
+    width: 600px;
+    height: 250px;
+    border: 5px solid black;
+    position: relative;
+    margin: 30px 15px;
+
+    background-image: url('../assets/img/rungame-city-bg.jpg');
+    background-repeat: repeat-x;
+    background-position: left 0px bottom 0%;
+    background-size: contain;
+
+    animation: slide 7s infinite linear;
+    animation-play-state: paused;
+}
+@keyframes slide {
+    0% {
+        background-position: left 0px bottom 0%;
+    }
+    100% {
+        background-position: left -370.9090909135px bottom 0%;
+    }
+}
+
+#mcdonalds {
+    width: 120px;
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    z-index: 12;
+    transform-origin: bottom right;
+}
+.takeaway {
+    animation: takeaway 0.5s 0.1s linear;
+}
+@keyframes takeaway {
+    0% {
+        transform: rotate(0deg);
+    }
+    50% {
+        transform: rotate(15deg);
+    }
+    100% {
+        transform: rotate(0deg);
+    }
+}
+
+#burger {
+    width: 40px;
+    position: absolute;
+    bottom: 0px;
+    right: 20px;
+    z-index: 11;
+}
+.diet {
+    animation: diet linear;
+}
+@keyframes diet {
+    0% {
+        right: 20px;
+    }
+    100% {
+        right: 555px;
+    }
+}
+
+#star {
+    width: 40px;
+    position: absolute;
+    bottom: 170px;
+    right: 0px;
+    z-index: 13;
+    display: none;
+}
+.to-the-moon {
+    animation: to-the-moon 2s linear;
+}
+@keyframes to-the-moon {
+    0% {
+        bottom: 170px;
+        right: 0px;
+    }
+    33% {
+        bottom: 100px;
+        right: 200px;
+    }
+    100% {
+        bottom: 100px;
+        right: 555px;
+    }
+}
+
+#pikachu-container {
+    width: 100px;
+    position: absolute;
+    bottom: 0px;
+    left: 40px;
+    z-index: 91;
+}
+#pikachu {
+    width: 100%;
+    z-index: 92;
+}
+.jump {
+    animation: jump 0.6s linear;
+}
+@keyframes jump {
+    0% {
+        bottom: 0px;
+    }
+    50% {
+        bottom: 100px;
+    }
+    100% {
+        bottom: 0px;
+    }
+}
+.kill {
+    transform: rotateY(180deg) rotate(195deg) translateY(-35px);
+}
+.car-active {
+    transform: rotate(-23deg);
+}
+
+#cloud-text {
+    width: 140px;
+    position: absolute;
+    bottom: 55px;
+    left: 75px;
+    z-index: 93;
+    display: none;
+}
+#cloud-text img {
+    width: 100%;
+    z-index: 94;
+}
+#cloud-text p {
+    width: 100%;
+    position: absolute;
+    bottom: 6px;
+    left: 39px;
+    z-index: 95;
+}
+
+#car {
+    position: absolute;
+    left: 7px;
+    bottom: 4px;
+    z-index: 96;
+    display: none;
+}
+#super-car {
+    width: 118px;
+}
+#wheel-car-left {
+    width: 22px;
+    position: absolute;
+    left: 8px;
+    bottom: -3px;
+    animation: race 1.2s infinite linear;
+    animation-play-state: paused;
+}
+#wheel-car-right {
+    width: 22px;
+    position: absolute;
+    left: 80px;
+    bottom: -3px;
+    animation: race 1.2s infinite linear;
+    animation-play-state: paused;
+}
+@keyframes race {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+#thug-life {
+    width: 44px;
+    position: absolute;
+    left: 46px;
+    bottom: 35px;
+    transform: rotate(-23deg);
+}
+#fire {
+    width: 15px;
+    transform: rotate(270deg) scaleX(0.8) scaleY(1.3);
+    position: absolute;
+    left: -22px;
+    bottom: -2px;
+    display: none;
+}

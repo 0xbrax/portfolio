@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>404 LOL</title>
+        <link rel="icon" type="image/x-icon" href="assets/arcade-game.ico">
+
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+
+        <link rel="stylesheet" href="css/style.css">
+    </head>
+
+    <body>
+        <main class="container d-flex flex-column align-items-center justify-content-between">
+            <section class="my-4">
+                <div class="text-center">
+                    <h1>Pikachu vs McDonald's</h1>
+                </div>
+        
+                <div id="game">
+                    <div id="pikachu-container">
+                        <img src="assets/img/pikachu-run-static-2.png" id="pikachu">
+                        <div id="cloud-text">
+                            <img src="assets/img/cloud-comic.png">
+                            <p>PIKA PIKA</p>
+                        </div>
+        
+                        <div id="car">
+                            <img src="assets/img/green_no_wheels-edit1.png" id="super-car">
+                            <img src="assets/img/wheel.png" id="wheel-car-left">
+                            <img src="assets/img/wheel.png" id="wheel-car-right">
+                            <img src="assets/img/thug-glasses-edit.png" id="thug-life">
+                            <img src="assets/img/fire-blue.gif" id="fire">
+                        </div>
+                    </div>
+        
+                    <img src="assets/img/mcdonalds-store-nobg.png" id="mcdonalds">
+                    <img src="assets/img/doodle-burger-1-cut.png" id="burger">
+        
+                    <img src="assets/img/cute-star-1.png" id="star">
+                </div>
+        
+                <div class="d-flex justify-content-center align-items-center">
+                    <button id="pika-audio-btn" class="btn btn-warning mx-3"><span class="align-middle me-2">SoundFX</span><i class="ri-sound-module-fill align-middle"></i></button>
+                    <button id="play-btn" class="btn btn-success fs-5 mx-3"><span class="align-middle me-2">PLAY!</span><i class="ri-gamepad-fill align-middle"></i></button>
+                    <button id="reset-btn" class="btn btn-danger fs-5 mx-3"><span class="align-middle me-2">reset</span><i class="ri-restart-fill align-middle"></i></button>
+                    <button id="bg-music-btn" class="btn btn-warning mx-3"><span class="align-middle me-2">MusicBG</span><i class="ri-sound-module-fill align-middle"></i></button>
+                </div>
+        
+                <div class="d-flex justify-content-center mt-4">
+                    <div class="alert alert-primary">
+                        <span class="mx-4">LOL score: <span id="score" class="fw-bold"></span></span>
+                        <span class="mx-4">Record: <span id="record" class="fw-bold"></span></span>
+                    </div>
+                </div>
+        
+                <div class="text-center">
+                    <p>
+                        Press <span class="fw-bold">SPACE</span> or <span class="fw-bold">UP</span> to jump. Press <span class="fw-bold">LEFT</span> and <span class="fw-bold">RIGHT</span> to move.<br />
+                        Press <span class="fw-bold">DOWN</span> for Super Sayan mode.<br />
+                        Wen Lambo? Press <span class="fw-bold">B</span> for thug life, stonks.
+                    </p>
+                    <p>
+                        Press <span class="fw-bold">ENTER</span> = Instant play!
+                    </p>
+                </div>
+            </section>
+
+            <section class="my-4">
+                <div class="fs-3">
+                    <a href="https://www.instagram.com/0xbrax" target="_blank"><i class="fa-brands fa-square-instagram"></i></i></a>
+                    <a class="my-3" href="https://github.com/0xbrax" target="_blank"><i class="fa-brands fa-github"></i></a>
+                    <a href="https://twitter.com/0xbrax" target="_blank"><i class="fa-brands fa-square-twitter"></i></i></a>
+                </div>
+                <div class="text-center text-secondary">
+                    0xbrax
+                </div>
+            </section>
+        </main>
+
+        <script type="text/javascript" src="js/main.js"></script>
+    </body>
+</html>
