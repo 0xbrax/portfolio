@@ -22,8 +22,6 @@ const bonusSound = new Audio('assets/audio/mixkit-fairy-arcade-sparkle-866-edit.
 const carStart = new Audio('assets/audio/ferrari-laferrari-v12-sound-edit.mp3');
 const carStop = new Audio('assets/audio/car-horn-edit.mp3');
 
-
-
 const mcdonalds = document.getElementById('mcdonalds');
 const burger = document.getElementById('burger');
 let grillTime = 1.8;
@@ -37,6 +35,14 @@ let liveScore = undefined;
 let record = document.getElementById('record');
 let recordCounter = 0;
 let liveRecord = [];
+
+let keyState = {};
+window.addEventListener('keydown', function(event) {
+    keyState[event.key] = true;
+}, true);
+window.addEventListener('keyup', function(event) {
+    keyState[event.key] = false;
+}, true);
 
 playBtn.addEventListener('click', playGame);
 resetBtn.addEventListener('click', resetGame);
@@ -85,14 +91,6 @@ bonusSound.addEventListener('ended', function() {
 
 score.innerHTML = scoreCounter;
 record.innerHTML = recordCounter;
-
-let keyState = {};
-window.addEventListener('keydown', function(event) {
-    keyState[event.key] = true;
-}, true);
-window.addEventListener('keyup', function(event) {
-    keyState[event.key] = false;
-}, true);
 
 let isPikachuAlive = setInterval(function() {
     carNos.style.display = 'none';
@@ -208,7 +206,7 @@ window.document.querySelector('body').addEventListener('keydown', function(event
             break;
         case 'ArrowDown': //key: 'ArrowDown', code: 'ArrowDown', keyCode: 40
                 event.preventDefault();
-                superSayan()
+                getSuperSayan()
             break;
         case 'b': //key: 'b', code: 'KeyB', keyCode: 66
                 event.preventDefault();
@@ -329,7 +327,7 @@ function goLeft() {
     }
 }
 
-function superSayan() {
+function getSuperSayan() {
     if (pikachu.classList.contains('kill')) {
         return;
     }
@@ -511,3 +509,109 @@ function randomNumber(min, max) {
 function randomNumberDec(min, max) {
     return Math.round((Math.random() * (max - min) + min) * 10) / 10;
 }
+
+
+
+//////// MOBILE BUTTON ////////
+
+const mobileInstantPlay = document.getElementById('mobile-instant-play');
+const mobileJump = document.getElementById('mobile-jump');
+const mobileLeft = document.getElementById('mobile-left');
+const mobileRight = document.getElementById('mobile-right');
+const mobileSuperSayan = document.getElementById('mobile-supersayan');
+const mobileSuperCar = document.getElementById('mobile-supercar');
+let mobileRightMove = undefined;
+let mobileLeftMove = undefined;
+
+mobileInstantPlay.addEventListener('click', event => {
+    event.preventDefault();
+    if (isGamePlaying == false) {
+        if(isPikachuSuperSayan == false && isSuperCarActive == false) {
+            resetGame();
+        } else {
+            pikachuContainer.style.left = 40 + 'px';
+        }
+        playGame();
+    }
+});
+
+mobileJump.addEventListener('click', jump);
+
+mobileRight.addEventListener('touchstart', function() {
+    if (mobileRightMove == undefined) {
+        mobileRightMove = setInterval(function() {
+            goRight();
+            wheelLeft.style.animationPlayState = 'running';
+            wheelRight.style.animationPlayState = 'running';
+            wheelLeft.style.animationDirection = 'normal';
+            wheelRight.style.animationDirection = 'normal';
+            carNos.style.display = 'block';
+        }, 10);
+    }
+});
+mobileRight.addEventListener('touchend', function() {
+    clearInterval(mobileRightMove);
+    mobileRightMove = undefined;
+})
+mobileLeft.addEventListener('touchstart', function() {
+    if (mobileLeftMove == undefined) {
+        mobileLeftMove = setInterval(function() {
+            goLeft();
+            wheelLeft.style.animationPlayState = 'running';
+            wheelRight.style.animationPlayState = 'running';
+            wheelLeft.style.animationDirection = 'reverse';
+            wheelRight.style.animationDirection = 'reverse';
+            carNos.style.display = 'block';
+        }, 10);
+    }
+});
+mobileLeft.addEventListener('touchend', function() {
+    clearInterval(mobileLeftMove);
+    mobileLeftMove = undefined;
+
+    wheelLeft.style.animationDirection = 'normal';
+    wheelRight.style.animationDirection = 'normal';
+})
+
+mobileRight.addEventListener('mousedown', function() {
+    if (mobileRightMove == undefined) {
+        mobileRightMove = setInterval(function() {
+            goRight();
+            wheelLeft.style.animationPlayState = 'running';
+            wheelRight.style.animationPlayState = 'running';
+            wheelLeft.style.animationDirection = 'normal';
+            wheelRight.style.animationDirection = 'normal';
+            carNos.style.display = 'block';
+        }, 10);
+    }
+});
+mobileRight.addEventListener('mouseup', function() {
+    clearInterval(mobileRightMove);
+    mobileRightMove = undefined;
+})
+mobileLeft.addEventListener('mousedown', function() {
+    if (mobileLeftMove == undefined) {
+        mobileLeftMove = setInterval(function() {
+            goLeft();
+            wheelLeft.style.animationPlayState = 'running';
+            wheelRight.style.animationPlayState = 'running';
+            wheelLeft.style.animationDirection = 'reverse';
+            wheelRight.style.animationDirection = 'reverse';
+            carNos.style.display = 'block';
+        }, 10);
+    }
+});
+mobileLeft.addEventListener('mouseup', function() {
+    clearInterval(mobileLeftMove);
+    mobileLeftMove = undefined;
+
+    wheelLeft.style.animationDirection = 'normal';
+    wheelRight.style.animationDirection = 'normal';
+})
+
+
+
+
+
+mobileSuperSayan.addEventListener('click', getSuperSayan);
+mobileSuperCar.addEventListener('click', getSuperCar);

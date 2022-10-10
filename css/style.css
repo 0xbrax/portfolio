@@ -7,7 +7,7 @@ main {
     height: 250px;
     border: 5px solid black;
     position: relative;
-    margin: 30px 15px;
+    margin: 15px;
 
     background-image: url('../assets/img/rungame-city-bg.jpg');
     background-repeat: repeat-x;
@@ -194,4 +194,13 @@ main {
     left: -22px;
     bottom: -2px;
     display: none;
+}
+
+
+
+/******** BOOTSTRAP RESET ********/
+.btn:hover {
+    color: var(--bs-btn-color);
+    background-color: var(--bs-btn-bg);
+    border-color: var(--bs-btn-border-color);
 }
