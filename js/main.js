@@ -197,7 +197,7 @@ window.document.querySelector('body').addEventListener('keydown', function(event
                     if(isPikachuSuperSayan == false && isSuperCarActive == false) {
                         resetGame();
                     } else {
-                        pikachuContainer.style.left = 30 + 'px';
+                        pikachuContainer.style.left = 24 + 'px';
                     }
                     playGame();
                 }
@@ -276,7 +276,7 @@ function resetGame() {
     cloudText.style.display = 'none';
     mcdonalds.classList.remove('takeaway');
     gameContainer.style.animationPlayState = 'paused';
-    pikachuContainer.style.left = 30 + 'px';
+    pikachuContainer.style.left = 24 + 'px';
 
     scoreCounter = 0;
     score.innerHTML = scoreCounter;
@@ -312,7 +312,7 @@ function goRight() {
     let pikachuLeft = parseInt(window.getComputedStyle(pikachuContainer).getPropertyValue('left'));
     let pikachuRight = parseInt(window.getComputedStyle(pikachuContainer).getPropertyValue('right'));
 
-    if (!pikachu.classList.contains('kill') && pikachuRight > 150) {
+    if (!pikachu.classList.contains('kill') && pikachuRight > 152) {
         if (isSuperCarActive == true) {
             pikachuContainer.style.left = (pikachuLeft + 8) + 'px';
         } else {
@@ -324,7 +324,7 @@ function goRight() {
 function goLeft() {
     let pikachuLeft = parseInt(window.getComputedStyle(pikachuContainer).getPropertyValue('left'));
 
-    if (!pikachu.classList.contains('kill') && pikachuLeft > 30) {
+    if (!pikachu.classList.contains('kill') && pikachuLeft > 24) {
         if (isSuperCarActive == true) {
             pikachuContainer.style.left = (pikachuLeft - 8) + 'px';
         } else {
@@ -490,6 +490,12 @@ function setSfxVolume() {
     } else {
         carStop.volume = 1;
     }
+
+    if (superSayanSound.volume == 1) {
+        superSayanSound.volume = 0;
+    } else {
+        superSayanSound.volume = 1;
+    }
 }
 
 function setBackMusic() {
@@ -542,7 +548,7 @@ mobileInstantPlay.addEventListener('click', event => {
         if(isPikachuSuperSayan == false && isSuperCarActive == false) {
             resetGame();
         } else {
-            pikachuContainer.style.left = 30 + 'px';
+            pikachuContainer.style.left = 24 + 'px';
         }
         playGame();
     }
@@ -624,3 +630,15 @@ mobileLeft.addEventListener('mouseup', function() {
 
 mobileSuperSayan.addEventListener('mousedown', getSuperSayan);
 mobileSuperCar.addEventListener('mousedown', getSuperCar);
+
+
+
+//////// PRELOAD PAGE ////////
+
+let preloadPage = document.getElementById('preload-page');
+window.addEventListener('load', function() {
+    setTimeout(function() {
+        preloadPage.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }, 1200);
+});

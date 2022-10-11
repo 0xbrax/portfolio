@@ -1,9 +1,46 @@
+body {
+    overflow: hidden;
+}
+
+#preload-page {
+    width: 100%;
+    height: 100vh;
+    position: fixed;
+    background-color: blueviolet;
+    z-index: 9999;
+}
+#preload-page div {
+    text-align: center;
+    font-size: 35px;
+    color: white;
+
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+#preload-page img {
+    height: 100%;
+    min-height: 33px;
+    max-height: 333px;
+}
+
+
+
+#game-container {
+    width: 600px;
+    height: 328px;
+    margin: 0 auto;
+    position: relative;
+    background-color: black;
+    border-bottom: 5px solid black;
+}
+
 #game {
     width: 600px;
     height: 250px;
-    border: 5px solid black;
     position: relative;
-    margin: 0 auto;
+    border: 5px solid black;
 
     background-image: url('../assets/img/rungame-city-bg.jpg');
     background-repeat: repeat-x;
@@ -20,6 +57,12 @@
     100% {
         background-position: left -370.9090909135px bottom 0%;
     }
+}
+
+#score-container {
+    position: absolute;
+    left: 10px;
+    top: 5px;
 }
 
 #mcdonalds {
@@ -94,7 +137,7 @@
     width: 100px;
     position: absolute;
     bottom: 0px;
-    left: 30px;
+    left: 24px;
     z-index: 91;
 }
 #pikachu {
