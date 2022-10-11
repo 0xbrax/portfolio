@@ -1,13 +1,9 @@
-main {
-    height: 100vh;
-}
-
 #game {
     width: 600px;
     height: 250px;
     border: 5px solid black;
     position: relative;
-    margin: 15px;
+    margin: 0 auto;
 
     background-image: url('../assets/img/rungame-city-bg.jpg');
     background-repeat: repeat-x;
@@ -98,7 +94,7 @@ main {
     width: 100px;
     position: absolute;
     bottom: 0px;
-    left: 40px;
+    left: 30px;
     z-index: 91;
 }
 #pikachu {
@@ -106,7 +102,7 @@ main {
     z-index: 92;
 }
 .jump {
-    animation: jump 0.6s linear;
+    animation: jump 0.6s cubic-bezier(0.2, 0.65, 0.85, 0.66);
 }
 @keyframes jump {
     0% {

@@ -16,11 +16,12 @@ let carNos = document.getElementById('fire');
 let isSuperCarActive = false;
 const backMusic = new Audio('assets/audio/Vanze - Survive (feat. Neon Dreams) [NCS Release].mp3');
 let isBGMusicPlaying = false;
-const pikaSound = new Audio('assets/audio/pikachu-pika-sfx.mp3');
+const pikaSound = new Audio('assets/audio/pikachu-jump-8bit-sfx.mp3');
 const killSound = new Audio('assets/audio/mixkit-retro-game-over-1947-edit.mp3');
 const bonusSound = new Audio('assets/audio/mixkit-fairy-arcade-sparkle-866-edit.mp3');
 const carStart = new Audio('assets/audio/ferrari-laferrari-v12-sound-edit.mp3');
-const carStop = new Audio('assets/audio/car-horn-edit.mp3');
+const carStop = new Audio('assets/audio/car-horn-sfx.mp3');
+const superSayanSound = new Audio('assets/audio/pikachu-supersayan-sfx.mp3');
 
 const mcdonalds = document.getElementById('mcdonalds');
 const burger = document.getElementById('burger');
@@ -156,6 +157,8 @@ let isPikachuAlive = setInterval(function() {
         carStop.currentTime = 0;
         bonusSound.pause();
         bonusSound.currentTime = 0;
+        superSayanSound.pause();
+        superSayanSound.currentTime = 0;
 
         clearInterval(liveScore);
         liveScore = undefined;
@@ -194,7 +197,7 @@ window.document.querySelector('body').addEventListener('keydown', function(event
                     if(isPikachuSuperSayan == false && isSuperCarActive == false) {
                         resetGame();
                     } else {
-                        pikachuContainer.style.left = 40 + 'px';
+                        pikachuContainer.style.left = 30 + 'px';
                     }
                     playGame();
                 }
@@ -273,7 +276,7 @@ function resetGame() {
     cloudText.style.display = 'none';
     mcdonalds.classList.remove('takeaway');
     gameContainer.style.animationPlayState = 'paused';
-    pikachuContainer.style.left = 40 + 'px';
+    pikachuContainer.style.left = 30 + 'px';
 
     scoreCounter = 0;
     score.innerHTML = scoreCounter;
@@ -288,6 +291,8 @@ function resetGame() {
     bonusSound.currentTime = 0;
     killSound.pause();
     killSound.currentTime = 0;
+    superSayanSound.pause();
+    superSayanSound.currentTime = 0;
 
     clearInterval(liveScore);
     liveScore = undefined;
@@ -305,8 +310,9 @@ function jump() {
 
 function goRight() {
     let pikachuLeft = parseInt(window.getComputedStyle(pikachuContainer).getPropertyValue('left'));
+    let pikachuRight = parseInt(window.getComputedStyle(pikachuContainer).getPropertyValue('right'));
 
-    if (!pikachu.classList.contains('kill') && pikachuLeft < 240) {
+    if (!pikachu.classList.contains('kill') && pikachuRight > 150) {
         if (isSuperCarActive == true) {
             pikachuContainer.style.left = (pikachuLeft + 8) + 'px';
         } else {
@@ -318,7 +324,7 @@ function goRight() {
 function goLeft() {
     let pikachuLeft = parseInt(window.getComputedStyle(pikachuContainer).getPropertyValue('left'));
 
-    if (!pikachu.classList.contains('kill') && pikachuLeft > 40) {
+    if (!pikachu.classList.contains('kill') && pikachuLeft > 30) {
         if (isSuperCarActive == true) {
             pikachuContainer.style.left = (pikachuLeft - 8) + 'px';
         } else {
@@ -330,6 +336,13 @@ function goLeft() {
 function getSuperSayan() {
     if (pikachu.classList.contains('kill')) {
         return;
+    }
+
+    if (isPikachuSuperSayan == true) {
+        superSayanSound.pause();
+        superSayanSound.currentTime = 0;
+    } else {
+        superSayanSound.play();
     }
 
     if (isGamePlaying == true) {
@@ -529,13 +542,13 @@ mobileInstantPlay.addEventListener('click', event => {
         if(isPikachuSuperSayan == false && isSuperCarActive == false) {
             resetGame();
         } else {
-            pikachuContainer.style.left = 40 + 'px';
+            pikachuContainer.style.left = 30 + 'px';
         }
         playGame();
     }
 });
 
-mobileJump.addEventListener('click', jump);
+mobileJump.addEventListener('mousedown', jump);
 
 mobileRight.addEventListener('touchstart', function() {
     if (mobileRightMove == undefined) {
@@ -609,9 +622,5 @@ mobileLeft.addEventListener('mouseup', function() {
     wheelRight.style.animationDirection = 'normal';
 })
 
-
-
-
-
-mobileSuperSayan.addEventListener('click', getSuperSayan);
-mobileSuperCar.addEventListener('click', getSuperCar);
+mobileSuperSayan.addEventListener('mousedown', getSuperSayan);
+mobileSuperCar.addEventListener('mousedown', getSuperCar);
