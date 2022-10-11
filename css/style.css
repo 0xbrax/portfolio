@@ -21,8 +21,8 @@ body {
 }
 #preload-page img {
     height: 100%;
-    min-height: 33px;
-    max-height: 333px;
+    min-height: 100px;
+    max-height: 300px;
 }
 
 
