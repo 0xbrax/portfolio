@@ -29,6 +29,7 @@ let grillTime = 1.8;
 let star = document.getElementById('star');
 let liveBonus = undefined;
 let randomBonus = 5000;
+let isCarGoing = false;
 
 let score = document.getElementById('score');
 let scoreCounter = 0;
@@ -39,9 +40,11 @@ let liveRecord = [];
 
 let keyState = {};
 window.addEventListener('keydown', function(event) {
+    event.preventDefault();
     keyState[event.key] = true;
 }, true);
 window.addEventListener('keyup', function(event) {
+    event.preventDefault();
     keyState[event.key] = false;
 }, true);
 
@@ -96,7 +99,7 @@ record.innerHTML = recordCounter;
 let isPikachuAlive = setInterval(function() {
     carNos.style.display = 'none';
 
-    if (isGamePlaying == false) {
+    if (isGamePlaying == false && isCarGoing == false) {
         wheelLeft.style.animationPlayState = 'paused';
         wheelRight.style.animationPlayState = 'paused';
     } else {
@@ -105,6 +108,7 @@ let isPikachuAlive = setInterval(function() {
     }
 
     if (keyState['ArrowLeft']){
+        isCarGoing = true;
         goLeft(); //key: 'ArrowLeft', code: 'ArrowLeft', keyCode: 37
         wheelLeft.style.animationPlayState = 'running';
         wheelRight.style.animationPlayState = 'running';
@@ -112,16 +116,20 @@ let isPikachuAlive = setInterval(function() {
         wheelRight.style.animationDirection = 'reverse';
         carNos.style.display = 'block';
     } else {
+        isCarGoing = false;
         wheelLeft.style.animationDirection = 'normal';
         wheelRight.style.animationDirection = 'normal';
     }
     if (keyState['ArrowRight']){
+        isCarGoing = true;
         goRight(); //key: 'ArrowRight', code: 'ArrowRight', keyCode: 39
         wheelLeft.style.animationPlayState = 'running';
         wheelRight.style.animationPlayState = 'running';
         wheelLeft.style.animationDirection = 'normal';
         wheelRight.style.animationDirection = 'normal';
         carNos.style.display = 'block';
+    } else {
+        isCarGoing = false;
     }
 
     let pikachuBottom = parseInt(window.getComputedStyle(pikachuContainer).getPropertyValue('bottom'));
@@ -542,7 +550,18 @@ const mobileSuperCar = document.getElementById('mobile-supercar');
 let mobileRightMove = undefined;
 let mobileLeftMove = undefined;
 
-mobileInstantPlay.addEventListener('click', event => {
+mobileInstantPlay.addEventListener('touchstart', event => {
+    event.preventDefault();
+    if (isGamePlaying == false) {
+        if(isPikachuSuperSayan == false && isSuperCarActive == false) {
+            resetGame();
+        } else {
+            pikachuContainer.style.left = 24 + 'px';
+        }
+        playGame();
+    }
+});
+mobileInstantPlay.addEventListener('mousedown', event => {
     event.preventDefault();
     if (isGamePlaying == false) {
         if(isPikachuSuperSayan == false && isSuperCarActive == false) {
@@ -554,11 +573,20 @@ mobileInstantPlay.addEventListener('click', event => {
     }
 });
 
-mobileJump.addEventListener('mousedown', jump);
+mobileJump.addEventListener('touchstart', event => {
+    event.preventDefault();
+    jump();
+});
+mobileJump.addEventListener('mousedown', event => {
+    event.preventDefault();
+    jump();
+});
 
-mobileRight.addEventListener('touchstart', function() {
+mobileRight.addEventListener('touchstart', event => {
+    event.preventDefault();
     if (mobileRightMove == undefined) {
         mobileRightMove = setInterval(function() {
+            isCarGoing = true;
             goRight();
             wheelLeft.style.animationPlayState = 'running';
             wheelRight.style.animationPlayState = 'running';
@@ -568,33 +596,17 @@ mobileRight.addEventListener('touchstart', function() {
         }, 10);
     }
 });
-mobileRight.addEventListener('touchend', function() {
+mobileRight.addEventListener('touchend', event => {
+    event.preventDefault();
+    isCarGoing = false;
     clearInterval(mobileRightMove);
     mobileRightMove = undefined;
 })
-mobileLeft.addEventListener('touchstart', function() {
-    if (mobileLeftMove == undefined) {
-        mobileLeftMove = setInterval(function() {
-            goLeft();
-            wheelLeft.style.animationPlayState = 'running';
-            wheelRight.style.animationPlayState = 'running';
-            wheelLeft.style.animationDirection = 'reverse';
-            wheelRight.style.animationDirection = 'reverse';
-            carNos.style.display = 'block';
-        }, 10);
-    }
-});
-mobileLeft.addEventListener('touchend', function() {
-    clearInterval(mobileLeftMove);
-    mobileLeftMove = undefined;
-
-    wheelLeft.style.animationDirection = 'normal';
-    wheelRight.style.animationDirection = 'normal';
-})
-
-mobileRight.addEventListener('mousedown', function() {
+mobileRight.addEventListener('mousedown', event => {
+    event.preventDefault();
     if (mobileRightMove == undefined) {
         mobileRightMove = setInterval(function() {
+            isCarGoing = true;
             goRight();
             wheelLeft.style.animationPlayState = 'running';
             wheelRight.style.animationPlayState = 'running';
@@ -604,13 +616,18 @@ mobileRight.addEventListener('mousedown', function() {
         }, 10);
     }
 });
-mobileRight.addEventListener('mouseup', function() {
+mobileRight.addEventListener('mouseup', event => {
+    event.preventDefault();
+    isCarGoing = false;
     clearInterval(mobileRightMove);
     mobileRightMove = undefined;
 })
-mobileLeft.addEventListener('mousedown', function() {
+
+mobileLeft.addEventListener('touchstart', event => {
+    event.preventDefault();
     if (mobileLeftMove == undefined) {
         mobileLeftMove = setInterval(function() {
+            isCarGoing = true;
             goLeft();
             wheelLeft.style.animationPlayState = 'running';
             wheelRight.style.animationPlayState = 'running';
@@ -620,7 +637,32 @@ mobileLeft.addEventListener('mousedown', function() {
         }, 10);
     }
 });
-mobileLeft.addEventListener('mouseup', function() {
+mobileLeft.addEventListener('touchend', event => {
+    event.preventDefault();
+    isCarGoing = false;
+    clearInterval(mobileLeftMove);
+    mobileLeftMove = undefined;
+
+    wheelLeft.style.animationDirection = 'normal';
+    wheelRight.style.animationDirection = 'normal';
+})
+mobileLeft.addEventListener('mousedown', event => {
+    event.preventDefault();
+    if (mobileLeftMove == undefined) {
+        mobileLeftMove = setInterval(function() {
+            isCarGoing = true;
+            goLeft();
+            wheelLeft.style.animationPlayState = 'running';
+            wheelRight.style.animationPlayState = 'running';
+            wheelLeft.style.animationDirection = 'reverse';
+            wheelRight.style.animationDirection = 'reverse';
+            carNos.style.display = 'block';
+        }, 10);
+    }
+});
+mobileLeft.addEventListener('mouseup', event => {
+    event.preventDefault();
+    isCarGoing = false;
     clearInterval(mobileLeftMove);
     mobileLeftMove = undefined;
 
@@ -628,8 +670,23 @@ mobileLeft.addEventListener('mouseup', function() {
     wheelRight.style.animationDirection = 'normal';
 })
 
-mobileSuperSayan.addEventListener('mousedown', getSuperSayan);
-mobileSuperCar.addEventListener('mousedown', getSuperCar);
+mobileSuperSayan.addEventListener('touchstart', event => {
+    event.preventDefault();
+    getSuperSayan();
+});
+mobileSuperSayan.addEventListener('mousedown', event => {
+    event.preventDefault();
+    getSuperSayan();
+});
+
+mobileSuperCar.addEventListener('touchstart', event => {
+    event.preventDefault();
+    getSuperCar();
+});
+mobileSuperCar.addEventListener('mousedown', event => {
+    event.preventDefault();
+    getSuperCar();
+});
 
 
 
