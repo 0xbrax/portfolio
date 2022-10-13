@@ -1,3 +1,8 @@
+const nicknameContainer = document.getElementById('nickname-container');
+const nickname = document.getElementById('nickname');
+const nameSender = document.getElementById('nickname-sender');
+const bestScoreView = document.getElementById('best-score-view');
+
 const gameContainer = document.getElementById('game');
 let isGamePlaying = false;
 const playBtn = document.getElementById('play-btn');
@@ -16,18 +21,20 @@ let carNos = document.getElementById('fire');
 let isSuperCarActive = false;
 const backMusic = new Audio('assets/audio/Vanze - Survive (feat. Neon Dreams) [NCS Release].mp3');
 let isBGMusicPlaying = false;
-const pikaSound = new Audio('assets/audio/pikachu-jump-8bit-sfx.mp3');
+const jumpSound = new Audio('assets/audio/arcade-8bit-jump-sfx.mp3');
 const killSound = new Audio('assets/audio/mixkit-retro-game-over-1947-edit.mp3');
 const bonusSound = new Audio('assets/audio/mixkit-fairy-arcade-sparkle-866-edit.mp3');
 const carStart = new Audio('assets/audio/ferrari-laferrari-v12-sound-edit.mp3');
 const carStop = new Audio('assets/audio/car-horn-sfx.mp3');
-const superSayanSound = new Audio('assets/audio/pikachu-supersayan-sfx.mp3');
+const superSayanSound = new Audio('assets/audio/pikachu-remix-supersayan-sfx.mp3');
+const pikachuSound = new Audio('assets/audio/pikachu-pika-sfx.mp3');
 
 const mcdonalds = document.getElementById('mcdonalds');
 const burger = document.getElementById('burger');
 let grillTime = 1.8;
 let star = document.getElementById('star');
 let liveBonus = undefined;
+let bonusPoints = 1000;
 let randomBonus = 5000;
 let isCarGoingRight = false;
 let isCarGoingLeft = false;
@@ -38,19 +45,13 @@ let liveScore = undefined;
 let record = document.getElementById('record');
 let recordCounter = 0;
 let liveRecord = [];
+let worldRecord = document.getElementById('world-record');
+const leaderboardID = 'cfqyXSB5PmTHj6UnnYS2';
 
 let keyState = {};
-window.addEventListener('keydown', function(event) {
-    event.preventDefault();
-    keyState[event.key] = true;
-}, true);
-window.addEventListener('keyup', function(event) {
-    event.preventDefault();
-    keyState[event.key] = false;
-}, true);
 
-playBtn.addEventListener('click', playGame);
 resetBtn.addEventListener('click', resetGame);
+
 pikaAudioBtn.addEventListener('click', setSfxVolume);
 bgMusicBtn.addEventListener('click', setBackMusic);
 
@@ -81,9 +82,8 @@ star.addEventListener('animationend', function() {
 });
 pikachuContainer.addEventListener('animationend', function() {
     pikachuContainer.classList.remove('jump');
-    cloudText.style.display = 'none';
-    pikaSound.pause();
-    pikaSound.currentTime = 0;
+    jumpSound.pause();
+    jumpSound.currentTime = 0;
 });
 killSound.addEventListener('ended', function() {
     killSound.pause();
@@ -94,8 +94,8 @@ bonusSound.addEventListener('ended', function() {
     bonusSound.currentTime = 0;
 });
 
-score.innerHTML = scoreCounter;
-record.innerHTML = recordCounter;
+score.innerHTML = `LOL score: <span class="fw-bold">${scoreCounter}</span>`;
+record.innerHTML = `Local record: <span class="fw-bold">${recordCounter}</span> by <span class="fw-bold">${nickname.value}</span>`;
 
 let isPikachuAlive = setInterval(function() {
     if (isGamePlaying == false && isCarGoingRight == false && isCarGoingLeft == false) {
@@ -161,8 +161,8 @@ let isPikachuAlive = setInterval(function() {
 
         killSound.play();
 
-        pikaSound.pause();
-        pikaSound.currentTime = 0;
+        jumpSound.pause();
+        jumpSound.currentTime = 0;
         carStart.pause();
         carStart.currentTime = 0;
         carStop.pause();
@@ -171,6 +171,8 @@ let isPikachuAlive = setInterval(function() {
         bonusSound.currentTime = 0;
         superSayanSound.pause();
         superSayanSound.currentTime = 0;
+        pikachuSound.pause();
+        pikachuSound.currentTime = 0;
 
         clearInterval(liveScore);
         liveScore = undefined;
@@ -178,6 +180,13 @@ let isPikachuAlive = setInterval(function() {
         liveBonus = undefined;
 
         recordStorage();
+        setNewPlayerScore(leaderboardID, nickname.value, scoreCounter);
+
+        //if (scoreCounter >= worldRecordCounter) {
+            setTimeout(function() {
+                getLeaderboard(leaderboardID);
+            }, 1000);
+        //}
     }
 
     if (liveBonus == undefined && isGamePlaying == true) {
@@ -196,39 +205,20 @@ let isPikachuAlive = setInterval(function() {
 
         bonusSound.play();
 
-        scoreCounter = scoreCounter + 1000;
-        score.innerHTML = scoreCounter;
+        cloudText.style.display = 'block';
+        setTimeout(function() {
+            cloudText.style.display = 'none';
+        }, 1000);
+
+        scoreCounter = scoreCounter + bonusPoints;
+        score.innerHTML = `LOL score: <span class="fw-bold">${scoreCounter}</span>`;
     }
 }, 10);
 
-window.document.querySelector('body').addEventListener('keydown', function(event) {
-    switch (event.key) {
-        case 'Enter': //key: 'Enter', code: 'Enter', keyCode: 13
-                event.preventDefault();
-                if (isGamePlaying == false) {
-                    if(isPikachuSuperSayan == false && isSuperCarActive == false) {
-                        resetGame();
-                    } else {
-                        pikachuContainer.style.left = 24 + 'px';
-                    }
-                    playGame();
-                }
-            break;
-        case ' ': //key: ' ', code: 'Space', keyCode: 32
-        case 'ArrowUp': //key: 'ArrowUp', code: 'ArrowUp', keyCode: 38
-                event.preventDefault();
-                jump();
-            break;
-        case 'ArrowDown': //key: 'ArrowDown', code: 'ArrowDown', keyCode: 40
-                event.preventDefault();
-                getSuperSayan()
-            break;
-        case 'b': //key: 'b', code: 'KeyB', keyCode: 66
-                event.preventDefault();
-                getSuperCar();
-        break;
-    }
-});
+getLeaderboard(leaderboardID);
+let getWorldRecord = setInterval(function() {
+    getLeaderboard(leaderboardID);
+}, 10000);
 
 function playGame() {
     if (pikachu.classList.contains('kill')) {
@@ -260,7 +250,7 @@ function playGame() {
     if (liveScore == undefined) {
         liveScore = setInterval(function() {
             scoreCounter = scoreCounter + 10;
-            score.innerHTML = scoreCounter;
+            score.innerHTML = `LOL score: <span class="fw-bold">${scoreCounter}</span>`;
         }, 100);
     }
 
@@ -291,10 +281,10 @@ function resetGame() {
     pikachuContainer.style.left = 24 + 'px';
 
     scoreCounter = 0;
-    score.innerHTML = scoreCounter;
+    score.innerHTML = `LOL score: <span class="fw-bold">${scoreCounter}</span>`;
 
-    pikaSound.pause();
-    pikaSound.currentTime = 0;
+    jumpSound.pause();
+    jumpSound.currentTime = 0;
     carStart.pause();
     carStart.currentTime = 0;
     carStop.pause();
@@ -305,6 +295,8 @@ function resetGame() {
     killSound.currentTime = 0;
     superSayanSound.pause();
     superSayanSound.currentTime = 0;
+    pikachuSound.pause();
+    pikachuSound.currentTime = 0;
 
     clearInterval(liveScore);
     liveScore = undefined;
@@ -315,8 +307,7 @@ function resetGame() {
 function jump() {
     if (!pikachu.classList.contains('kill')) {
         pikachuContainer.classList.add('jump');
-        cloudText.style.display = 'block';
-        pikaSound.play()
+        jumpSound.play()
     }
 }
 
@@ -353,7 +344,12 @@ function getSuperSayan() {
     if (isPikachuSuperSayan == true) {
         superSayanSound.pause();
         superSayanSound.currentTime = 0;
+
+        pikachuSound.play();
     } else {
+        pikachuSound.pause();
+        pikachuSound.currentTime = 0;
+
         superSayanSound.play();
     }
 
@@ -473,10 +469,10 @@ function getSuperCar() {
 }
 
 function setSfxVolume() {
-    if (pikaSound.volume == 1) {
-        pikaSound.volume = 0;
+    if (jumpSound.volume == 1) {
+        jumpSound.volume = 0;
     } else {
-        pikaSound.volume = 1;
+        jumpSound.volume = 1;
     }
 
     if (killSound.volume == 1) {
@@ -508,6 +504,12 @@ function setSfxVolume() {
     } else {
         superSayanSound.volume = 1;
     }
+
+    if (pikachuSound.volume == 1) {
+        pikachuSound.volume = 0;
+    } else {
+        pikachuSound.volume = 1;
+    }
 }
 
 function setBackMusic() {
@@ -527,7 +529,7 @@ function recordStorage() {
         for (let i = 0; i < liveRecord.length; i++) {
             if (liveRecord[i] > recordCounter) {
                 recordCounter = liveRecord[i];
-                record.innerHTML = recordCounter;
+                record.innerHTML = `Local record: <span class="fw-bold">${recordCounter}</span> by <span class="fw-bold">${nickname.value}</span>`;
             }
         }
     }
@@ -553,29 +555,6 @@ const mobileSuperSayan = document.getElementById('mobile-supersayan');
 const mobileSuperCar = document.getElementById('mobile-supercar');
 let mobileRightMove = undefined;
 let mobileLeftMove = undefined;
-
-mobileInstantPlay.addEventListener('touchstart', event => {
-    event.preventDefault();
-    if (isGamePlaying == false) {
-        if(isPikachuSuperSayan == false && isSuperCarActive == false) {
-            resetGame();
-        } else {
-            pikachuContainer.style.left = 24 + 'px';
-        }
-        playGame();
-    }
-});
-mobileInstantPlay.addEventListener('mousedown', event => {
-    event.preventDefault();
-    if (isGamePlaying == false) {
-        if(isPikachuSuperSayan == false && isSuperCarActive == false) {
-            resetGame();
-        } else {
-            pikachuContainer.style.left = 24 + 'px';
-        }
-        playGame();
-    }
-});
 
 mobileJump.addEventListener('touchstart', event => {
     event.preventDefault();
@@ -668,6 +647,146 @@ mobileSuperCar.addEventListener('mousedown', event => {
 
 
 
+//////// LEADERBOARD ////////
+
+function setNewPlayerScore(id, player, score) {
+    fetch(
+        `https://us-central1-js-capstone-backend.cloudfunctions.net/api/games/${id}/scores`,
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                user: player,
+                score: score,
+            }),
+        },
+    );
+};
+async function getLeaderboard(id) {
+    const response = await fetch(
+        `https://us-central1-js-capstone-backend.cloudfunctions.net/api/games/${id}/scores`,
+    );
+    const dataText = await response.text();
+    const parsedData = JSON.parse(dataText);
+
+    let realTimeWorldRecord = parsedData.result;
+    let worldRecordCounter = 0;
+
+    if (realTimeWorldRecord.length > 0) {
+        for (let i = 0; i < realTimeWorldRecord.length; i++) {
+            if (realTimeWorldRecord[i].score > worldRecordCounter) {
+                worldRecordCounter = realTimeWorldRecord[i].score;
+
+                worldRecord.innerHTML = `World record: <span class="fw-bold">${worldRecordCounter}</span> by <span class="fw-bold">${realTimeWorldRecord[i].user.substring(0, 3)}</span>`;
+            }
+        }
+    } else {
+        worldRecord.innerHTML = `World record: <span class="fw-bold">0</span> by <span class="fw-bold">---</span>`;
+    }
+
+    realTimeWorldRecord.sort((a, b) => (b.score) - a.score);
+    bestScoreView.innerHTML = '';
+
+    for (let i = 0; i < 5; i++) {
+        let divScore = document.createElement('div');
+        bestScoreView.append(divScore);
+        if (realTimeWorldRecord[i] == undefined) {
+            divScore.innerHTML = `0 by ---`;
+        } else {
+            divScore.innerHTML = `${realTimeWorldRecord[i].score} by ${realTimeWorldRecord[i].user.substring(0, 3)}`;
+        }
+    }
+};
+
+
+
+//////// NICKNAME REQUEST TO PLAY ////////
+
+nameSender.addEventListener('click', function() {
+    requestToPlay();
+});
+
+nickname.addEventListener('keyup', function(event) {
+    if (event.key == 'Enter') {
+        requestToPlay();
+    }
+});
+
+function requestToPlay() {
+    if (nickname.value.length == 0 || nickname.value.length > 3) {
+        return
+    }
+
+    nicknameContainer.style.display = 'none';
+    record.innerHTML = `Local record: <span class="fw-bold">${recordCounter}</span> by <span class="fw-bold">${nickname.value}</span>`;
+
+    window.document.querySelector('body').addEventListener('keydown', function(event) {
+        event.preventDefault();
+        keyState[event.key] = true;
+    }, true);
+    window.document.querySelector('body').addEventListener('keyup', function(event) {
+        event.preventDefault();
+        keyState[event.key] = false;
+    }, true);
+
+    window.document.querySelector('body').addEventListener('keydown', function(event) {
+        switch (event.key) {
+            case 'Enter': //key: 'Enter', code: 'Enter', keyCode: 13
+                    event.preventDefault();
+                    if (isGamePlaying == false) {
+                        if(isPikachuSuperSayan == false && isSuperCarActive == false) {
+                            resetGame();
+                        } else {
+                            pikachuContainer.style.left = 24 + 'px';
+                        }
+                        playGame();
+                    }
+                break;
+            case ' ': //key: ' ', code: 'Space', keyCode: 32
+                    event.preventDefault();
+                    jump();
+                break;
+            case 'ArrowUp': //key: 'ArrowUp', code: 'ArrowUp', keyCode: 38
+                    event.preventDefault();
+                    getSuperCar();
+                break;
+            case 'ArrowDown': //key: 'ArrowDown', code: 'ArrowDown', keyCode: 40
+                    event.preventDefault();
+                    getSuperSayan()
+                break;
+        }
+    });
+
+    playBtn.addEventListener('click', playGame);
+
+    mobileInstantPlay.addEventListener('touchstart', event => {
+        event.preventDefault();
+        if (isGamePlaying == false) {
+            if(isPikachuSuperSayan == false && isSuperCarActive == false) {
+                resetGame();
+            } else {
+                pikachuContainer.style.left = 24 + 'px';
+            }
+            playGame();
+        }
+    });
+    mobileInstantPlay.addEventListener('mousedown', event => {
+        event.preventDefault();
+        if (isGamePlaying == false) {
+            if(isPikachuSuperSayan == false && isSuperCarActive == false) {
+                resetGame();
+            } else {
+                pikachuContainer.style.left = 24 + 'px';
+            }
+            playGame();
+        }
+    });
+}
+
+
+
 //////// PRELOAD PAGE ////////
 
 let preloadPage = document.getElementById('preload-page');
@@ -675,5 +794,5 @@ window.addEventListener('load', function() {
     setTimeout(function() {
         preloadPage.style.display = 'none';
         document.body.style.overflow = 'auto';
-    }, 1200);
+    }, 1230);
 });

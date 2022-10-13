@@ -11,7 +11,7 @@ body {
 }
 #preload-page div {
     text-align: center;
-    font-size: 35px;
+    font-size: 30px;
     color: white;
 
     position: absolute;
@@ -22,7 +22,7 @@ body {
 #preload-page img {
     height: 100%;
     min-height: 100px;
-    max-height: 300px;
+    max-height: 250px;
 }
 
 
@@ -34,6 +34,33 @@ body {
     position: relative;
     background-color: black;
     border-bottom: 5px solid black;
+}
+
+#nickname-container {
+    width: 70%;
+    height: 40%;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 50px 150px;
+    border-radius: 10px;
+    z-index: 800;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#nickname {
+    width: 110px;
+}
+#nickname-container label {
+    position: absolute;
+    left: 50%;
+    bottom: 10%;
+    transform: translateX(-50%);
+    color: white;
 }
 
 #game {
@@ -61,8 +88,17 @@ body {
 
 #score-container {
     position: absolute;
-    left: 10px;
-    top: 5px;
+    left: 0;
+    top: 0;
+    padding: 5px 10px;
+    width: 100%;
+    z-index: 200;
+}
+
+#best-score-container {
+    border: 2px solid black;
+    padding: 10px 20px;
+    text-align: center;
 }
 
 #mcdonalds {
