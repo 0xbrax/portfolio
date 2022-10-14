@@ -19,7 +19,7 @@ let wheelLeft = document.getElementById('wheel-car-left');
 let wheelRight = document.getElementById('wheel-car-right');
 let carNos = document.getElementById('fire');
 let isSuperCarActive = false;
-const backMusic = new Audio('assets/audio/Vanze - Survive (feat. Neon Dreams) [NCS Release].mp3');
+const backMusic = new Audio('assets/audio/Josh Mease - 4 on the Floor 8bit.wav');
 let isBGMusicPlaying = false;
 const jumpSound = new Audio('assets/audio/arcade-8bit-jump-sfx.mp3');
 const killSound = new Audio('assets/audio/mixkit-retro-game-over-1947-edit.mp3');
@@ -95,7 +95,7 @@ bonusSound.addEventListener('ended', function() {
 });
 
 score.innerHTML = `LOL score: <span class="fw-bold">${scoreCounter}</span>`;
-record.innerHTML = `Local record: <span class="fw-bold">${recordCounter}</span> by <span class="fw-bold">${nickname.value}</span>`;
+record.innerHTML = `Local record: <span class="fw-bold">${recordCounter}</span> by <span class="fw-bold">---</span>`;
 
 let isPikachuAlive = setInterval(function() {
     if (isGamePlaying == false && isCarGoingRight == false && isCarGoingLeft == false) {
@@ -315,9 +315,9 @@ function goRight() {
     let pikachuLeft = parseInt(window.getComputedStyle(pikachuContainer).getPropertyValue('left'));
     let pikachuRight = parseInt(window.getComputedStyle(pikachuContainer).getPropertyValue('right'));
 
-    if (!pikachu.classList.contains('kill') && pikachuRight > 152) {
+    if (!pikachu.classList.contains('kill') && pikachuRight > 168) {
         if (isSuperCarActive == true) {
-            pikachuContainer.style.left = (pikachuLeft + 8) + 'px';
+            pikachuContainer.style.left = (pikachuLeft + 6) + 'px';
         } else {
             pikachuContainer.style.left = (pikachuLeft + 4) + 'px';
         }
@@ -329,7 +329,7 @@ function goLeft() {
 
     if (!pikachu.classList.contains('kill') && pikachuLeft > 24) {
         if (isSuperCarActive == true) {
-            pikachuContainer.style.left = (pikachuLeft - 8) + 'px';
+            pikachuContainer.style.left = (pikachuLeft - 6) + 'px';
         } else {
             pikachuContainer.style.left = (pikachuLeft - 4) + 'px';
         }
@@ -516,9 +516,11 @@ function setBackMusic() {
     if (isBGMusicPlaying == false) {
         backMusic.play();
         isBGMusicPlaying = true;
+        backMusic.volume = 1;
     } else {
         backMusic.pause();
         isBGMusicPlaying = false;
+        backMusic.volume = 0;
     }
 }
 
@@ -717,6 +719,11 @@ nickname.addEventListener('keyup', function(event) {
 function requestToPlay() {
     if (nickname.value.length == 0 || nickname.value.length > 3) {
         return
+    }
+
+    if (backMusic.volume == 1) {
+        backMusic.play();
+        isBGMusicPlaying = true;
     }
 
     nicknameContainer.style.display = 'none';
