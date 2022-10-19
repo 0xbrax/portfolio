@@ -110,14 +110,14 @@ body {
     transform-origin: bottom right;
 }
 .takeaway {
-    animation: takeaway 0.5s 0.1s linear;
+    animation: takeaway 0.5s 0.1s ease-out;
 }
 @keyframes takeaway {
     0% {
         transform: rotate(0deg);
     }
     50% {
-        transform: rotate(15deg);
+        transform: rotate(13deg);
     }
     100% {
         transform: rotate(0deg);

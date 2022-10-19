@@ -182,11 +182,9 @@ let isPikachuAlive = setInterval(function() {
         recordStorage();
         setNewPlayerScore(leaderboardID, nickname.value, scoreCounter);
 
-        //if (scoreCounter >= worldRecordCounter) {
-            setTimeout(function() {
-                getLeaderboard(leaderboardID);
-            }, 1000);
-        //}
+        setTimeout(function() {
+            getLeaderboard(leaderboardID);
+        }, 1000);
     }
 
     if (liveBonus == undefined && isGamePlaying == true) {
@@ -218,7 +216,7 @@ let isPikachuAlive = setInterval(function() {
 getLeaderboard(leaderboardID);
 let getWorldRecord = setInterval(function() {
     getLeaderboard(leaderboardID);
-}, 10000);
+}, 20000);
 
 function playGame() {
     if (pikachu.classList.contains('kill')) {
