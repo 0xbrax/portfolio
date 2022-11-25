@@ -1,18 +1,51 @@
+/***** BOOTSTRAP RESET *****/
+
+.btn:hover {
+    color: var(--bs-btn-color);
+    background-color: var(--bs-btn-bg);
+    border-color: var(--bs-btn-border-color);
+}
+
+/***** MAIN *****/
+
+:root {
+    --main-purple-col: #ab87ff;
+    --sec-purple-col: #D59AF2;
+    --pink-col: #FFB6D1;
+    --blue-col: #B4E1FF;
+    --green-col: #C1FF9B;
+}
+
 body {
-    overflow: hidden;
+    font-family: 'Ubuntu', sans-serif;
+
+    background: var(--pink-col);
+    background: linear-gradient(180deg, var(--pink-col) 58.2%, var(--blue-col) 58.2%);
 }
 
 #preload-page {
     width: 100%;
     height: 100vh;
     position: fixed;
-    background-color: blueviolet;
-    z-index: 9999;
+    z-index: 9995;
+
+    color: var(--main-purple-col);
+    background: linear-gradient(135deg, var(--sec-purple-col) 25%, var(--pink-col) 25%, var(--pink-col) 50%, var(--blue-col) 50%, var(--blue-col) 75%, var(--green-col) 75%);
+    background-size: 200% 200%;
+    animation: gradient 2.8s ease infinite;
+}
+@keyframes gradient {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
 }
 #preload-page div {
     text-align: center;
     font-size: 30px;
-    color: white;
+    font-weight: bold;
 
     position: absolute;
     left: 50%;
@@ -24,8 +57,46 @@ body {
     min-height: 100px;
     max-height: 250px;
 }
+#loading {
+    display: inline-block;
+    background-color: var(--main-purple-col);
+    height: 22px;
+    width: 14px;
+    opacity: 0;
+    animation: loading 1s linear infinite;
+}
+@keyframes loading {
+    50% {
+        opacity: 1;
+    }
+}
 
+main {
+    overflow-x: hidden;
+}
 
+.relative-index-per-bg {
+    position: relative;
+
+    z-index: 500;
+}
+
+/***** HEADER *****/
+
+header {
+    height: 70px;
+    background-color: var(--main-purple-col);
+}
+
+header nav {
+    height: 100%;
+}
+
+header img {
+    height: 50px;
+}
+
+/***** GAME *****/
 
 #game-container {
     width: 600px;
@@ -46,7 +117,7 @@ body {
     background-color: rgba(0, 0, 0, 0.7);
     padding: 50px 150px;
     border-radius: 10px;
-    z-index: 800;
+    z-index: 300;
 
     display: flex;
     justify-content: center;
@@ -68,8 +139,9 @@ body {
     height: 250px;
     position: relative;
     border: 5px solid black;
+    color: black;
 
-    background-image: url('../assets/img/rungame-city-bg.jpg');
+    background-image: url('../assets/img/2D-city-back_2x_01-edit.png');
     background-repeat: repeat-x;
     background-position: left 0px bottom 0%;
     background-size: contain;
@@ -82,7 +154,7 @@ body {
         background-position: left 0px bottom 0%;
     }
     100% {
-        background-position: left -370.9090909135px bottom 0%;
+        background-position: left -480px bottom 0%;
     }
 }
 
@@ -95,16 +167,10 @@ body {
     z-index: 200;
 }
 
-#best-score-container {
-    border: 2px solid black;
-    padding: 10px 20px;
-    text-align: center;
-}
-
 #mcdonalds {
     width: 120px;
     position: absolute;
-    bottom: 0px;
+    bottom: 26px;
     right: 0px;
     z-index: 12;
     transform-origin: bottom right;
@@ -127,7 +193,7 @@ body {
 #burger {
     width: 40px;
     position: absolute;
-    bottom: 0px;
+    bottom: 26px;
     right: 20px;
     z-index: 11;
 }
@@ -140,6 +206,93 @@ body {
     }
     100% {
         right: 555px;
+    }
+}
+
+#monster {
+    width: 100px;
+    position: absolute;
+    bottom: 10px;
+    right: 0px;
+    z-index: 11;
+
+    display: none;
+}
+.attack {
+    animation: attack linear;
+}
+@keyframes attack {
+    0% {
+        right: 0px;
+    }
+    100% {
+        right: 520px;
+    }
+}
+
+#final-boss-container {
+    width: 140px;
+    position: absolute;
+    bottom: 15px;
+    right: 10px;
+    z-index: 51;
+
+    display: none;
+}
+#final-boss {
+    width: 100%;
+}
+.boss-move {
+    animation: boss-move linear;
+}
+@keyframes boss-move {
+    0%, 100% {
+        bottom: 15px;
+    }
+    25% {
+        bottom: -15px;
+    }
+    75% {
+        bottom: 75px;
+    }
+}
+#final-boss-life {
+    position: absolute;
+    bottom: 3px;
+    right: 18px;
+    background: linear-gradient(90deg, rgba(255, 0, 0, 1) 0%, rgba(173, 255, 47, 1) 0%);
+    border: 2px solid black;
+    border-radius: 6px;
+    width: 120px;
+    height: 12px;
+
+    display: none;
+}
+#fire-ball {
+    width: 90px;
+    position: absolute;
+    right: 70px;
+    transform: rotate(-23deg);
+
+    /*display: none; SET ON JS*/
+}
+.boss-attack {
+    animation: boss-attack linear;
+}
+@keyframes boss-attack {
+    0% {
+        right: 70px;
+        transform: rotate(-23deg);
+    }
+    25% {
+        bottom: 30px;
+        right: 200px;
+        transform: rotate(0deg);
+    }
+    100% {
+        bottom: 30px;
+        right: 510px;
+        transform: rotate(0deg);
     }
 }
 
@@ -160,11 +313,11 @@ body {
         right: 0px;
     }
     33% {
-        bottom: 100px;
+        bottom: 126px;
         right: 200px;
     }
     100% {
-        bottom: 100px;
+        bottom: 126px;
         right: 555px;
     }
 }
@@ -172,7 +325,7 @@ body {
 #pikachu-container {
     width: 100px;
     position: absolute;
-    bottom: 0px;
+    bottom: 26px;
     left: 24px;
     z-index: 91;
 }
@@ -185,13 +338,13 @@ body {
 }
 @keyframes jump {
     0% {
-        bottom: 0px;
+        bottom: 26px;
     }
     50% {
-        bottom: 100px;
+        bottom: 126px;
     }
     100% {
-        bottom: 0px;
+        bottom: 26px;
     }
 }
 .kill {
@@ -204,8 +357,8 @@ body {
 #cloud-text {
     width: 140px;
     position: absolute;
-    bottom: 55px;
-    left: 75px;
+    bottom: 42px;
+    left: 88px;
     z-index: 93;
     display: none;
 }
@@ -242,7 +395,7 @@ body {
 #wheel-car-right {
     width: 22px;
     position: absolute;
-    left: 80px;
+    left: 81px;
     bottom: -3px;
     animation: race 1.2s infinite linear;
     animation-play-state: paused;
@@ -271,11 +424,221 @@ body {
     display: none;
 }
 
+#lighting-ball {
+    width: 60px;
+    position: absolute;
+    z-index: 201;
+
+    /*display: none; SET ON JS*/
+}
+.pika-attack {
+    animation: pika-attack linear;
+}
+@keyframes pika-attack {
+    100% {
+        left: 540px;
+    }
+}
 
 
-/******** BOOTSTRAP RESET ********/
-.btn:hover {
-    color: var(--bs-btn-color);
-    background-color: var(--bs-btn-bg);
-    border-color: var(--bs-btn-border-color);
+
+/***** SPECIAL *****/
+
+.custom-shape-edit-top {
+    width: 100%;
+    height: 400px;
+    background-color: var(--sec-purple-col);
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.custom-shape-divider-top-1669183005 {
+    position: absolute;
+    top: 400px;
+    left: 0;
+    width: 150%;
+    overflow: hidden;
+    line-height: 0;
+}
+.custom-shape-divider-top-1669183005 svg {
+    position: relative;
+    display: block;
+    width: calc(150% + 1.3px);
+    height: 50px;
+}
+.custom-shape-divider-top-1669183005 .shape-fill {
+    fill: var(--sec-purple-col);
+}
+
+.custom-shape-edit-bottom {
+    width: 100%;
+    height: 250px;
+    background-color: var(--green-col);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+.custom-shape-divider-bottom-1669183688 {
+    position: absolute;
+    bottom: 250px;
+    left: 0;
+    width: 150%;
+    overflow: hidden;
+    line-height: 0;
+    transform: rotate(180deg);
+}
+.custom-shape-divider-bottom-1669183688 svg {
+    position: relative;
+    display: block;
+    width: calc(150% + 1.3px);
+    height: 50px;
+    transform: rotateY(180deg);
+}
+.custom-shape-divider-bottom-1669183688 .shape-fill {
+    fill: var(--green-col);
+}
+
+
+
+#food-truck-container-img {
+    height: 280px;
+}
+#truck-door-container {
+    width: 44px;
+    height: 97px;
+    bottom: 51px;
+    left: 250px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+#truck-door {
+    width: 100%;
+    height: 100%;
+    background-color: #cd181f;
+    box-shadow: inset 0px 0px 0px 1px #000000;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+#truck-door img {
+    height: 6px;
+    top: 60px;
+    right: 4px;
+}
+#truck-door-window {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #0ca49b;
+    box-shadow: 0px 0px 0px 2px #000000;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+#truck-door-container:hover #truck-door {
+    animation: open-door 1.5s ease forwards;
+}
+@keyframes open-door {
+    0% {
+        -webkit-transform: perspective(600) rotateY(0deg);
+        transform-origin: 0% 50%;
+    }
+    100% {
+        -webkit-transform: perspective(600) rotateY(-180deg);
+        transform-origin: 0% 50%;
+    }
+}
+#best-score-container {
+    font-size: 10px;
+
+    top: 174px;
+    left: 25px;
+
+    transform: skew(10deg);
+}
+.best-score-bg {
+    background-color: #231f20;
+}
+#pikachu-static {
+    width: 100px;
+    transform: scaleX(-1);
+
+    bottom: 65px;
+    right: 108px;
+}
+
+
+
+#info-container {
+    background-image: url('../assets/img/paper-planes-bg_3x.png');
+    background-size: auto 100%;
+    background-repeat: repeat-x;
+    background-position: center;
+}
+
+.badge {
+    display: block;
+    position: relative;
+    width: 20rem;
+    height: 20rem;
+    background: url('../assets/img/Dreampool.png') no-repeat 100% 50%;
+    background-size: 120%;
+    border-radius: 50%;
+    transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
+    box-shadow: 0px 0.5rem 1rem rgba(0, 0, 0, 0.75);
+}
+.badge:hover {
+    box-shadow: 0px 0.5rem 2rem rgba(0, 0, 0, 0.75);
+    background-position: 0% 50%;
+}
+.badge:hover .text {
+    transform: rotate(-45deg) translate(0px) rotate(-315deg);
+    background: rgba(171, 135, 255, 0.5);
+    width: 20rem;
+    letter-spacing: 1rem;
+    line-height: 20rem;
+    height: 20rem;
+    margin-top: -10rem;
+    margin-left: -10rem;
+    transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1), letter-spacing 1.5s ease-out;
+}
+.badge .text {
+    display: block;
+    position: absolute;
+    width: 10rem;
+    height: 10rem;
+    line-height: 10rem;
+    left: 50%;
+    top: 50%;
+    margin-top: -5rem;
+    margin-left: -5rem;
+    font-size: 2rem;
+    text-align: center;
+    color: #fff;
+    border-radius: 50%;
+    background: var(--main-purple-col);
+    transform: rotate(-180deg) translate(-10rem) rotate(180deg);
+    box-shadow: 0px 0.5rem 1rem rgba(0, 0, 0, 0.5);
+    transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
+}
+
+/***** MEDIA QUERY *****/
+
+@media all and (min-width: 768px) {
+    .custom-shape-divider-top-1669183005 {
+        width: 100%;
+    }
+    .custom-shape-divider-top-1669183005 svg {
+        width: calc(100% + 1.3px);
+    }
+
+    .custom-shape-divider-bottom-1669183688 {
+        width: 100%;
+    }
+    .custom-shape-divider-bottom-1669183688 svg {
+        width: calc(100% + 1.3px);
+    }
 }

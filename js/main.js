@@ -1,5 +1,5 @@
 const nicknameContainer = document.getElementById('nickname-container');
-const nickname = document.getElementById('nickname');
+let nickname = document.getElementById('nickname');
 const nameSender = document.getElementById('nickname-sender');
 const bestScoreView = document.getElementById('best-score-view');
 
@@ -32,16 +32,51 @@ const pikachuSound = new Audio('assets/audio/pikachu-pika-sfx.mp3');
 const mcdonalds = document.getElementById('mcdonalds');
 const burger = document.getElementById('burger');
 let grillTime = 1.8;
+
+let monster = document.getElementById('monster');
+let liveMonster = undefined;
+let randomMonster = 1600;
+let monsterTime = 1.3;
+
+
+
+let finalBossContainer = document.getElementById('final-boss-container');
+let finalBossMoveTime = 2;
+let finalBossSelected = 0;
+let finalBossLife = document.getElementById('final-boss-life');
+let finalBossLifeCounter = 6;
+let finalBoss = document.getElementById('final-boss');
+let fireBall = document.getElementById('fire-ball');
+let liveFireBall = undefined;
+let randomFireBall = 3600;
+let fireBallTime = 1.3;
+fireBall.style.display = 'none';
+
+let finalBossControl = undefined;
+let finalBossLifeControl = 0;
+
+let lightBall = document.getElementById('lighting-ball');
+lightBall.style.display = 'none';
+let lightBallTime = null;
+
+
+
 let star = document.getElementById('star');
 let liveBonus = undefined;
 let bonusPoints = 1000;
 let randomBonus = 5000;
+
 let isCarGoingRight = false;
 let isCarGoingLeft = false;
 
+const scoreContainer = document.getElementById('score-container');
 let score = document.getElementById('score');
 let scoreCounter = 0;
 let liveScore = undefined;
+let level = document.getElementById('level');
+let levelCheck = 0;
+let levelCounter = 1;
+let levelState = null;
 let record = document.getElementById('record');
 let recordCounter = 0;
 let liveRecord = [];
@@ -69,22 +104,79 @@ burger.addEventListener('animationend', function() {
 
     mcdonalds.classList.add('takeaway');
     burger.classList.add('diet');
-    grillTime = randomNumberDec(1.1, 1.9);
+
+    if (levelCheck >= 22) {
+        grillTime = randomNumberDec(1.1, 1.7);
+    } else {
+        levelCheck++;
+        grillTime = randomNumberDec(1.3, 2.1);
+    }
+
     burger.style.animationDuration = grillTime + 's';
 });
+
+monster.addEventListener('animationend', function() {
+    monster.classList.remove('attack');
+    monster.src = 'assets/img/blue-monster-flying.gif';
+
+    clearInterval(liveMonster);
+
+    levelCheck++;
+
+    liveMonster = undefined;
+
+    randomMonster = randomNumberDec(1.7, 2.3) * 1000;
+
+    monsterTime = randomNumberDec(0.9, 1.6);
+});
+
+finalBossContainer.addEventListener('animationend', function() {
+    finalBossContainer.classList.remove('boss-move');
+    
+    void finalBossContainer.offsetWidth;
+
+    finalBossContainer.classList.add('boss-move');
+    finalBossMoveTime = randomNumberDec(1, 3);
+    finalBossContainer.style.animationDuration = finalBossMoveTime + 's';
+});
+
+fireBall.addEventListener('animationend', function() {
+    fireBall.style.display = 'none';
+    fireBall.classList.remove('boss-attack');
+
+    clearInterval(liveFireBall);
+    liveFireBall = undefined;
+    randomFireBall = randomNumberDec(1.0, 1.6) * 1000;
+
+    fireBallTime = randomNumberDec(1.0, 1.6);
+});
+
 star.addEventListener('animationend', function() {
     star.style.display = 'none';
     star.classList.remove('to-the-moon');
 
     clearInterval(liveBonus);
     liveBonus = undefined;
-    randomBonus = randomNumber(4, 9) * 1000;
+
+    if (levelCounter > 3) {
+        randomBonus = randomNumber(2, 5) * 1000;
+    } else {
+        randomBonus = randomNumber(4, 9) * 1000;
+    }
 });
+
 pikachuContainer.addEventListener('animationend', function() {
     pikachuContainer.classList.remove('jump');
     jumpSound.pause();
     jumpSound.currentTime = 0;
 });
+
+lightBall.addEventListener('animationend', function() {
+    lightBall.classList.remove('pika-attack');
+    lightBall.style.display = 'none';
+    lightBall.src = 'assets/img/lighting-ball-pulse.gif';
+});
+
 killSound.addEventListener('ended', function() {
     killSound.pause();
     killSound.currentTime = 0;
@@ -95,7 +187,14 @@ bonusSound.addEventListener('ended', function() {
 });
 
 score.innerHTML = `LOL score: <span class="fw-bold">${scoreCounter}</span>`;
+level.innerHTML = `Level: <span class="fw-bold">${levelCounter}</span>`;
 record.innerHTML = `Local record: <span class="fw-bold">${recordCounter}</span> by <span class="fw-bold">---</span>`;
+worldRecord.innerHTML = `World record: <span class="fw-bold">Loading...</span>`;
+for (let i = 0; i < 5; i++) {
+    let divScore = document.createElement('div');
+    bestScoreView.append(divScore);
+    divScore.innerHTML = `Loading...`;
+}
 
 let isPikachuAlive = setInterval(function() {
     if (isGamePlaying == false && isCarGoingRight == false && isCarGoingLeft == false) {
@@ -141,51 +240,28 @@ let isPikachuAlive = setInterval(function() {
     let pikachuRight = parseInt(window.getComputedStyle(pikachuContainer).getPropertyValue('right'));
     let burgerLeft = parseInt(window.getComputedStyle(burger).getPropertyValue('left'));
     let burgerRight = parseInt(window.getComputedStyle(burger).getPropertyValue('right'));
+    let monsterLeft = parseInt(window.getComputedStyle(monster).getPropertyValue('left'));
+    let monsterRight = parseInt(window.getComputedStyle(monster).getPropertyValue('right'));
+    let fireBallRight = parseInt(window.getComputedStyle(fireBall).getPropertyValue('right'));
+    let finalBossRight = parseInt(window.getComputedStyle(finalBossContainer).getPropertyValue('right'));
+    let finalBossBottom = parseInt(window.getComputedStyle(finalBossContainer).getPropertyValue('bottom'));
+    let lightBallRight = parseInt(window.getComputedStyle(lightBall).getPropertyValue('right'));
+    let lightBallBottom = parseInt(window.getComputedStyle(lightBall).getPropertyValue('bottom'));
 
-    if (pikachuLeft <= (burgerLeft + 5) && pikachuRight <= (burgerRight + 30) && pikachuBottom <= 25) {
-        isGamePlaying = false;
-        isPikachuSuperSayan = false;
-        isSuperCarActive = false;
-
-        pikachu.src = 'assets/img/pikachu-run-static-3.png';
-        pikachuContainer.classList.remove('jump');
-        pikachu.classList.add('kill');
-        pikachu.classList.remove('car-active');
-        superCar.style.display = 'none';
-        mcdonalds.classList.remove('takeaway');
-        burger.classList.remove('diet');
-        star.style.display = 'none';
-        star.classList.remove('to-the-moon');
-        cloudText.style.display = 'none';
-        gameContainer.style.animationPlayState = 'paused';
-
-        killSound.play();
-
-        jumpSound.pause();
-        jumpSound.currentTime = 0;
-        carStart.pause();
-        carStart.currentTime = 0;
-        carStop.pause();
-        carStop.currentTime = 0;
-        bonusSound.pause();
-        bonusSound.currentTime = 0;
-        superSayanSound.pause();
-        superSayanSound.currentTime = 0;
-        pikachuSound.pause();
-        pikachuSound.currentTime = 0;
-
-        clearInterval(liveScore);
-        liveScore = undefined;
-        clearInterval(liveBonus);
-        liveBonus = undefined;
-
-        recordStorage();
-        setNewPlayerScore(leaderboardID, nickname.value, scoreCounter);
-
-        setTimeout(function() {
-            getLeaderboard(leaderboardID);
-        }, 1000);
+    if (pikachuLeft <= (burgerLeft + 5) && pikachuRight <= (burgerRight + 30) && pikachuBottom <= 51) {
+        die();
     }
+
+    if (pikachuLeft <= (monsterLeft + 30) && pikachuRight <= (monsterRight + 70) && pikachuBottom <= 51) {
+        die();
+    }
+
+    if ((pikachuRight + 80) >= (fireBallRight + 80) && pikachuRight <= (fireBallRight + 80) && pikachuBottom <= 51) {
+        die();
+    }
+
+    let starLeft = parseInt(window.getComputedStyle(star).getPropertyValue('left'));
+    let starRight = parseInt(window.getComputedStyle(star).getPropertyValue('right'));
 
     if (liveBonus == undefined && isGamePlaying == true) {
         liveBonus = setInterval(function() {
@@ -194,12 +270,18 @@ let isPikachuAlive = setInterval(function() {
         }, randomBonus);
     }
 
-    let starLeft = parseInt(window.getComputedStyle(star).getPropertyValue('left'));
-    let starRight = parseInt(window.getComputedStyle(star).getPropertyValue('right'));
+    if (!lightBall.classList.contains('pika-attack')) {
+        lightBall.style.left = pikachuLeft + 90 + 'px';
+        lightBall.style.bottom = pikachuBottom + 7 + 'px';
+    }
 
-    if (pikachuLeft <= (starLeft + 5) && pikachuRight <= (starRight + 30) && pikachuBottom >= 75) {
+    if (pikachuLeft <= (starLeft + 5) && pikachuRight <= (starRight + 30) && pikachuBottom >= 101) {
         star.style.display = 'none';
         star.classList.remove('to-the-moon');
+
+        if (levelCounter == 3) {
+            lightBall.style.display = 'block';
+        }
 
         bonusSound.play();
 
@@ -210,6 +292,148 @@ let isPikachuAlive = setInterval(function() {
 
         scoreCounter = scoreCounter + bonusPoints;
         score.innerHTML = `LOL score: <span class="fw-bold">${scoreCounter}</span>`;
+    }
+
+    ///////////////////////////////////////////////////
+    if (levelCheck >= 22) {
+        ///// RESET /////
+        if (levelState != 2) {
+            return;
+        }
+
+        monster.style.display = 'none';
+        finalBossContainer.style.display = 'none';
+        //////////
+
+        gameContainer.style.backgroundImage = 'url(assets/img/2D-city-back_2x_02-edit.png)';
+        scoreContainer.style.color = 'black';
+        level.innerHTML = `Level: <span class="fw-bold">\u221e</span>`;
+
+        mcdonalds.style.display = 'block';
+        burger.style.display = 'block';
+
+        levelState = 3;
+    } else if (levelCheck == 21) {
+        if (finalBossSelected == 2 && liveFireBall == undefined) {
+            liveFireBall = setInterval(function() {
+                finalBoss.src = 'assets/img/phoenix-idle_flaping.gif';
+                fireBall.style.display = 'block';
+
+                let finalBossBottom = parseInt(window.getComputedStyle(finalBossContainer).getPropertyValue('bottom'));
+                fireBall.style.bottom = (45 + finalBossBottom) + 'px';
+                fireBall.classList.add('boss-attack');
+
+                finalBossControl = setTimeout(function() {
+                    finalBoss.src = 'assets/img/phoenix-idle_no_flaping.gif';
+
+                    finalBossSelected = 2;
+                }, 890);
+
+                fireBall.style.animationDuration = fireBallTime + 's';
+            }, randomFireBall);
+
+            finalBossSelected = 3;
+        }
+
+        if ((lightBallRight + 40) >= (finalBossRight + 20) && lightBallRight <= (finalBossRight + 20) && (lightBallBottom - 18) >= (finalBossBottom + 20) && (lightBallBottom + 8) <= (finalBossBottom + 110)) {
+            lightBall.style.display = 'none';
+            lightBall.classList.remove('pika-attack');
+            lightBall.src = 'assets/img/lighting-ball-pulse.gif';
+            finalBossLifeControl = finalBossLifeControl + 16.66;
+            finalBossLife.style.background = `linear-gradient(90deg, rgba(255, 0, 0, 1) ${finalBossLifeControl}%, rgba(173, 255, 47, 1) ${finalBossLifeControl}%)`;
+            finalBossLifeCounter--;
+
+            if (finalBossLifeCounter == 0) {
+                finalBossSelected = 4;
+                if (finalBossSelected != 4) {
+                    return;
+                }
+
+                clearInterval(liveFireBall);
+                liveFireBall = undefined;
+                clearTimeout(finalBossControl);
+
+                finalBoss.src = 'assets/img/phoenix-die_1800_ms.gif';
+                finalBossContainer.classList.remove('boss-move');
+
+                setTimeout(function() {
+                    finalBossContainer.style.display = 'none';
+                    fireBall.style.display = 'none';
+                    fireBall.classList.remove('boss-attack');
+                    finalBossLife.style.display = 'none';
+
+                    scoreCounter = scoreCounter + 5000;
+                    score.innerHTML = `LOL score: <span class="fw-bold">${scoreCounter}</span>`;
+
+                    levelCheck++;
+
+                    levelCounter = 4;
+                }, 1790);
+            }
+
+            finalBossSelected = 5;
+        }
+
+        ///// RESET /////
+        if (levelState != 1) {
+            return;
+        }
+
+        mcdonalds.style.display = 'none';
+        burger.style.display = 'none';
+
+        monster.style.display = 'none';
+        //////////
+
+        gameContainer.style.backgroundImage = 'url(assets/img/2D-city-back_2x_04-edit.png)';
+        scoreContainer.style.color = 'white';
+        levelCounter = 3;
+        level.innerHTML = `Level: <span class="fw-bold">${levelCounter}</span>`;
+
+        if (finalBossSelected == 0) {
+            finalBossLife.style.display = 'block';
+            finalBossContainer.style.display = 'block';
+            finalBoss.src = 'assets/img/phoenix-rise_1620_ms.gif';
+
+            finalBossSelected = 1;
+        }
+        if (finalBossSelected == 1) {
+            setTimeout(function() {
+                finalBoss.src = 'assets/img/phoenix-idle_no_flaping.gif';
+                finalBossContainer.classList.add('boss-move');
+                finalBossContainer.style.animationDuration = finalBossMoveTime + 's';
+            }, 1610);
+
+            finalBossSelected = 2;
+        }
+
+        levelState = 2;
+    } else if (levelCheck >= 11) {
+        ///// RESET /////
+        levelState = 0;
+        if (levelState != 0) {
+            return;
+        }
+
+        mcdonalds.style.display = 'none';
+        burger.style.display = 'none';
+        //////////
+
+        gameContainer.style.backgroundImage = 'url(assets/img/2D-city-back_2x_03-edit.png)';
+        scoreContainer.style.color = 'white';
+        levelCounter = 2;
+        level.innerHTML = `Level: <span class="fw-bold">${levelCounter}</span>`;
+        monster.style.display = 'block';
+        if (liveMonster == undefined && isGamePlaying == true) {
+            liveMonster = setInterval(function() {
+                monster.src = 'assets/img/blue-monster-flying-snapping.gif';
+                monster.classList.add('attack');
+
+                monster.style.animationDuration = monsterTime + 's';
+            }, randomMonster);
+        }
+
+        levelState = 1;
     }
 }, 10);
 
@@ -223,6 +447,12 @@ function playGame() {
         return;
     }
 
+    levelCounter = 1;
+    gameContainer.style.backgroundImage = 'url(assets/img/2D-city-back_2x_01-edit.png)';
+    scoreContainer.style.color = 'black';
+    level.innerHTML = `Level: <span class="fw-bold">${levelCounter}</span>`;
+
+    pikachuContainer.style.left = 24 + 'px';
     isGamePlaying = true;
 
     if (isPikachuSuperSayan == true) {
@@ -240,6 +470,7 @@ function playGame() {
     }
 
     gameContainer.style.animationPlayState = 'running';
+    levelCheck++;
 
     mcdonalds.classList.add('takeaway');
     burger.classList.add('diet');
@@ -258,12 +489,34 @@ function playGame() {
             star.classList.add('to-the-moon');
         }, randomBonus);
     }
+
+    grillTime = 1.8;
+
+    randomMonster = 1600;
+    monsterTime = 1.3;
+
+    finalBossMoveTime = 2;
+    finalBossSelected = 0;
+    finalBossLifeCounter = 6;
+    finalBossLifeControl = 0;
+    finalBossLife.style.background = `linear-gradient(90deg, rgba(255, 0, 0, 1) ${finalBossLifeControl}%, rgba(173, 255, 47, 1) ${finalBossLifeControl}%)`;
+
+    randomFireBall = 3600;
+    fireBallTime = 1.3;
+
+    randomBonus = 5000;
 }
 
 function resetGame() {
     isGamePlaying = false;
     isPikachuSuperSayan = false;
     isSuperCarActive = false;
+
+    levelCheck = 0;
+    levelCounter = 1;
+    gameContainer.style.backgroundImage = 'url(assets/img/2D-city-back_2x_01-edit.png)';
+    scoreContainer.style.color = 'black';
+    level.innerHTML = `Level: <span class="fw-bold">${levelCounter}</span>`;
 
     pikachu.src = 'assets/img/pikachu-run-static-2.png';
     pikachuContainer.classList.remove('jump');
@@ -278,6 +531,32 @@ function resetGame() {
     gameContainer.style.animationPlayState = 'paused';
     pikachuContainer.style.left = 24 + 'px';
 
+    monster.src = 'assets/img/blue-monster-flying.gif';
+    monster.style.display = 'none';
+    monster.classList.remove('attack');
+
+    clearInterval(liveMonster);
+    liveMonster = undefined;
+
+    lightBall.style.display = 'none';
+    lightBall.classList.remove('pika-attack');
+    lightBall.src = 'assets/img/lighting-ball-pulse.gif';
+
+    finalBossContainer.style.display = 'none';
+    finalBossContainer.classList.remove('boss-move');
+
+    fireBall.style.display = 'none';
+    fireBall.classList.remove('boss-attack');
+    finalBossLife.style.display = 'none';
+
+    clearInterval(liveFireBall);
+    liveFireBall = undefined;
+    clearTimeout(finalBossControl);
+
+    mcdonalds.style.display = 'block';
+    burger.style.display = 'block';
+
+    scoreContainer.style.color = 'black';
     scoreCounter = 0;
     score.innerHTML = `LOL score: <span class="fw-bold">${scoreCounter}</span>`;
 
@@ -300,6 +579,71 @@ function resetGame() {
     liveScore = undefined;
     clearInterval(liveBonus);
     liveBonus = undefined;
+}
+
+function die() {
+    isGamePlaying = false;
+    isPikachuSuperSayan = false;
+    isSuperCarActive = false;
+
+    pikachu.src = 'assets/img/pikachu-run-static-3.png';
+    pikachuContainer.classList.remove('jump');
+    pikachu.classList.add('kill');
+    pikachu.classList.remove('car-active');
+    superCar.style.display = 'none';
+    mcdonalds.classList.remove('takeaway');
+    burger.classList.remove('diet');
+    star.style.display = 'none';
+    star.classList.remove('to-the-moon');
+    cloudText.style.display = 'none';
+    gameContainer.style.animationPlayState = 'paused';
+
+    monster.src = 'assets/img/blue-monster-flying.gif';
+    monster.classList.remove('attack');
+
+    clearInterval(liveMonster);
+    liveMonster = undefined;
+
+    if (!lightBall.classList.contains('pika-attack')) {
+        lightBall.style.display = 'none';
+    }
+
+    fireBall.style.display = 'none';
+    fireBall.classList.remove('boss-attack');
+
+    clearInterval(liveFireBall);
+    liveFireBall = undefined;
+    clearTimeout(finalBossControl);
+
+    finalBoss.src = 'assets/img/phoenix-idle_no_flaping.gif';
+    finalBossSelected = 3;
+
+    killSound.play();
+
+    jumpSound.pause();
+    jumpSound.currentTime = 0;
+    carStart.pause();
+    carStart.currentTime = 0;
+    carStop.pause();
+    carStop.currentTime = 0;
+    bonusSound.pause();
+    bonusSound.currentTime = 0;
+    superSayanSound.pause();
+    superSayanSound.currentTime = 0;
+    pikachuSound.pause();
+    pikachuSound.currentTime = 0;
+
+    clearInterval(liveScore);
+    liveScore = undefined;
+    clearInterval(liveBonus);
+    liveBonus = undefined;
+
+    recordStorage();
+    setNewPlayerScore(leaderboardID, nickname.value, scoreCounter);
+
+    setTimeout(function() {
+        getLeaderboard(leaderboardID);
+    }, 1000);
 }
 
 function jump() {
@@ -466,6 +810,18 @@ function getSuperCar() {
     }
 }
 
+function pikaAttack() {
+    if (lightBall.style.display == 'none') {
+        return;
+    }
+
+    let pikachuRight = parseInt(window.getComputedStyle(pikachuContainer).getPropertyValue('right'));
+
+    lightBall.src = 'assets/img/lighting-ball-rotating.gif';
+    lightBall.classList.add('pika-attack');
+    lightBall.style.animationDuration = (pikachuRight / 350) + 's';
+}
+
 function setSfxVolume() {
     if (jumpSound.volume == 1) {
         jumpSound.volume = 0;
@@ -555,6 +911,7 @@ const mobileSuperSayan = document.getElementById('mobile-supersayan');
 const mobileSuperCar = document.getElementById('mobile-supercar');
 let mobileRightMove = undefined;
 let mobileLeftMove = undefined;
+const mobileAttack = document.getElementById('mobile-attack');
 
 mobileJump.addEventListener('touchstart', event => {
     event.preventDefault();
@@ -645,6 +1002,15 @@ mobileSuperCar.addEventListener('mousedown', event => {
     getSuperCar();
 });
 
+mobileAttack.addEventListener('touchstart', event => {
+    event.preventDefault();
+    pikaAttack();
+});
+mobileAttack.addEventListener('mousedown', event => {
+    event.preventDefault();
+    pikaAttack();
+});
+
 
 
 //////// LEADERBOARD ////////
@@ -695,7 +1061,8 @@ async function getLeaderboard(id) {
         if (realTimeWorldRecord[i] == undefined) {
             divScore.innerHTML = `0 by ---`;
         } else {
-            divScore.innerHTML = `${realTimeWorldRecord[i].score} by ${realTimeWorldRecord[i].user.substring(0, 3)}`;
+            divScore.innerHTML = `${realTimeWorldRecord[i].score}`;
+            //divScore.innerHTML = `${realTimeWorldRecord[i].score} by ${realTimeWorldRecord[i].user.substring(0, 3)}`;
         }
     }
 };
@@ -715,7 +1082,8 @@ nickname.addEventListener('keyup', function(event) {
 });
 
 function requestToPlay() {
-    if (nickname.value.length == 0 || nickname.value.length > 3) {
+    const nickCheck = nickname.value.toString().trim();
+    if (nickCheck == '' || nickCheck.length == 0 || nickCheck.length > 3) {
         return
     }
 
@@ -743,8 +1111,6 @@ function requestToPlay() {
                     if (isGamePlaying == false) {
                         if(isPikachuSuperSayan == false && isSuperCarActive == false) {
                             resetGame();
-                        } else {
-                            pikachuContainer.style.left = 24 + 'px';
                         }
                         playGame();
                     }
@@ -761,6 +1127,10 @@ function requestToPlay() {
                     event.preventDefault();
                     getSuperSayan()
                 break;
+            case 'AltGraph': //key: 'AltGraph', code: 'AltRight', keyCode: 18
+                    event.preventDefault();
+                    pikaAttack();
+                break;
         }
     });
 
@@ -771,8 +1141,6 @@ function requestToPlay() {
         if (isGamePlaying == false) {
             if(isPikachuSuperSayan == false && isSuperCarActive == false) {
                 resetGame();
-            } else {
-                pikachuContainer.style.left = 24 + 'px';
             }
             playGame();
         }
@@ -782,8 +1150,6 @@ function requestToPlay() {
         if (isGamePlaying == false) {
             if(isPikachuSuperSayan == false && isSuperCarActive == false) {
                 resetGame();
-            } else {
-                pikachuContainer.style.left = 24 + 'px';
             }
             playGame();
         }
@@ -799,5 +1165,5 @@ window.addEventListener('load', function() {
     setTimeout(function() {
         preloadPage.style.display = 'none';
         document.body.style.overflow = 'auto';
-    }, 1230);
+    }, 2130);
 });

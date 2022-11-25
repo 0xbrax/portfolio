@@ -7,7 +7,11 @@
         <title>0xbrax | 404 LOL</title>
         <link rel="icon" type="image/x-icon" href="assets/arcade-game.ico">
 
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;700&display=swap" rel="stylesheet">
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
         <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
 
@@ -18,12 +22,31 @@
         <div id="preload-page">
             <div>
                 <img src="assets/img/paperella.gif">
-                <p>LOADING...</p>
+                <p>LOADING<span id="loading"></span></p>
             </div>
         </div>
 
-        <main>
-            <section id="game-container">
+        <header>
+            <nav class="container-md d-flex align-items-center">
+                <a href="#">
+                    <img src="assets/img/LOGO Brax bianco no sfondo.png" alt="Brax">
+                </a>
+            </nav>
+        </header>
+
+        <main class="position-relative">
+
+            <div class="custom-shape-edit-top"></div>
+            <div class="custom-shape-divider-top-1669183005">
+                <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                    <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
+                </svg>
+            </div>
+
+
+            <h4 class="text-center relative-index-per-bg my-2">Let's play Pika Ride</h4>
+
+            <section id="game-container" class="relative-index-per-bg">
                 <div id="game">
                     <div id="pikachu-container">
                         <img src="assets/img/pikachu-run-static-2.png" id="pikachu">
@@ -40,23 +63,33 @@
                             <img src="assets/img/fire-blue.gif" id="fire">
                         </div>
                     </div>
+                    <img src="assets/img/lighting-ball-pulse.gif" id="lighting-ball">
 
-                    <img src="assets/img/tak-ur-ordrr-final-v1.png" id="mcdonalds">
+                    <img src="assets/img/tak-ur-ordrr-edit.png" id="mcdonalds">
                     <img src="assets/img/doodle-burger-1-cut.png" id="burger">
+
+                    <img src="assets/img/blue-monster-flying.gif" id="monster">
+
+                    <div id="final-boss-container">
+                        <img src="assets/img/phoenix-rise_1620_ms.gif" id="final-boss">
+                    </div>
+                    <img src="assets/img/fireball-red.gif" id="fire-ball">
+                    <div id="final-boss-life"></div>
 
                     <img src="assets/img/cute-star-1.png" id="star">
                 </div>
 
                 <div class="d-flex justify-content-center align-items-center mt-1">
                     <div class="btn-group">
-                        <button id="mobile-left" type="button" class="btn btn-secondary btn-lg px-4 py-3"><i class="fa-solid fa-left-long"></i></button>
-                        <button id="mobile-right" type="button" class="btn btn-secondary btn-lg px-4 py-3"><i class="fa-solid fa-right-long"></i></button>
+                        <button id="mobile-left" type="button" class="btn btn-secondary btn-lg px-4 py-3"><i class="fa-solid fa-caret-left fa-lg"></i></button>
+                        <button id="mobile-right" type="button" class="btn btn-secondary btn-lg px-4 py-3"><i class="fa-solid fa-caret-right fa-lg"></i></button>
                     </div>
 
-                    <div class="mx-5">
+                    <div class="mx-4">
                         <div class="btn-group">
                             <button id="mobile-supercar" type="button" class="btn btn-secondary px-3 py-2"><i class="fa-solid fa-car"></i></button>
                             <button id="mobile-supersayan" type="button" class="btn btn-secondary px-3 py-2"><i class="fa-solid fa-fire"></i></button>
+                            <button id="mobile-attack" type="button" class="btn btn-secondary px-3 py-2"><i class="fa-solid fa-bolt"></i></button>
                         </div>
                         <button id="mobile-instant-play" type="button" class="btn btn-secondary btn-sm px-3 py-2 ms-3"><i class="fa-solid fa-play"></i></button>
                     </div>
@@ -66,8 +99,11 @@
                     </div>
                 </div>
 
-                <div id="score-container" class="d-flex justify-content-between text-primary">
-                    <div id="score"></div>
+                <div id="score-container" class="d-flex justify-content-between">
+                    <div>
+                        <div id="score"></div>
+                        <div id="level"></div>
+                    </div>
                     <div id="record"></div>
                     <div id="world-record"></div>
                 </div>
@@ -75,30 +111,41 @@
                 <div id="nickname-container">
                     <input type="text" id="nickname" class="form-control" placeholder="NICKNAME" autocomplete="off">
                     <label for="nickname" class="form-label">Enter length: min 1 - max 3</label>
-                    <button id="nickname-sender" type="button" class="btn btn-primary px-3 py-2 ms-3"><i class="fa-solid fa-paper-plane fa-rotate-by" style="--fa-rotate-angle: 45deg;"></i></button>
+                    <button id="nickname-sender" type="button" class="btn btn-primary px-3 py-2 ms-3"><i class="fa-solid fa-plane"></i></button>
                 </div>
             </section>
 
-            <section class="my-3">
+            <section class="relative-index-per-bg mt-3">
                 <div class="d-flex justify-content-center align-items-center">
-                    <button id="pika-audio-btn" class="btn btn-warning mx-2"><span class="align-middle me-2">SoundFX</span><i class="ri-sound-module-fill align-middle"></i></button>
-                    <button id="play-btn" class="btn btn-success fs-5 mx-2"><span class="align-middle me-2">PLAY!</span><i class="ri-gamepad-fill align-middle"></i></button>
-                    <button id="reset-btn" class="btn btn-danger fs-5 mx-2"><span class="align-middle me-2">reset</span><i class="ri-restart-fill align-middle"></i></button>
-                    <button id="bg-music-btn" class="btn btn-warning mx-2"><span class="align-middle me-2">MusicBG</span><i class="ri-sound-module-fill align-middle"></i></button>
+                    <button id="pika-audio-btn" class="btn btn-warning mx-2 d-flex align-items-center"><span class="me-2">SoundFX</span><i class="ri-sound-module-fill "></i></button>
+                    <button id="play-btn" class="btn btn-success fs-5 mx-2 d-flex align-items-center"><span class="me-2">PLAY!</span><i class="fa-solid fa-gamepad"></i></button>
+                    <button id="reset-btn" class="btn btn-danger fs-5 mx-2 d-flex align-items-center"><span class="me-2">reset</span><i class="fa-solid fa-rotate-right"></i></button>
+                    <button id="bg-music-btn" class="btn btn-warning mx-2 d-flex align-items-center"><span class="me-2">MusicBG</span><i class="ri-sound-module-fill align-middle"></i></button>
                 </div>
 
-                <div class="d-flex justify-content-center my-3">
-                    <div id="best-score-container">
-                        <div class="fw-bold">Best scores</div>
-                        <div id="best-score-view"></div>
+                <h4 class="text-center mt-2">...or just take a break</h4>
+
+                <div class="d-flex justify-content-center mt-0 mb-1">
+                    <div id="food-truck-container" class="position-relative">
+                        <img src="assets/img/food-truck edit.png" id="food-truck-container-img">
+    
+                        <div id="truck-door-container" class="position-absolute">
+                            <div id="truck-door" class="position-relative">
+                                <div id="truck-door-window" class="position-absolute"></div>
+                                <img src="assets/img/food-truck-door-handle.png" class="position-absolute">
+                            </div>
+                        </div>
+
+                        <div id="best-score-container" class="position-absolute text-white text-center">
+                            <div class="best-score-bg m-0">Best scores</div>
+                            <div id="best-score-view" class="m-0"></div>
+                        </div>
+
+                        <img src="assets/img/pikachu-run-static-2.png" id="pikachu-static" class="position-absolute">
                     </div>
                 </div>
 
-                <div class="text-center">
-                    <h1>Pika Run</h1>
-                </div>
-
-                <div class="text-center mt-3">
+                <div class="text-center mt-2">
                     <p>
                         Enter your nickname to play the game.<br />
                         <span class="fst-italic">(with mobile devices play it in horizontal view)</span>
@@ -106,25 +153,46 @@
                     <p>
                         Press <span class="fw-bold">SPACE</span> to jump. Press <span class="fw-bold">LEFT</span> and <span class="fw-bold">RIGHT</span> to move.<br />
                         Press <span class="fw-bold">DOWN</span> for Super Sayan mode.<br />
-                        Wen Lambo? Press <span class="fw-bold">UP</span> for thug life, stonks.
+                        Wen Lambo? Press <span class="fw-bold">UP</span> for thug life, stonks.<br />
+                        Get stars in level 3 and press <span class="fw-bold">ALTGR</span> for thunderbolt move.
                     </p>
                     <p>
                         Press <span class="fw-bold">ENTER</span> = Instant play!
                     </p>
                 </div>
 
-                <div class="text-center mt-5">
+                <h4 class="text-center mt-2">Anyway, you can find me around the web! xoxo</h4>
+
+                <div id="info-container" class="d-flex justify-content-center mt-4">
+                    <div class="badge">
+                        <div class="text">Hallo</div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4 mb-3">
                     <div class="fs-3">
-                        <a class="text-info" href="https://www.instagram.com/0xbrax" target="_blank"><i class="fa-brands fa-square-instagram"></i></i></a>
-                        <a class="text-info my-3" href="https://github.com/0xbrax" target="_blank"><i class="fa-brands fa-github"></i></a>
-                        <a class="text-info" href="https://twitter.com/0xbrax" target="_blank"><i class="fa-brands fa-square-twitter"></i></i></a>
+                        <a class="text-primary" href="https://www.instagram.com/0xbrax" target="_blank"><i class="fa-brands fa-square-instagram"></i></i></a>
+                        <a class="text-primary ms-2" href="https://www.linkedin.com/in/marco-braccini/" target="_blank"><i class="fa-brands fa-linkedin"></i></i></a>
+                        <a class="text-primary ms-2" href="https://github.com/0xbrax" target="_blank"><i class="fa-brands fa-square-github"></i></a>
+                        <a class="text-primary ms-2" href="https://twitter.com/0xbrax" target="_blank"><i class="fa-brands fa-square-twitter"></i></i></a>
                     </div>
                     <div class="text-center text-secondary">
                         0xbrax
                     </div>
                 </div>
             </section>
+
+
+            <div class="custom-shape-divider-bottom-1669183688">
+                <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                    <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
+                </svg>
+            </div>
+            <div class="custom-shape-edit-bottom"></div>
+
         </main>
+
+
 
         <script type="text/javascript" src="js/main.js"></script>
     </body>
