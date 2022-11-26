@@ -113,6 +113,30 @@
                     <label for="nickname" class="form-label">Enter length: min 1 - max 3</label>
                     <button id="nickname-sender" type="button" class="btn btn-primary px-3 py-2 ms-3"><i class="fa-solid fa-plane"></i></button>
                 </div>
+
+                <div id="game-info-handle" class="text-white bg-primary position-absolute d-flex justify-content-center align-items-center rounded-circle pointer">
+                    <i class="fa-solid fa-info"></i>
+                </div>
+
+                <div id="game-info-container" class="position-absolute text-center text-white rounded py-2">
+                    <p>
+                        Enter your nickname to play the game.<br />
+                        <span class="fst-italic">(with mobile devices play it in horizontal view)</span>
+                    </p>
+                    <p>
+                        Press <span class="fw-bold">SPACE</span> to jump. Press <span class="fw-bold">LEFT</span> and <span class="fw-bold">RIGHT</span> to move.<br />
+                        Press <span class="fw-bold">DOWN</span> for Super Sayan mode.<br />
+                        Wen Lambo? Press <span class="fw-bold">UP</span> for thug life, stonks.<br />
+                        Get stars in level 3 and press <span class="fw-bold">E</span> or <span class="fw-bold">Y</span> for thunderbolt move.
+                    </p>
+                    <p class="mb-0">
+                        Press <span class="fw-bold">ENTER</span> = Instant play!
+                    </p>
+
+                    <div id="game-info-btn" class="text-white bg-primary position-absolute d-flex justify-content-center align-items-center rounded-circle pointer">
+                        <i class="fa-solid fa-xmark"></i>
+                    </div>
+                </div>
             </section>
 
             <section class="relative-index-per-bg mt-3">
@@ -127,8 +151,8 @@
 
                 <div class="d-flex justify-content-center mt-0 mb-1">
                     <div id="food-truck-container" class="position-relative">
-                        <img src="assets/img/food-truck edit.png" id="food-truck-container-img">
-    
+                        <img src="assets/img/food-truck edit big menu.png" id="food-truck-container-img">
+
                         <div id="truck-door-container" class="position-absolute">
                             <div id="truck-door" class="position-relative">
                                 <div id="truck-door-window" class="position-absolute"></div>
@@ -136,29 +160,19 @@
                             </div>
                         </div>
 
+                        <img id="truck-kitchen-part" class="position-absolute" src="assets/img/food-truck kitchen part.png">
+
                         <div id="best-score-container" class="position-absolute text-white text-center">
-                            <div class="best-score-bg m-0">Best scores</div>
+                            <div class="mb-2 fx-bold">Best scores</div>
                             <div id="best-score-view" class="m-0"></div>
                         </div>
 
-                        <img src="assets/img/pikachu-run-static-2.png" id="pikachu-static" class="position-absolute">
-                    </div>
-                </div>
+                        <img id="pikachu-static" class="position-absolute" src="assets/img/pikachu-run-static-2.png">
 
-                <div class="text-center mt-2">
-                    <p>
-                        Enter your nickname to play the game.<br />
-                        <span class="fst-italic">(with mobile devices play it in horizontal view)</span>
-                    </p>
-                    <p>
-                        Press <span class="fw-bold">SPACE</span> to jump. Press <span class="fw-bold">LEFT</span> and <span class="fw-bold">RIGHT</span> to move.<br />
-                        Press <span class="fw-bold">DOWN</span> for Super Sayan mode.<br />
-                        Wen Lambo? Press <span class="fw-bold">UP</span> for thug life, stonks.<br />
-                        Get stars in level 3 and press <span class="fw-bold">ALTGR</span> for thunderbolt move.
-                    </p>
-                    <p>
-                        Press <span class="fw-bold">ENTER</span> = Instant play!
-                    </p>
+                        <button id="pika-food-btn" class="btn btn-primary position-absolute">
+                            BREAK
+                        </button>
+                    </div>
                 </div>
 
                 <h4 class="text-center mt-2">Anyway, you can find me around the web! xoxo</h4>

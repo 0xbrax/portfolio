@@ -81,6 +81,10 @@ main {
     z-index: 500;
 }
 
+.pointer {
+    cursor: pointer;
+}
+
 /***** HEADER *****/
 
 header {
@@ -132,6 +136,30 @@ header img {
     bottom: 10%;
     transform: translateX(-50%);
     color: white;
+}
+
+#game-info-container {
+    width: 76%;
+    background-color: rgba(0, 0, 0, 0.9);
+    top: 8%;
+    left: 50%;
+    transform: translateX(-50%);
+
+    z-index: 350;
+}
+#game-info-btn {
+    top: 10px;
+    right: 10px;
+
+    width: 26px;
+    aspect-ratio: 1 / 1;
+}
+#game-info-handle {
+    bottom: 83px;
+    left: 10px;
+
+    width: 26px;
+    aspect-ratio: 1 / 1;
 }
 
 #game {
@@ -507,11 +535,13 @@ header img {
     width: 44px;
     height: 97px;
     bottom: 51px;
-    left: 250px;
+    left: 272px;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
+
+    z-index: 311;
 }
 #truck-door {
     width: 100%;
@@ -538,8 +568,33 @@ header img {
     left: 50%;
     transform: translateX(-50%);
 }
-#truck-door-container:hover #truck-door {
-    animation: open-door 1.5s ease forwards;
+.truck-door-anim {
+    animation: open-door-break 3.4s 0.1s ease forwards;
+}
+@keyframes open-door-break {
+    0% {
+        -webkit-transform: perspective(600) rotateY(0deg);
+        transform-origin: 0% 50%;
+    }
+    20% {
+        -webkit-transform: perspective(600) rotateY(-180deg);
+        transform-origin: 0% 50%;
+    }
+    45% {
+        -webkit-transform: perspective(600) rotateY(-180deg);
+        transform-origin: 0% 50%;
+    }
+    65% {
+        -webkit-transform: perspective(600) rotateY(0deg);
+        transform-origin: 0% 50%;
+    }
+    100% {
+        -webkit-transform: perspective(600) rotateY(0deg);
+        transform-origin: 0% 50%;
+    }
+}
+.truck-door-hover {
+    animation: open-door 1s ease forwards;
 }
 @keyframes open-door {
     0% {
@@ -551,23 +606,73 @@ header img {
         transform-origin: 0% 50%;
     }
 }
+#truck-kitchen-part {
+    width: 16.1%;
+    bottom: 16.9%;
+    right: 32.6%;
+
+    z-index: 310;
+}
 #best-score-container {
     font-size: 10px;
-
-    top: 174px;
-    left: 25px;
-
+    top: 151px;
+    left: 29px;
     transform: skew(10deg);
-}
-.best-score-bg {
-    background-color: #231f20;
 }
 #pikachu-static {
     width: 100px;
-    transform: scaleX(-1);
+    bottom: 63px;
+    right: 208px;
+    transform: scaleX(1);
 
-    bottom: 65px;
-    right: 108px;
+    z-index: 309;
+}
+.pikachu-static-anim {
+    animation: pika-food 3s linear forwards;
+}
+@keyframes pika-food {
+    0% {
+        bottom: 63px;
+        right: 208px;
+        transform: scaleX(1);
+    }
+    12% {
+        z-index: 309;
+    }
+    13% {
+        z-index: 320;
+    }
+    15% {
+        bottom: 63px;
+        right: 280px;
+        transform: scaleX(-1);
+    }
+    35% {
+        bottom: 0px;
+        right: 320px;
+        transform: scaleX(-1);
+    }
+    40% {
+        transform: scaleX(1);
+    }
+    90% {
+        bottom: 0px;
+        right: 148px;
+        transform: scaleX(1);
+    }
+    95% {
+        transform: scaleX(-1);
+    }
+    100% {
+        bottom: 66px;
+        right: 108px;
+        transform: scaleX(-1);
+    }
+}
+#pika-food-btn {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 

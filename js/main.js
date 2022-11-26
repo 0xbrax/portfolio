@@ -3,6 +3,10 @@ let nickname = document.getElementById('nickname');
 const nameSender = document.getElementById('nickname-sender');
 const bestScoreView = document.getElementById('best-score-view');
 
+const gameInfo = document.getElementById('game-info-container');
+const gameInfoBtn = document.getElementById('game-info-btn');
+const gameInfoHandle = document.getElementById('game-info-handle');
+
 const gameContainer = document.getElementById('game');
 let isGamePlaying = false;
 const playBtn = document.getElementById('play-btn');
@@ -38,8 +42,6 @@ let liveMonster = undefined;
 let randomMonster = 1600;
 let monsterTime = 1.3;
 
-
-
 let finalBossContainer = document.getElementById('final-boss-container');
 let finalBossMoveTime = 2;
 let finalBossSelected = 0;
@@ -58,8 +60,6 @@ let finalBossLifeControl = 0;
 let lightBall = document.getElementById('lighting-ball');
 lightBall.style.display = 'none';
 let lightBallTime = null;
-
-
 
 let star = document.getElementById('star');
 let liveBonus = undefined;
@@ -84,6 +84,57 @@ let worldRecord = document.getElementById('world-record');
 const leaderboardID = 'cfqyXSB5PmTHj6UnnYS2';
 
 let keyState = {};
+
+const truckDoor = document.getElementById('truck-door');
+const truckDoorContainer = document.getElementById('truck-door-container');
+const pikaStatic = document.getElementById('pikachu-static');
+const breakBtn = document.getElementById('pika-food-btn');
+
+gameInfoBtn.addEventListener('click', function() {
+    if (gameInfo.classList.contains('d-none')) {
+        gameInfo.classList.remove('d-none');
+    } else {
+        gameInfo.classList.add('d-none');
+    }
+    gameInfo.classList.toggle('d-block');
+});
+gameInfoHandle.addEventListener('click', function() {
+    if (isGamePlaying == true) {
+        return;
+    }
+    if (gameInfo.classList.contains('d-none')) {
+        gameInfo.classList.remove('d-none');
+    } else {
+        gameInfo.classList.add('d-none');
+    }
+    gameInfo.classList.toggle('d-block');
+});
+
+///////////////////////////////// HERE
+breakBtn.addEventListener('click', function() {
+    truckDoor.classList.toggle('truck-door-anim');
+    pikaStatic.classList.toggle('pikachu-static-anim');
+
+    if (pikaStatic.classList.contains('pikachu-static-anim')) {
+        breakBtn.innerHTML = 'NO MORE BREAK';
+    } else {
+        breakBtn.innerHTML = 'BREAK';
+    }
+});
+truckDoorContainer.addEventListener('mouseover', function() {
+    if (pikaStatic.classList.contains('pikachu-static-anim')) {
+        return;
+    } else {
+        truckDoor.classList.add('truck-door-hover');
+    }
+});
+truckDoorContainer.addEventListener('mouseleave', function() {
+    if (pikaStatic.classList.contains('pikachu-static-anim')) {
+        return;
+    } else {
+        truckDoor.classList.remove('truck-door-hover');
+    }
+});
 
 resetBtn.addEventListener('click', resetGame);
 
@@ -1061,8 +1112,7 @@ async function getLeaderboard(id) {
         if (realTimeWorldRecord[i] == undefined) {
             divScore.innerHTML = `0 by ---`;
         } else {
-            divScore.innerHTML = `${realTimeWorldRecord[i].score}`;
-            //divScore.innerHTML = `${realTimeWorldRecord[i].score} by ${realTimeWorldRecord[i].user.substring(0, 3)}`;
+            divScore.innerHTML = `${realTimeWorldRecord[i].score} - ${realTimeWorldRecord[i].user.substring(0, 3)}`;
         }
     }
 };
@@ -1127,7 +1177,10 @@ function requestToPlay() {
                     event.preventDefault();
                     getSuperSayan()
                 break;
-            case 'AltGraph': //key: 'AltGraph', code: 'AltRight', keyCode: 18
+            case 'e': //key: 'e', code: 'KeyE', keyCode: 69
+            case 'E': //key: 'E', code: 'KeyE', keyCode: 69
+            case 'y': //key: 'y', code: 'KeyY', keyCode: 89
+            case 'Y': //key: 'Y', code: 'KeyY', keyCode: 89
                     event.preventDefault();
                     pikaAttack();
                 break;
