@@ -44,99 +44,105 @@
             </div>
 
 
-            <h4 class="text-center relative-index-per-bg my-2">Let's play Pika Ride</h4>
+            <h4 class="text-center relative-index-per-bg my-2 px-3">Let's play Pika Ride</h4>
 
-            <section id="game-container" class="relative-index-per-bg">
-                <div id="game">
-                    <div id="pikachu-container">
-                        <img src="assets/img/pikachu-run-static-2.png" id="pikachu">
-                        <div id="cloud-text">
-                            <img src="assets/img/cloud-comic.png">
-                            <p>PIKA PIKA</p>
+            <section class="d-flex justify-content-center relative-index-per-bg">
+                <div id="game-container">
+                    <div id="game">
+                        <div id="pikachu-container">
+                            <img src="assets/img/pikachu-run-static-2.png" id="pikachu">
+                            <div id="cloud-text">
+                                <img src="assets/img/cloud-comic.png">
+                                <p>PIKA PIKA</p>
+                            </div>
+    
+                            <div id="car">
+                                <img src="assets/img/green_no_wheels-edit1.png" id="super-car">
+                                <img src="assets/img/wheel.png" id="wheel-car-left">
+                                <img src="assets/img/wheel.png" id="wheel-car-right">
+                                <img src="assets/img/thug-glasses-edit.png" id="thug-life">
+                                <img src="assets/img/fire-blue.gif" id="fire">
+                            </div>
                         </div>
-
-                        <div id="car">
-                            <img src="assets/img/green_no_wheels-edit1.png" id="super-car">
-                            <img src="assets/img/wheel.png" id="wheel-car-left">
-                            <img src="assets/img/wheel.png" id="wheel-car-right">
-                            <img src="assets/img/thug-glasses-edit.png" id="thug-life">
-                            <img src="assets/img/fire-blue.gif" id="fire">
+                        <img src="assets/img/lighting-ball-pulse.gif" id="lighting-ball">
+    
+                        <img src="assets/img/tak-ur-ordrr-edit.png" id="mcdonalds">
+                        <img src="assets/img/doodle-burger-1-cut.png" id="burger">
+    
+                        <img src="assets/img/blue-monster-flying.gif" id="monster">
+    
+                        <div id="final-boss-container">
+                            <img src="assets/img/phoenix-rise_1620_ms.gif" id="final-boss">
                         </div>
+                        <img src="assets/img/fireball-red.gif" id="fire-ball">
+                        <div id="final-boss-life"></div>
+    
+                        <img src="assets/img/cute-star-1.png" id="star">
                     </div>
-                    <img src="assets/img/lighting-ball-pulse.gif" id="lighting-ball">
-
-                    <img src="assets/img/tak-ur-ordrr-edit.png" id="mcdonalds">
-                    <img src="assets/img/doodle-burger-1-cut.png" id="burger">
-
-                    <img src="assets/img/blue-monster-flying.gif" id="monster">
-
-                    <div id="final-boss-container">
-                        <img src="assets/img/phoenix-rise_1620_ms.gif" id="final-boss">
-                    </div>
-                    <img src="assets/img/fireball-red.gif" id="fire-ball">
-                    <div id="final-boss-life"></div>
-
-                    <img src="assets/img/cute-star-1.png" id="star">
-                </div>
-
-                <div class="d-flex justify-content-center align-items-center mt-1">
-                    <div class="btn-group">
-                        <button id="mobile-left" type="button" class="btn btn-secondary btn-lg px-4 py-3"><i class="fa-solid fa-caret-left fa-lg"></i></button>
-                        <button id="mobile-right" type="button" class="btn btn-secondary btn-lg px-4 py-3"><i class="fa-solid fa-caret-right fa-lg"></i></button>
-                    </div>
-
-                    <div class="mx-4">
+    
+                    <div class="d-flex justify-content-center align-items-center mt-1">
                         <div class="btn-group">
-                            <button id="mobile-supercar" type="button" class="btn btn-secondary px-3 py-2"><i class="fa-solid fa-car"></i></button>
-                            <button id="mobile-supersayan" type="button" class="btn btn-secondary px-3 py-2"><i class="fa-solid fa-fire"></i></button>
-                            <button id="mobile-attack" type="button" class="btn btn-secondary px-3 py-2"><i class="fa-solid fa-bolt"></i></button>
+                            <button id="mobile-left" type="button" class="btn btn-secondary btn-lg px-4 py-3"><i class="fa-solid fa-caret-left fa-lg"></i></button>
+                            <button id="mobile-right" type="button" class="btn btn-secondary btn-lg px-4 py-3"><i class="fa-solid fa-caret-right fa-lg"></i></button>
                         </div>
-                        <button id="mobile-instant-play" type="button" class="btn btn-secondary btn-sm px-3 py-2 ms-3"><i class="fa-solid fa-play"></i></button>
+    
+                        <div class="mx-4">
+                            <div class="btn-group">
+                                <button id="mobile-supercar" type="button" class="btn btn-secondary px-3 py-2"><i class="fa-solid fa-car"></i></button>
+                                <button id="mobile-supersayan" type="button" class="btn btn-secondary px-3 py-2"><i class="fa-solid fa-fire"></i></button>
+                                <button id="mobile-attack" type="button" class="btn btn-secondary px-3 py-2"><i class="fa-solid fa-bolt"></i></button>
+                            </div>
+                            <button id="mobile-instant-play" type="button" class="btn btn-secondary btn-sm px-3 py-2 ms-3"><i class="fa-solid fa-play"></i></button>
+                        </div>
+    
+                        <div class="btn-group">
+                            <button id="mobile-jump" type="button" class="btn btn-secondary btn-lg px-5 py-3">JUMP</button>
+                        </div>
                     </div>
-
-                    <div class="btn-group">
-                        <button id="mobile-jump" type="button" class="btn btn-secondary btn-lg px-5 py-3">JUMP</button>
+    
+                    <div id="score-container" class="d-flex justify-content-between">
+                        <div>
+                            <div id="score"></div>
+                            <div id="level"></div>
+                        </div>
+                        <div id="record"></div>
+                        <div id="world-record"></div>
+                    </div>
+    
+                    <div id="nickname-container">
+                        <input type="text" id="nickname" class="form-control" placeholder="NICKNAME" autocomplete="off">
+                        <label for="nickname" class="form-label">Enter length: min 1 - max 3</label>
+                        <button id="nickname-sender" type="button" class="btn btn-primary px-3 py-2 ms-3"><i class="fa-solid fa-plane"></i></button>
+                    </div>
+    
+                    <div id="game-info-handle" class="text-white bg-primary position-absolute d-flex justify-content-center align-items-center rounded-circle pointer">
+                        <i class="fa-solid fa-info"></i>
+                    </div>
+    
+                    <div id="game-info-container" class="position-absolute text-center text-white rounded py-2">
+                        <p>
+                            Enter your nickname to play the game.<br />
+                            <span class="fst-italic">(with mobile devices play it in horizontal view)</span>
+                        </p>
+                        <p>
+                            Press <span class="fw-bold">SPACE</span> to jump. Press <span class="fw-bold">LEFT</span> and <span class="fw-bold">RIGHT</span> to move.<br />
+                            Press <span class="fw-bold">DOWN</span> for Super Sayan mode.<br />
+                            Wen Lambo? Press <span class="fw-bold">UP</span> for thug life, stonks.<br />
+                            Get stars in level 3 and press <span class="fw-bold">E</span> or <span class="fw-bold">Y</span> for thunderbolt move.
+                        </p>
+                        <p class="mb-0">
+                            Press <span class="fw-bold">ENTER</span> = Instant play!
+                        </p>
+    
+                        <div id="game-info-btn" class="text-white bg-primary position-absolute d-flex justify-content-center align-items-center rounded-circle pointer">
+                            <i class="fa-solid fa-xmark"></i>
+                        </div>
                     </div>
                 </div>
 
-                <div id="score-container" class="d-flex justify-content-between">
-                    <div>
-                        <div id="score"></div>
-                        <div id="level"></div>
-                    </div>
-                    <div id="record"></div>
-                    <div id="world-record"></div>
-                </div>
 
-                <div id="nickname-container">
-                    <input type="text" id="nickname" class="form-control" placeholder="NICKNAME" autocomplete="off">
-                    <label for="nickname" class="form-label">Enter length: min 1 - max 3</label>
-                    <button id="nickname-sender" type="button" class="btn btn-primary px-3 py-2 ms-3"><i class="fa-solid fa-plane"></i></button>
-                </div>
 
-                <div id="game-info-handle" class="text-white bg-primary position-absolute d-flex justify-content-center align-items-center rounded-circle pointer">
-                    <i class="fa-solid fa-info"></i>
-                </div>
 
-                <div id="game-info-container" class="position-absolute text-center text-white rounded py-2">
-                    <p>
-                        Enter your nickname to play the game.<br />
-                        <span class="fst-italic">(with mobile devices play it in horizontal view)</span>
-                    </p>
-                    <p>
-                        Press <span class="fw-bold">SPACE</span> to jump. Press <span class="fw-bold">LEFT</span> and <span class="fw-bold">RIGHT</span> to move.<br />
-                        Press <span class="fw-bold">DOWN</span> for Super Sayan mode.<br />
-                        Wen Lambo? Press <span class="fw-bold">UP</span> for thug life, stonks.<br />
-                        Get stars in level 3 and press <span class="fw-bold">E</span> or <span class="fw-bold">Y</span> for thunderbolt move.
-                    </p>
-                    <p class="mb-0">
-                        Press <span class="fw-bold">ENTER</span> = Instant play!
-                    </p>
-
-                    <div id="game-info-btn" class="text-white bg-primary position-absolute d-flex justify-content-center align-items-center rounded-circle pointer">
-                        <i class="fa-solid fa-xmark"></i>
-                    </div>
-                </div>
             </section>
 
             <section class="relative-index-per-bg mt-3">
@@ -147,7 +153,7 @@
                     <button id="bg-music-btn" class="btn btn-warning mx-2 d-flex align-items-center"><span class="me-2">MusicBG</span><i class="ri-sound-module-fill align-middle"></i></button>
                 </div>
 
-                <h4 class="text-center mt-2">...or just take a break</h4>
+                <h4 class="text-center mt-2 px-3">...or just take a break</h4>
 
                 <div class="d-flex justify-content-center mt-0 mb-1">
                     <div id="food-truck-container" class="position-relative">
@@ -175,11 +181,15 @@
                     </div>
                 </div>
 
-                <h4 class="text-center mt-2">Anyway, you can find me around the web! xoxo</h4>
+                <h4 class="text-center mt-2 px-3">Anyway, you can find me around the web! xoxo</h4>
 
                 <div id="info-container" class="d-flex justify-content-center mt-4">
                     <div class="badge">
                         <div class="text">Hallo</div>
+
+                        <a href="https://opensea.io/assets/ethereum/0x495f947276749ce646f68ac8c248420045cb7b5e/91909880063035989946426545430640419443565129360941632704534706326623437717505" target="_blank" id="nft-link" class="position-absolute fs-4">
+                            <i class="fa-brands fa-ethereum"></i>
+                        </a>
                     </div>
                 </div>
 

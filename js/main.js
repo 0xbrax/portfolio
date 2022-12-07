@@ -110,7 +110,6 @@ gameInfoHandle.addEventListener('click', function() {
     gameInfo.classList.toggle('d-block');
 });
 
-///////////////////////////////// HERE
 breakBtn.addEventListener('click', function() {
     truckDoor.classList.toggle('truck-door-anim');
     pikaStatic.classList.toggle('pikachu-static-anim');
@@ -866,11 +865,13 @@ function pikaAttack() {
         return;
     }
 
-    let pikachuRight = parseInt(window.getComputedStyle(pikachuContainer).getPropertyValue('right'));
+    if (finalBossSelected == 2 || finalBossSelected == 3) {
+        let pikachuRight = parseInt(window.getComputedStyle(pikachuContainer).getPropertyValue('right'));
 
-    lightBall.src = 'assets/img/lighting-ball-rotating.gif';
-    lightBall.classList.add('pika-attack');
-    lightBall.style.animationDuration = (pikachuRight / 350) + 's';
+        lightBall.src = 'assets/img/lighting-ball-rotating.gif';
+        lightBall.classList.add('pika-attack');
+        lightBall.style.animationDuration = (pikachuRight / 350) + 's';
+    }
 }
 
 function setSfxVolume() {
