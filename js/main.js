@@ -69,6 +69,11 @@ let randomBonus = 5000;
 let isCarGoingRight = false;
 let isCarGoingLeft = false;
 
+const truckDoor = document.getElementById('truck-door');
+const truckDoorContainer = document.getElementById('truck-door-container');
+const pikaStatic = document.getElementById('pikachu-static');
+const breakBtn = document.getElementById('pika-food-btn');
+
 const scoreContainer = document.getElementById('score-container');
 let score = document.getElementById('score');
 let scoreCounter = 0;
@@ -85,10 +90,73 @@ const leaderboardID = 'cfqyXSB5PmTHj6UnnYS2';
 
 let keyState = {};
 
-const truckDoor = document.getElementById('truck-door');
-const truckDoorContainer = document.getElementById('truck-door-container');
-const pikaStatic = document.getElementById('pikachu-static');
-const breakBtn = document.getElementById('pika-food-btn');
+let paths = document.querySelectorAll('.paper-plane-path');
+
+fillSvgPaths();
+document.addEventListener('scroll', fillSvgPaths);
+
+function fillSvgPaths() {
+    let scrollPercentage = (document.documentElement.scrollTop + document.body.scrollTop) / (document.documentElement.scrollHeight - document.documentElement.clientHeight);
+
+    for (let i = 0; i < paths.length; i++) {
+        let path = paths[i];
+        let pathLength = path.getTotalLength();
+
+        path.style.strokeDasharray = pathLength;
+        path.style.strokeDashoffset = pathLength;
+
+        let drawLength = pathLength * scrollPercentage;
+
+        path.style.strokeDashoffset = pathLength - drawLength;
+    }
+}
+
+//////// AUDIO VISUALIZER ////////
+
+const visualizerContainer = document.querySelector(".visualizer-container");
+const musicBarsNumber = 16;
+
+for (let i = 0; i < musicBarsNumber; i++ ) {
+    const bar = document.createElement("DIV");
+    bar.setAttribute("id", "bar" + i);
+    bar.setAttribute("class", "visualizer-container__bar");
+    visualizerContainer.appendChild(bar);
+}
+
+backMusic.addEventListener('play', function() {
+    const ctx = new AudioContext();
+    const audioSource = ctx.createMediaElementSource(backMusic);
+    const analayzer = ctx.createAnalyser();
+
+    audioSource.connect(analayzer);
+    audioSource.connect(ctx.destination);
+
+    const frequencyData = new Uint8Array(analayzer.frequencyBinCount);
+    analayzer.getByteFrequencyData(frequencyData);
+
+    function renderFrame() {
+        analayzer.getByteFrequencyData(frequencyData);
+
+        for (let i = 0; i < musicBarsNumber; i++ ) {
+            const index = (i + 2) * 2;
+            let freqDBspl = frequencyData[index];
+
+            const bar = document.querySelector("#bar" + i);
+            if (!bar) {
+                continue;
+            }
+
+            const barHeight = Math.max(((freqDBspl / 5) > 50 ? 50 : (freqDBspl / 5)) || 5);
+            bar.style.height = barHeight + "px";
+        }
+
+        window.requestAnimationFrame(renderFrame);
+    }
+
+    renderFrame();
+});
+
+////////////////
 
 gameInfoBtn.addEventListener('click', function() {
     if (gameInfo.classList.contains('d-none')) {
