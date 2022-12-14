@@ -1206,6 +1206,13 @@ function requestToPlay() {
         return
     }
 
+    if (isGamePlaying == false) {
+        if(isPikachuSuperSayan == false && isSuperCarActive == false) {
+            resetGame();
+        }
+        playGame();
+    }
+
     if (backMusic.volume == 1) {
         backMusic.play();
         isBGMusicPlaying = true;
