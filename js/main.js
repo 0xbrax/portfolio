@@ -69,10 +69,12 @@ let randomBonus = 5000;
 let isCarGoingRight = false;
 let isCarGoingLeft = false;
 
-const truckDoor = document.getElementById('truck-door');
 const truckDoorContainer = document.getElementById('truck-door-container');
+const truckDoorFront = document.getElementById('truck-door-front');
+const truckDoorBack = document.getElementById('truck-door-back');
 const pikaStatic = document.getElementById('pikachu-static');
 const breakBtn = document.getElementById('pika-food-btn');
+let isBreakActive = false;
 
 const scoreContainer = document.getElementById('score-container');
 let score = document.getElementById('score');
@@ -89,6 +91,8 @@ let worldRecord = document.getElementById('world-record');
 const leaderboardID = 'cfqyXSB5PmTHj6UnnYS2';
 
 let keyState = {};
+
+//////// PAPER PLANE DRAW ////////
 
 let paths = document.querySelectorAll('.paper-plane-path');
 
@@ -110,6 +114,8 @@ function fillSvgPaths() {
         path.style.strokeDashoffset = pathLength - drawLength;
     }
 }
+
+////////////////
 
 //////// AUDIO VISUALIZER ////////
 
@@ -139,14 +145,14 @@ backMusic.addEventListener('play', function() {
 
         for (let i = 0; i < musicBarsNumber; i++ ) {
             const index = (i + 2) * 2;
-            let freqDBspl = frequencyData[index];
+            let freqDB = frequencyData[index];
 
             const bar = document.querySelector("#bar" + i);
             if (!bar) {
                 continue;
             }
 
-            const barHeight = Math.max(((freqDBspl / 5) > 50 ? 50 : (freqDBspl / 5)) || 5);
+            const barHeight = Math.max(((freqDB / 5) > 50 ? 50 : (freqDB / 5)) || 5);
             bar.style.height = barHeight + "px";
         }
 
@@ -179,28 +185,45 @@ gameInfoHandle.addEventListener('click', function() {
 });
 
 breakBtn.addEventListener('click', function() {
-    truckDoor.classList.toggle('truck-door-anim');
     pikaStatic.classList.toggle('pikachu-static-anim');
 
     if (pikaStatic.classList.contains('pikachu-static-anim')) {
         breakBtn.innerHTML = 'NO MORE BREAK';
+
+        isBreakActive = true;
+
+        truckDoorFront.classList.add('truck-door-anim');
+        truckDoorBack.classList.add('truck-door-anim');
     } else {
         breakBtn.innerHTML = 'BREAK';
+
+        isBreakActive = false;
+
+        truckDoorFront.classList.remove('truck-door-anim');
+        truckDoorBack.classList.remove('truck-door-anim');
     }
+});
+pikaStatic.addEventListener('animationend', function() {
+    isBreakActive = false;
+
+    truckDoorFront.classList.remove('truck-door-anim');
+    truckDoorBack.classList.remove('truck-door-anim');
 });
 truckDoorContainer.addEventListener('mouseover', function() {
-    if (pikaStatic.classList.contains('pikachu-static-anim')) {
+    if (isBreakActive == true) {
         return;
-    } else {
-        truckDoor.classList.add('truck-door-hover');
     }
+
+    truckDoorFront.classList.add('truck-door-hover');
+    truckDoorBack.classList.add('truck-door-hover');
 });
 truckDoorContainer.addEventListener('mouseleave', function() {
-    if (pikaStatic.classList.contains('pikachu-static-anim')) {
+    if (isBreakActive == true) {
         return;
-    } else {
-        truckDoor.classList.remove('truck-door-hover');
     }
+
+    truckDoorFront.classList.remove('truck-door-hover');
+    truckDoorBack.classList.remove('truck-door-hover');
 });
 
 resetBtn.addEventListener('click', resetGame);
@@ -304,7 +327,7 @@ bonusSound.addEventListener('ended', function() {
     bonusSound.currentTime = 0;
 });
 
-score.innerHTML = `LOL score: <span class="fw-bold">${scoreCounter}</span>`;
+score.innerHTML = `Score: <span class="fw-bold">${scoreCounter}</span>`;
 level.innerHTML = `Level: <span class="fw-bold">${levelCounter}</span>`;
 record.innerHTML = `Local record: <span class="fw-bold">${recordCounter}</span> by <span class="fw-bold">---</span>`;
 worldRecord.innerHTML = `World record: <span class="fw-bold">Loading...</span>`;

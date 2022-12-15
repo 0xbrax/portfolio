@@ -316,8 +316,6 @@ header img {
     position: absolute;
     right: 70px;
     transform: rotate(-23deg);
-
-    /*display: none; SET ON JS*/
 }
 .boss-attack {
     animation: boss-attack linear;
@@ -412,8 +410,8 @@ header img {
 #cloud-text p {
     width: 100%;
     position: absolute;
-    bottom: 6px;
-    left: 39px;
+    bottom: 4px;
+    left: 37px;
     z-index: 95;
 }
 
@@ -471,8 +469,6 @@ header img {
     width: 60px;
     position: absolute;
     z-index: 201;
-
-    /*display: none; SET ON JS*/
 }
 .pika-attack {
     animation: pika-attack linear;
@@ -492,7 +488,7 @@ header img {
     position: fixed;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%) rotate(-5deg);
 
     z-index: 50;
 }
@@ -574,24 +570,48 @@ header img {
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
 
+    transform-style: preserve-3d;
+
     z-index: 311;
 }
-#truck-door {
+#truck-door-front {
     width: 100%;
     height: 100%;
+    top: 0;
+    left: 0;
     background-color: #cd181f;
     box-shadow: inset 0px 0px 0px 1px #000000;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
+
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+
+    z-index: 202;
 }
-#truck-door img {
+#truck-door-front img {
     height: 6px;
     top: 60px;
     right: 4px;
 }
-#truck-door-window {
+#truck-door-back {
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: #cd181f;
+    box-shadow: inset 0px 0px 0px 1px #000000;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+
+    z-index: 201;
+}
+
+.truck-door-window {
     width: 30px;
     height: 30px;
     border-radius: 50%;
