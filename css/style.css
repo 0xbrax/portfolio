@@ -16,15 +16,17 @@
     --green-col: #C1FF9B;
 }
 
+* {
+    font-family: 'Ubuntu', sans-serif;
+}
+
+
 body {
     background-color: var(--main-purple-col);
 }
 
 main {
-    font-family: 'Ubuntu', sans-serif;
-
-    background: var(--pink-col);
-    background: linear-gradient(180deg, var(--pink-col) 58.2%, var(--blue-col) 58.2%);
+    background: linear-gradient(180deg, var(--pink-col) 56%, var(--blue-col) 56%);
 }
 
 #preload-page {
@@ -66,6 +68,7 @@ main {
     background-color: var(--main-purple-col);
     height: 22px;
     width: 14px;
+    margin-left: 2px;
     opacity: 0;
     animation: loading 1s linear infinite;
 }
@@ -660,9 +663,9 @@ header img {
     }
 }
 #truck-kitchen-part {
-    width: 16.1%;
-    bottom: 16.9%;
-    right: 32.6%;
+    width: 15.8%;
+    bottom: 17.1%;
+    right: 32.7%;
 
     z-index: 310;
 }
