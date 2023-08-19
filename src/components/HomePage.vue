@@ -9,9 +9,8 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { InteractionManager } from 'three.interactive';
 
-import CLoudsSunset from '../assets/video/0819.mp4';
+import CLoudsSunset from '../assets/video/360vr_clouds_sunset.mp4';
 import Plane from '../assets/other/cartoon_plane.glb';
-
 
 export default {
     name: "HomePage",
@@ -56,16 +55,11 @@ export default {
         directionalLight.position.set(1, 1, 1);
         scene.add(directionalLight);
 
-        // Set up the camera and controls
-        camera.position.set(0, 0, 0.1);
-        camera.rotation.y = Math.PI / 4;
-
-        console.log(camera.rotation)
-
-
+        // Camera & Controls
+        camera.position.set(0.5, 0, 0);
         const controls = new OrbitControls(camera, renderer.domElement);
-        controls.enableZoom = false; // ??
-        controls.enablePan = false; // ??
+        controls.enableZoom = false; // ?????
+        controls.enablePan = false; // ?????
 
         // Window resize
         function onWindowResize() {
@@ -87,6 +81,7 @@ export default {
 
         let planeModel;
         let planeMixer;
+        let isFPVActive = false;
 
         let PLANE_ROTATION_X = 0.001;
         let PLANE_ROTATION_Y = 0.001;
@@ -100,11 +95,8 @@ export default {
             planeModel = gltf.scene;
 
             planeModel.scale.set(0.5, 0.5, 0.5);
-            planeModel.position.set(0.3, -0.3, 0.3);
-
-            //cube.rotation.x = Math.PI / 4; // Ruota di 45 gradi lungo l'asse x
+            planeModel.position.set(0.4, -0.2, 0);
             planeModel.rotation.y = -Math.PI / 2;
-            //cube.rotation.z = Math.PI / 4;
 
             if (animations && animations.length) {
                 planeMixer = new THREE.AnimationMixer(planeModel);
@@ -140,14 +132,37 @@ export default {
                 isPlaneRotZPositive = !isPlaneRotZPositive;
             }, 2200);
 
-
-
             interactionManager.add(planeModel);
             planeModel.addEventListener("click", (event) => {
-                console.log('CLICK AEREO');
+                isFPVActive = true;
+                interactionManager.add(sphere);
 
-                camera.position.set(0.3, -0.3, 0.3);
+                camera.position.set(0.3, -0.1, 0); // TODO check il riposizionamento quando entra e boolean + remove event
                 controls.enabled = false;
+                planeModel.traverse((child) => {
+                    if (child.isMesh && child.name === 'Cube_3_Glass_0') {
+                        child.material.transparent = true;
+                        child.material.opacity = 0.2;
+                    }
+                });
+            });
+
+            sphere.addEventListener("click", (event) => {
+                if (isFPVActive === false) {
+                    return;
+                }
+
+                camera.position.set(0.5, 0, 0);
+                controls.enabled = true;
+                planeModel.traverse((child) => {
+                    if (child.isMesh && child.name === 'Cube_3_Glass_0') {
+                        child.material.transparent = false;
+                        child.material.opacity = 1;
+                    }
+                });
+
+                isFPVActive = false;
+                interactionManager.remove(sphere);
             });
 
             animate();
@@ -189,7 +204,6 @@ export default {
             planeModel.rotation.x += PLANE_ROTATION_X;
             planeModel.rotation.y += PLANE_ROTATION_Y;
             planeModel.rotation.z += PLANE_ROTATION_Z;
-
 
             interactionManager.update();
             renderer.render(scene, camera);
