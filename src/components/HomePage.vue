@@ -11,14 +11,16 @@ import { InteractionManager } from 'three.interactive';
 
 import CLoudsSunset from '../assets/video/360vr_clouds_sunset.mp4';
 import Plane from '../assets/other/cartoon_plane.glb';
+import Dragon from '../assets/other/dragon_flying_small.glb';
+
+import TestIMG from '../assets/image/crash-bandicoot1.jpg';
 
 export default {
     name: "HomePage",
 
     setup() {
-        // Scene
+        // SCENE
         const loader = new GLTFLoader();
-        const clock = new THREE.Clock();
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer();
@@ -30,7 +32,7 @@ export default {
             renderer.domElement
         );
 
-        // Background video
+        // BACKGROUND VIDEO
         const video = document.createElement('video');
         video.src = CLoudsSunset;
         video.autoplay = true;
@@ -41,27 +43,31 @@ export default {
         videoTexture.minFilter = THREE.LinearFilter;
         videoTexture.magFilter = THREE.LinearFilter;
 
-        // 3D Sphere
+        // 3D SPHERE
         const sphereGeometry = new THREE.SphereGeometry(500, 60, 40);
         sphereGeometry.scale(-1, 1, 1);
         const sphereMaterial = new THREE.MeshBasicMaterial({ map: videoTexture });
         const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
         scene.add(sphere);
 
-        // Ambient light
+        // AMBIENT LIGHT
         const ambientLight = new THREE.AmbientLight(0xffffff, 1);
         scene.add(ambientLight);
         const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
         directionalLight.position.set(1, 1, 1);
         scene.add(directionalLight);
 
-        // Camera & Controls
+        // CAMERA & CONTROLS
         camera.position.set(0.5, 0, 0);
         const controls = new OrbitControls(camera, renderer.domElement);
-        controls.enableZoom = false; // ?????
-        controls.enablePan = false; // ?????
+        controls.enableZoom = false;
+        controls.enablePan = false;
+        controls.enableDamping = true;
 
-        // Window resize
+        controls.rotateSpeed = -0.5;
+        controls.panSpeed = 0.5;
+
+        // WINDOW RESIZE
         function onWindowResize() {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
@@ -69,16 +75,8 @@ export default {
         }
         window.addEventListener('resize', onWindowResize, false);
 
-
-
-
-
-
-
-
-
-
-
+        // PLANE MODEL
+        const planeClock = new THREE.Clock();
         let planeModel;
         let planeMixer;
         let isFPVActive = false;
@@ -96,7 +94,13 @@ export default {
 
             planeModel.scale.set(0.5, 0.5, 0.5);
             planeModel.position.set(0.4, -0.2, 0);
-            planeModel.rotation.y = -Math.PI / 2;
+            planeModel.rotation.y = -Math.PI / 1.9;
+
+            planeModel.traverse((child) => {
+                if (child.isMesh && child.name === 'Cube_1_Body_0') {
+                    child.material.color.set(0xf4ff00);
+                }
+            });
 
             if (animations && animations.length) {
                 planeMixer = new THREE.AnimationMixer(planeModel);
@@ -137,12 +141,12 @@ export default {
                 isFPVActive = true;
                 interactionManager.add(sphere);
 
-                camera.position.set(0.3, -0.1, 0); // TODO check il riposizionamento quando entra e boolean + remove event
+                camera.position.set(0.4, -0.15, 0);
                 controls.enabled = false;
                 planeModel.traverse((child) => {
                     if (child.isMesh && child.name === 'Cube_3_Glass_0') {
                         child.material.transparent = true;
-                        child.material.opacity = 0.2;
+                        child.material.opacity = 0.3;
                     }
                 });
             });
@@ -151,7 +155,6 @@ export default {
                 if (isFPVActive === false) {
                     return;
                 }
-
                 camera.position.set(0.5, 0, 0);
                 controls.enabled = true;
                 planeModel.traverse((child) => {
@@ -164,21 +167,61 @@ export default {
                 isFPVActive = false;
                 interactionManager.remove(sphere);
             });
+        });
 
-            animate();
+        // DRAGON MODEL
+        const dragonClock = new THREE.Clock();
+        let dragonModel;
+        let dragonMixer;
+
+        loader.load(Dragon, (gltf) => {
+            const animations = gltf.animations;
+            dragonModel = gltf.scene;
+
+            dragonModel.scale.set(0.5, 0.5, 0.5);
+            dragonModel.position.set(-0.7, 0.1, -0.8);
+            dragonModel.rotation.y = Math.PI / 2;
+
+            if (animations && animations.length) {
+                dragonMixer = new THREE.AnimationMixer(dragonModel);
+                const clip = animations[0];
+                const action = dragonMixer.clipAction(clip);
+                action.play();
+
+                scene.add(dragonModel);
+            }
         });
 
 
 
 
 
-        /*const cubeMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-        // Crea un cubo con il materiale rosso
-        const cubeGeometry = new THREE.BoxGeometry(0.2, 0.2, 0.2); // Modifica le dimensioni se necessario
-        const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-        // Posiziona il cubo all'interno della sfera
-        cube.position.set(0.5, 0.5, 0.5); // Modifica le coordinate per posizionarlo correttamente
-        sphere.add(cube);*/
+
+
+
+        const textureLoader = new THREE.TextureLoader();
+        const texture = textureLoader.load(TestIMG);
+
+        const materialCube = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+        const materialImage = new THREE.MeshBasicMaterial({ map: texture });
+
+        const cubeMaterials = [
+            materialCube, // Front
+            materialCube, // Back
+            materialCube, // Top
+            materialCube, // Bottom
+            materialImage, // Right
+            materialCube  // Left
+        ];
+
+        const cubeGeometry = new THREE.BoxGeometry(0.5, 0.5, 0.05);
+        const cube = new THREE.Mesh(cubeGeometry, cubeMaterials);
+        cube.position.set(-0.55, -0.1, -0.8);
+        sphere.add(cube);
+
+        /*setInterval(() => {
+            cube.position.set(-3, 0.5, 1);
+        }, 10000);*/
 
 
 
@@ -193,18 +236,23 @@ export default {
             requestAnimationFrame(animate);
 
             if (planeMixer) {
-                const deltaTime = clock.getDelta();
+                const deltaTime = planeClock.getDelta();
                 planeMixer.update(deltaTime);
             }
+            if (dragonMixer) {
+                const deltaTime = dragonClock.getDelta();
+                dragonMixer.update(deltaTime);
+            }
 
-            //planeModel.position.x += 0.001; // Move along the X-axis
-            //planeModel.position.y += 0.001; // Move along the Y-axis
-            //planeModel.position.z += 0.001; // Move along the Z-axis
+            //cube.position.x += 0.01;
 
-            planeModel.rotation.x += PLANE_ROTATION_X;
-            planeModel.rotation.y += PLANE_ROTATION_Y;
-            planeModel.rotation.z += PLANE_ROTATION_Z;
+            if (planeModel) {
+                planeModel.rotation.x += PLANE_ROTATION_X;
+                planeModel.rotation.y += PLANE_ROTATION_Y;
+                planeModel.rotation.z += PLANE_ROTATION_Z;
+            }
 
+            controls.update();
             interactionManager.update();
             renderer.render(scene, camera);
         }
@@ -219,6 +267,8 @@ export default {
 
 
         // INIT
+        animate();
+
         onMounted(() => {
             const container = document.getElementById('container');
             container.appendChild(renderer.domElement);
