@@ -64,8 +64,8 @@ export default {
         controls.enablePan = false;
         controls.enableDamping = true;
 
-        controls.rotateSpeed = -0.5;
-        controls.panSpeed = 0.5;
+        controls.rotateSpeed = -1;
+        controls.panSpeed = 1;
 
         // WINDOW RESIZE
         function onWindowResize() {
