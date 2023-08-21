@@ -169,26 +169,59 @@ export default {
             });
         });
 
-        // DRAGON MODEL
-        const dragonClock = new THREE.Clock();
-        let dragonModel;
-        let dragonMixer;
+        // DRAGON MODEL 1 //// colors ok: ffff00 ffb2fd ff9bf7 fffc9b 9bffa4
+        const dragonClock_1 = new THREE.Clock();
+        let dragonModel_1;
+        let dragonMixer_1;
 
         loader.load(Dragon, (gltf) => {
             const animations = gltf.animations;
-            dragonModel = gltf.scene;
+            dragonModel_1 = gltf.scene;
 
-            dragonModel.scale.set(0.5, 0.5, 0.5);
-            dragonModel.position.set(-0.7, 0.1, -0.8);
-            dragonModel.rotation.y = Math.PI / 2;
+            dragonModel_1.scale.set(0.5, 0.5, 0.5);
+            dragonModel_1.position.set(-0.7, 0.1, -0.8);
+            dragonModel_1.rotation.y = Math.PI / 2;
 
             if (animations && animations.length) {
-                dragonMixer = new THREE.AnimationMixer(dragonModel);
+                dragonMixer_1 = new THREE.AnimationMixer(dragonModel_1);
                 const clip = animations[0];
-                const action = dragonMixer.clipAction(clip);
+                const action = dragonMixer_1.clipAction(clip);
                 action.play();
 
-                scene.add(dragonModel);
+                scene.add(dragonModel_1);
+            }
+        });
+
+        // DRAGON MODEL 2 //// colors ok: ff0000
+        const dragonClock_2 = new THREE.Clock();
+        let dragonModel_2;
+        let dragonMixer_2;
+
+        loader.load(Dragon, (gltf) => {
+            const animations = gltf.animations;
+            dragonModel_2 = gltf.scene;
+
+            dragonModel_2.scale.set(0.5, 0.5, 0.5);
+            dragonModel_2.position.set(-0.7, 0.1, 0.8);
+            dragonModel_2.rotation.y = Math.PI / 2;
+
+            dragonModel_2.traverse((child) => {
+                if (child.isMesh) {
+                    child.material.color.set(0xff0000);
+
+                    child.material.map = null;
+                }
+            });
+
+            scene.add(dragonModel_2);
+
+            if (animations && animations.length) {
+                dragonMixer_2 = new THREE.AnimationMixer(dragonModel_2);
+                const clip = animations[0];
+                const action = dragonMixer_2.clipAction(clip);
+                action.play();
+
+                scene.add(dragonModel_2);
             }
         });
 
@@ -239,9 +272,13 @@ export default {
                 const deltaTime = planeClock.getDelta();
                 planeMixer.update(deltaTime);
             }
-            if (dragonMixer) {
-                const deltaTime = dragonClock.getDelta();
-                dragonMixer.update(deltaTime);
+            if (dragonMixer_1) {
+                const deltaTime = dragonClock_1.getDelta();
+                dragonMixer_1.update(deltaTime);
+            }
+            if (dragonMixer_2) {
+                const deltaTime = dragonClock_2.getDelta();
+                dragonMixer_2.update(deltaTime);
             }
 
             //cube.position.x += 0.01;
