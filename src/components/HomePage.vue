@@ -22,8 +22,26 @@ export default {
     name: "HomePage",
 
     setup() {
+        // TODO work in progress
+        // LOADER
+        const loadingManager = new THREE.LoadingManager();
+        
+        loadingManager.onStart = function ( url, itemsLoaded, itemsTotal ) {
+            console.log( 'Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
+        };
+
+        let progress = 0;
+        loadingManager.onProgress = function ( url, itemsLoaded, itemsTotal ) {
+            progress = (itemsLoaded / itemsTotal) * 100;
+            console.log(`Caricamento: ${progress.toFixed(0)}%`);
+            console.log( 'Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
+        };
+        loadingManager.onLoad = function ( ) {
+            console.log( 'Loading complete!');
+        };
+
         // SCENE
-        const loader = new GLTFLoader();
+        const loader = new GLTFLoader(loadingManager);
         const textureLoader = new THREE.TextureLoader();
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -79,10 +97,6 @@ export default {
         }
         window.addEventListener('resize', onWindowResize, false);
 
-        // LOADER
-        const loadingManager = new THREE.LoadingManager();
-        // TODO work in progress
-
 
 
         // PLANE MODEL
@@ -91,9 +105,9 @@ export default {
         let planeMixer;
         let isFPVActive = false;
 
-        let PLANE_ROTATION_X = 0.001;
-        let PLANE_ROTATION_Y = 0.001;
-        let PLANE_ROTATION_Z = 0.001;
+        let PLANE_ROTATION_X = 0;
+        let PLANE_ROTATION_Y = 0;
+        let PLANE_ROTATION_Z = 0;
         let isPlaneRotXPositive = true;
         let isPlaneRotYPositive = true;
         let isPlaneRotZPositive = true;
@@ -104,7 +118,7 @@ export default {
 
             planeModel.scale.set(0.5, 0.5, 0.5);
             planeModel.position.set(0.4, -0.2, 0);
-            planeModel.rotation.y = -Math.PI / 1.9;
+            planeModel.rotation.y = -Math.PI / 1.95;
 
             planeModel.traverse((child) => {
                 if (child.isMesh && child.name === 'Cube_1_Body_0') {
@@ -120,8 +134,8 @@ export default {
                 action.play();
             }
 
+            PLANE_ROTATION_X = 0.001;
             setInterval(() => {
-                planeModel.position.x = 0.4;
                 if (isPlaneRotXPositive) {
                     PLANE_ROTATION_X = Math.abs(PLANE_ROTATION_X);
                 } else {
@@ -129,8 +143,8 @@ export default {
                 }
                 isPlaneRotXPositive = !isPlaneRotXPositive;
             }, 1800);
+            PLANE_ROTATION_Y = 0.001;
             setInterval(() => {
-                planeModel.position.y = -0.2;
                 if (isPlaneRotYPositive) {
                     PLANE_ROTATION_Y = Math.abs(PLANE_ROTATION_Y);
                 } else {
@@ -138,8 +152,8 @@ export default {
                 }
                 isPlaneRotYPositive = !isPlaneRotYPositive;
             }, 2000);
+            PLANE_ROTATION_Z = 0.001;
             setInterval(() => {
-                planeModel.position.z = 0;
                 if (isPlaneRotZPositive) {
                     PLANE_ROTATION_Z = Math.abs(PLANE_ROTATION_Z);
                 } else {
@@ -238,7 +252,6 @@ export default {
         });
 
         // CUBE MODEL 1
-
         const texture = textureLoader.load(TestIMG);
         const materialCube = new THREE.MeshBasicMaterial({ color: 0xff0000 });
         const materialImage = new THREE.MeshBasicMaterial({ map: texture });
@@ -365,10 +378,6 @@ export default {
 
             scene.add(flameModel);
         });
-
-
-
-
 
 
 
