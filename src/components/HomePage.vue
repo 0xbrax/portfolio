@@ -12,6 +12,9 @@ import { InteractionManager } from 'three.interactive';
 import CLoudsSunset from '../assets/video/360vr_clouds_sunset.mp4';
 import Plane from '../assets/other/cartoon_plane.glb';
 import Dragon from '../assets/other/dragon_flying_small.glb';
+import Truck from '../assets/other/icecream_truck.glb';
+import Rocket from '../assets/other/rocket_ship.glb';
+import Flame from '../assets/other/flame_animation.glb';
 
 import TestIMG from '../assets/image/crash-bandicoot1.jpg';
 
@@ -74,6 +77,12 @@ export default {
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
         window.addEventListener('resize', onWindowResize, false);
+
+        // LOADER
+        const loadingManager = new THREE.LoadingManager();
+        // TODO work in progress
+
+
 
         // PLANE MODEL
         const planeClock = new THREE.Clock();
@@ -169,7 +178,7 @@ export default {
             });
         });
 
-        // DRAGON MODEL 1 //// colors ok: ffff00 ffb2fd ff9bf7 fffc9b 9bffa4
+        // DRAGON MODEL 1
         const dragonClock_1 = new THREE.Clock();
         let dragonModel_1;
         let dragonMixer_1;
@@ -182,6 +191,13 @@ export default {
             dragonModel_1.position.set(-0.7, 0.1, -0.8);
             dragonModel_1.rotation.y = Math.PI / 2;
 
+            dragonModel_1.traverse((child) => {
+                if (child.isMesh) {
+                    child.material.color.set(0x00ff00);
+                    child.material.map = null;
+                }
+            });
+
             if (animations && animations.length) {
                 dragonMixer_1 = new THREE.AnimationMixer(dragonModel_1);
                 const clip = animations[0];
@@ -192,7 +208,7 @@ export default {
             }
         });
 
-        // DRAGON MODEL 2 //// colors ok: ff0000
+        // DRAGON MODEL 2
         const dragonClock_2 = new THREE.Clock();
         let dragonModel_2;
         let dragonMixer_2;
@@ -202,18 +218,15 @@ export default {
             dragonModel_2 = gltf.scene;
 
             dragonModel_2.scale.set(0.5, 0.5, 0.5);
-            dragonModel_2.position.set(-0.7, 0.1, 0.8);
+            dragonModel_2.position.set(0.7, 0.1, -0.8);
             dragonModel_2.rotation.y = Math.PI / 2;
 
             dragonModel_2.traverse((child) => {
                 if (child.isMesh) {
-                    child.material.color.set(0xff0000);
-
+                    child.material.color.set(0xff00ff);
                     child.material.map = null;
                 }
             });
-
-            scene.add(dragonModel_2);
 
             if (animations && animations.length) {
                 dragonMixer_2 = new THREE.AnimationMixer(dragonModel_2);
@@ -225,6 +238,78 @@ export default {
             }
         });
 
+
+        // ICECREAM TRUCK MODEL
+        let truckModel;
+
+        loader.load(Truck, (gltf) => {
+            truckModel = gltf.scene;
+
+            truckModel.scale.set(0.1, 0.1, 0.1);
+            truckModel.position.set(-0.6, 0.5, 1.1);
+            truckModel.rotation.y = -Math.PI / 2;
+
+            scene.add(truckModel);
+        });
+
+        // ROCKET MODEL
+        let rocketModel;
+
+        loader.load(Rocket, (gltf) => {
+            rocketModel = gltf.scene;
+
+            rocketModel.scale.set(0.3, 0.3, 0.3);
+            rocketModel.position.set(-0.53, 0.45, 1.1);
+            rocketModel.rotation.x = Math.PI / 1;
+            rocketModel.rotation.y = -Math.PI / 1;
+            rocketModel.rotation.z = -Math.PI / 4;
+
+            rocketModel.traverse((child) => {
+                if (child.isMesh) {
+                    switch (child.name) {
+                        case 'Rocket_Ship_01_Material_#29_0':
+                        case 'Rocket_Ship_01_Material_#30_0':
+                        case 'Rocket_Ship_01_Material_#42_0':
+                            child.material.transparent = true;
+                            child.material.opacity = 0;
+                    }
+                }
+            });
+
+            scene.add(rocketModel);
+        });
+
+        // ROCKET CYLINDER MODEL
+        const cylinderMaterial = new THREE.MeshBasicMaterial({ color: 0x4d4d4d });
+        const cylinderGeometry = new THREE.CylinderGeometry(0.05, 0.05, 0.05, 32);
+        const cylinderModel = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
+        cylinderModel.position.set(-0.47, 0.45, 1.1);
+        cylinderModel.rotation.z = Math.PI / 2;
+
+        scene.add(cylinderModel);
+
+        // ROCKET FLAME MODEL
+        const flameClock = new THREE.Clock();
+        let flameModel;
+        let flameMixer;
+
+        loader.load(Flame, (gltf) => {
+            const animations = gltf.animations;
+            flameModel = gltf.scene;
+
+            flameModel.scale.set(0.1, 0.3, 0.1);
+            flameModel.position.set(-0.53, 0.45, 1.1);
+            flameModel.rotation.z = -Math.PI / 2;
+
+            if (animations && animations.length) {
+                flameMixer = new THREE.AnimationMixer(flameModel);
+                const clip = animations[0];
+                const action = flameMixer.clipAction(clip);
+                action.play();
+
+                scene.add(flameModel);
+            }
+        });
 
 
 
@@ -279,6 +364,10 @@ export default {
             if (dragonMixer_2) {
                 const deltaTime = dragonClock_2.getDelta();
                 dragonMixer_2.update(deltaTime);
+            }
+            if (flameMixer) {
+                const deltaTime = flameClock.getDelta();
+                flameMixer.update(deltaTime);
             }
 
             //cube.position.x += 0.01;
