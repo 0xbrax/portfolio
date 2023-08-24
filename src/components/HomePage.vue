@@ -24,6 +24,7 @@ export default {
     setup() {
         // SCENE
         const loader = new GLTFLoader();
+        const textureLoader = new THREE.TextureLoader();
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer();
@@ -107,7 +108,7 @@ export default {
 
             planeModel.traverse((child) => {
                 if (child.isMesh && child.name === 'Cube_1_Body_0') {
-                    child.material.color.set(0xf4ff00);
+                    child.material.color.set(0xfdff00);
                 }
             });
 
@@ -115,12 +116,12 @@ export default {
                 planeMixer = new THREE.AnimationMixer(planeModel);
                 const clip = animations[0];
                 const action = planeMixer.clipAction(clip);
-                action.play();
 
-                scene.add(planeModel);
+                action.play();
             }
 
             setInterval(() => {
+                planeModel.position.x = 0.4;
                 if (isPlaneRotXPositive) {
                     PLANE_ROTATION_X = Math.abs(PLANE_ROTATION_X);
                 } else {
@@ -129,6 +130,7 @@ export default {
                 isPlaneRotXPositive = !isPlaneRotXPositive;
             }, 1800);
             setInterval(() => {
+                planeModel.position.y = -0.2;
                 if (isPlaneRotYPositive) {
                     PLANE_ROTATION_Y = Math.abs(PLANE_ROTATION_Y);
                 } else {
@@ -137,6 +139,7 @@ export default {
                 isPlaneRotYPositive = !isPlaneRotYPositive;
             }, 2000);
             setInterval(() => {
+                planeModel.position.z = 0;
                 if (isPlaneRotZPositive) {
                     PLANE_ROTATION_Z = Math.abs(PLANE_ROTATION_Z);
                 } else {
@@ -146,7 +149,7 @@ export default {
             }, 2200);
 
             interactionManager.add(planeModel);
-            planeModel.addEventListener("click", (event) => {
+            planeModel.addEventListener('click', (event) => {
                 isFPVActive = true;
                 interactionManager.add(sphere);
 
@@ -160,7 +163,7 @@ export default {
                 });
             });
 
-            sphere.addEventListener("click", (event) => {
+            sphere.addEventListener('click', (event) => {
                 if (isFPVActive === false) {
                     return;
                 }
@@ -176,12 +179,16 @@ export default {
                 isFPVActive = false;
                 interactionManager.remove(sphere);
             });
+
+            scene.add(planeModel);
         });
 
         // DRAGON MODEL 1
         const dragonClock_1 = new THREE.Clock();
         let dragonModel_1;
         let dragonMixer_1;
+
+        let CUBE_POSITION_Y = 0;
 
         loader.load(Dragon, (gltf) => {
             const animations = gltf.animations;
@@ -204,9 +211,59 @@ export default {
                 const action = dragonMixer_1.clipAction(clip);
                 action.play();
 
-                scene.add(dragonModel_1);
+                dragonMixer_1.addEventListener('loop', (event) => {
+                    cubeModel.position.set(-0.55, -0.1, -0.8);
+                    CUBE_POSITION_Y = -0.0005;
+
+                    setTimeout(() => {
+                        CUBE_POSITION_Y = -0.0002;
+
+                    }, 750);
+                    setTimeout(() => {
+                        CUBE_POSITION_Y = 0.0005;
+
+                    }, 1250);
+                    setTimeout(() => {
+                        CUBE_POSITION_Y = 0.0002;
+                    }, 2000);
+                });
             }
+
+            interactionManager.add(dragonModel_1);
+            dragonModel_1.addEventListener('click', (event) => {
+                console.log('CLICKKKK')
+            });
+
+            scene.add(dragonModel_1);
         });
+
+        // CUBE MODEL 1
+
+        const texture = textureLoader.load(TestIMG);
+        const materialCube = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+        const materialImage = new THREE.MeshBasicMaterial({ map: texture });
+
+        const cubeMaterials = [
+            materialCube, // Front
+            materialCube, // Back
+            materialCube, // Top
+            materialCube, // Bottom
+            materialImage, // Right
+            materialCube  // Left
+        ];
+
+        const cubeGeometry = new THREE.BoxGeometry(0.5, 0.5, 0.05);
+        const cubeModel = new THREE.Mesh(cubeGeometry, cubeMaterials);
+        cubeModel.position.set(-0.55, -0.1, -0.8);
+
+        interactionManager.add(cubeModel);
+        cubeModel.addEventListener('click', (event) => {
+            console.log('CLICKKKK')
+        });
+
+        sphere.add(cubeModel);
+
+
 
         // DRAGON MODEL 2
         const dragonClock_2 = new THREE.Clock();
@@ -233,11 +290,10 @@ export default {
                 const clip = animations[0];
                 const action = dragonMixer_2.clipAction(clip);
                 action.play();
-
-                scene.add(dragonModel_2);
             }
-        });
 
+            scene.add(dragonModel_2);
+        });
 
         // ICECREAM TRUCK MODEL
         let truckModel;
@@ -270,8 +326,7 @@ export default {
                         case 'Rocket_Ship_01_Material_#29_0':
                         case 'Rocket_Ship_01_Material_#30_0':
                         case 'Rocket_Ship_01_Material_#42_0':
-                            child.material.transparent = true;
-                            child.material.opacity = 0;
+                            child.material.visible = false;
                     }
                 }
             });
@@ -306,9 +361,9 @@ export default {
                 const clip = animations[0];
                 const action = flameMixer.clipAction(clip);
                 action.play();
-
-                scene.add(flameModel);
             }
+
+            scene.add(flameModel);
         });
 
 
@@ -316,30 +371,6 @@ export default {
 
 
 
-
-        const textureLoader = new THREE.TextureLoader();
-        const texture = textureLoader.load(TestIMG);
-
-        const materialCube = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-        const materialImage = new THREE.MeshBasicMaterial({ map: texture });
-
-        const cubeMaterials = [
-            materialCube, // Front
-            materialCube, // Back
-            materialCube, // Top
-            materialCube, // Bottom
-            materialImage, // Right
-            materialCube  // Left
-        ];
-
-        const cubeGeometry = new THREE.BoxGeometry(0.5, 0.5, 0.05);
-        const cube = new THREE.Mesh(cubeGeometry, cubeMaterials);
-        cube.position.set(-0.55, -0.1, -0.8);
-        sphere.add(cube);
-
-        /*setInterval(() => {
-            cube.position.set(-3, 0.5, 1);
-        }, 10000);*/
 
 
 
@@ -351,15 +382,21 @@ export default {
 
 
         const animate = () => {
-            requestAnimationFrame(animate);
-
             if (planeMixer) {
                 const deltaTime = planeClock.getDelta();
                 planeMixer.update(deltaTime);
             }
+            if (planeModel) {
+                planeModel.rotation.x += PLANE_ROTATION_X;
+                planeModel.rotation.y += PLANE_ROTATION_Y;
+                planeModel.rotation.z += PLANE_ROTATION_Z;
+            }
             if (dragonMixer_1) {
                 const deltaTime = dragonClock_1.getDelta();
                 dragonMixer_1.update(deltaTime);
+            }
+            if (cubeModel) {
+                cubeModel.position.y += CUBE_POSITION_Y;
             }
             if (dragonMixer_2) {
                 const deltaTime = dragonClock_2.getDelta();
@@ -370,17 +407,13 @@ export default {
                 flameMixer.update(deltaTime);
             }
 
-            //cube.position.x += 0.01;
 
-            if (planeModel) {
-                planeModel.rotation.x += PLANE_ROTATION_X;
-                planeModel.rotation.y += PLANE_ROTATION_Y;
-                planeModel.rotation.z += PLANE_ROTATION_Z;
-            }
 
             controls.update();
             interactionManager.update();
             renderer.render(scene, camera);
+
+            requestAnimationFrame(animate);
         }
 
         const getRandomNumber = (min, max) => {
