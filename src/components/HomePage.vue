@@ -10,11 +10,17 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { InteractionManager } from 'three.interactive';
 
 import CLoudsSunset from '../assets/video/360vr_clouds_sunset.mp4';
+
 import Plane from '../assets/other/cartoon_plane.glb';
 import Dragon from '../assets/other/dragon_flying_small.glb';
 import Truck from '../assets/other/icecream_truck.glb';
 import Rocket from '../assets/other/rocket_ship.glb';
 import Flame from '../assets/other/flame_animation.glb';
+
+import Github from '../assets/other/github_logo.glb';
+import Linkedin from '../assets/other/linkedin_logo.glb';
+import Twitter from '../assets/other/twitter_logo.glb';
+import Instagram from '../assets/other/instagram_logo.glb';
 
 import TestIMG from '../assets/image/crash-bandicoot1.jpg';
 
@@ -118,7 +124,7 @@ export default {
 
             planeModel.scale.set(0.5, 0.5, 0.5);
             planeModel.position.set(0.4, -0.2, 0);
-            planeModel.rotation.y = -Math.PI / 1.95;
+            planeModel.rotation.y = -Math.PI / 2;
 
             planeModel.traverse((child) => {
                 if (child.isMesh && child.name === 'Cube_1_Body_0') {
@@ -196,6 +202,8 @@ export default {
 
             scene.add(planeModel);
         });
+
+
 
         // DRAGON MODEL 1
         const dragonClock_1 = new THREE.Clock();
@@ -308,6 +316,8 @@ export default {
             scene.add(dragonModel_2);
         });
 
+
+
         // ICECREAM TRUCK MODEL
         let truckModel;
 
@@ -380,6 +390,58 @@ export default {
         });
 
 
+
+        // GITHUB MODEL
+        let githubModel;
+
+        loader.load(Github, (gltf) => {
+            githubModel = gltf.scene;
+
+            githubModel.scale.set(0.05, 0.05, 0.05);
+            githubModel.position.set(0.6, 0.3, 1.1);
+            githubModel.rotation.y = Math.PI / 1;
+
+            scene.add(githubModel);
+        });
+
+        // LINKEDIN MODEL
+        let linkedinModel;
+
+        loader.load(Linkedin, (gltf) => {
+            linkedinModel = gltf.scene;
+
+            linkedinModel.scale.set(0.5, 0.5, 0.5);
+            linkedinModel.position.set(0.8, 0.3, 1.1);
+            linkedinModel.rotation.y = Math.PI / 1;
+
+            scene.add(linkedinModel);
+        });
+
+        // TWITTER MODEL
+        let twitterModel;
+
+        loader.load(Twitter, (gltf) => {
+            twitterModel = gltf.scene;
+
+            twitterModel.scale.set(0.01, 0.01, 0.01);
+            twitterModel.position.set(1.1, 0.5, 1.1);
+            twitterModel.rotation.y = Math.PI / 1;
+
+            scene.add(twitterModel);
+        });
+
+        // INSTAGRAM MODEL
+        let instagramModel;
+
+        loader.load(Instagram, (gltf) => {
+            instagramModel = gltf.scene;
+
+            instagramModel.scale.set(0.3, 0.3, 0.3);
+            instagramModel.position.set(1.6, 0.5, 1.1);
+            instagramModel.rotation.y = Math.PI / 2;
+
+            scene.add(instagramModel);
+        });
 
 
 
