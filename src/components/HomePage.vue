@@ -235,19 +235,19 @@ export default {
 
                 dragonMixer_1.addEventListener('loop', (event) => {
                     cubeModel.position.set(-0.55, -0.1, -0.8);
-                    CUBE_POSITION_Y = -0.0005;
-
+                    CUBE_POSITION_Y = 0.0002;
+                    setTimeout(() => {
+                        CUBE_POSITION_Y = -0.0005;
+                    }, 25);
                     setTimeout(() => {
                         CUBE_POSITION_Y = -0.0002;
-
-                    }, 750);
+                    }, 1025);
                     setTimeout(() => {
                         CUBE_POSITION_Y = 0.0005;
-
-                    }, 1250);
+                    }, 1275);
                     setTimeout(() => {
                         CUBE_POSITION_Y = 0.0002;
-                    }, 2000);
+                    }, 2275);
                 });
             }
 
