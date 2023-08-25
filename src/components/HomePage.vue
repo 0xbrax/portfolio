@@ -1,9 +1,25 @@
 <template>
-    <div id="container" @click="play()"></div>
+    <div id="main-container">
+        <div id="loading-screen" v-if="isEnterClicked === false">
+            <img id="logo-img" src="../assets/image/LOGO Brax bianco no sfondo.png" alt="Brax">
+
+            <div id="enter-btn" @click="progress === 100 ? doEnter() : undefined" :class="{ 'active': progress === 100 }">
+                <div id="enter-btn-fx" :style="{ height: progress + '%'}" :class="{ 'active': progress === 100 }"></div>
+                <div id="enter-text">
+                    <div v-if="progress !== 100">
+                        <div>Loading</div>
+                        <div>{{ `${progress.toFixed(0)}%` }}</div>
+                    </div>
+                    <div v-else>Enter</div>
+                </div>
+            </div>
+        </div>
+        <div id="canvas"></div>
+    </div>
 </template>
 
 <script>
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -28,22 +44,13 @@ export default {
     name: "HomePage",
 
     setup() {
-        // TODO work in progress
         // LOADER
         const loadingManager = new THREE.LoadingManager();
-        
-        loadingManager.onStart = function ( url, itemsLoaded, itemsTotal ) {
-            console.log( 'Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
-        };
+        const progress = ref(0);
+        const isEnterClicked = ref(false);
 
-        let progress = 0;
-        loadingManager.onProgress = function ( url, itemsLoaded, itemsTotal ) {
-            progress = (itemsLoaded / itemsTotal) * 100;
-            console.log(`Caricamento: ${progress.toFixed(0)}%`);
-            console.log( 'Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
-        };
-        loadingManager.onLoad = function ( ) {
-            console.log( 'Loading complete!');
+        loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
+            progress.value = (itemsLoaded / itemsTotal) * 100;
         };
 
         // SCENE
@@ -238,16 +245,16 @@ export default {
                     CUBE_POSITION_Y = 0.0002;
                     setTimeout(() => {
                         CUBE_POSITION_Y = -0.0005;
-                    }, 25);
+                    }, 50);
                     setTimeout(() => {
                         CUBE_POSITION_Y = -0.0002;
-                    }, 1025);
+                    }, 1050);
                     setTimeout(() => {
                         CUBE_POSITION_Y = 0.0005;
-                    }, 1275);
+                    }, 1300);
                     setTimeout(() => {
                         CUBE_POSITION_Y = 0.0002;
-                    }, 2275);
+                    }, 2300);
                 });
             }
 
@@ -490,7 +497,8 @@ export default {
         const getRandomNumber = (min, max) => {
             return Math.random() * (max - min) + min;
         }
-        const play = () => {
+        const doEnter = () => {
+            isEnterClicked.value = true;
             video.play();
         }
 
@@ -500,12 +508,14 @@ export default {
         animate();
 
         onMounted(() => {
-            const container = document.getElementById('container');
-            container.appendChild(renderer.domElement);
+            const canvas = document.getElementById('canvas');
+            canvas.appendChild(renderer.domElement);
         })
 
         return {
-            play
+            progress,
+            isEnterClicked,
+            doEnter
         }
     }
 }
