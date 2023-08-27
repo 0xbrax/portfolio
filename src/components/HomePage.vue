@@ -1,6 +1,6 @@
 <template>
     <div id="main-container">
-        <div id="loading-screen" v-if="isEnterClicked === null">
+        <div id="loading-screen" v-if="isEnterClicked === false">
             <img id="logo-img" src="../assets/image/LOGO Brax bianco no sfondo.png" alt="Brax">
 
             <div id="enter-btn" @click="progress === 100 ? doEnter() : undefined" :class="{ 'active': progress === 100 }">
@@ -94,8 +94,9 @@ export default {
         scene.add(directionalLight);
 
         // CAMERA & CONTROLS
-        camera.position.set(0.5, 0, 0);
+        camera.position.set(0.8, 0.2, 0);
         const controls = new OrbitControls(camera, renderer.domElement);
+        controls.target.set(0, 0, 0);
         controls.enableZoom = false;
         controls.enablePan = false;
         controls.enableDamping = true;
@@ -178,24 +179,48 @@ export default {
 
             interactionManager.add(planeModel);
             planeModel.addEventListener('click', (event) => {
+                interactionManager.remove(planeModel);
                 isFPVActive = true;
-                interactionManager.add(sphere);
 
-                camera.position.set(0.4, -0.15, 0);
+                controls.target.set(0, 0, 0);
                 controls.enabled = false;
+
+                let selectedChild;
                 planeModel.traverse((child) => {
                     if (child.isMesh && child.name === 'Cube_3_Glass_0') {
-                        child.material.transparent = true;
-                        child.material.opacity = 0.3;
+                        selectedChild = child;
+                        selectedChild.material.transparent = true;
                     }
                 });
+
+                gsap.to(camera.position, {
+                    duration: 0.5,
+                    x: 0.4,
+                    y: -0.15,
+                    z: 0,
+                    ease: 'power2.inOut',
+                    onComplete: () => {
+                        if (!selectedChild) {
+                            return;
+                        }
+                        gsap.to(selectedChild.material, {
+                            duration: 0.5,
+                            opacity: 0.3,
+                            ease: 'power2.inOut',
+                            onComplete: () => {
+                                interactionManager.add(sphere);
+                            }
+                        }).play();
+                    }
+                }).play();
             });
 
             sphere.addEventListener('click', (event) => {
                 if (isFPVActive === false) {
                     return;
                 }
-                camera.position.set(0.5, 0, 0);
+                camera.position.set(0.8, 0.2, 0);
+                controls.target.set(0, 0, 0);
                 controls.enabled = true;
                 planeModel.traverse((child) => {
                     if (child.isMesh && child.name === 'Cube_3_Glass_0') {
@@ -206,6 +231,7 @@ export default {
 
                 isFPVActive = false;
                 interactionManager.remove(sphere);
+                interactionManager.add(planeModel);
             });
 
             scene.add(planeModel);
@@ -289,6 +315,7 @@ export default {
         cubeModel.addEventListener('click', (event) => {
             controls.enabled = false;
 
+            // ANIMATION
             const distance = 0.5;
             const duration = 0.7;
             const initialCameraPosition = camera.position.clone();
