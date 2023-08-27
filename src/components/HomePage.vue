@@ -1,6 +1,6 @@
 <template>
     <div id="main-container">
-        <div id="loading-screen" v-if="isEnterClicked === false">
+        <div id="loading-screen" v-if="isEnterClicked === null">
             <img id="logo-img" src="../assets/image/LOGO Brax bianco no sfondo.png" alt="Brax">
 
             <div id="enter-btn" @click="progress === 100 ? doEnter() : undefined" :class="{ 'active': progress === 100 }">
@@ -24,6 +24,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { InteractionManager } from 'three.interactive';
+import { gsap } from 'gsap';
 
 import CLoudsSunset from '../assets/video/360vr_clouds_sunset.mp4';
 
@@ -286,7 +287,31 @@ export default {
 
         interactionManager.add(cubeModel);
         cubeModel.addEventListener('click', (event) => {
-            console.log('CLICKKKK')
+            controls.enabled = false;
+
+            const distance = 0.5;
+            const duration = 0.7;
+            const initialCameraPosition = camera.position.clone();
+            const initialControlsRotation = controls.target.clone();
+            const elementPosition = cubeModel.position.clone();
+            const newCameraPosition = elementPosition.clone().add(new THREE.Vector3(0, 0, distance));
+
+            const zoomAnimation = gsap.timeline({
+                onUpdate: () => {
+                    const progress = zoomAnimation.progress();
+                    controls.target.lerpVectors(initialControlsRotation, elementPosition, progress);
+                    camera.position.lerpVectors(initialCameraPosition, newCameraPosition, progress);
+                },
+                onComplete: () => {
+                    controls.enabled = true;
+                }
+            });
+
+            zoomAnimation.to({}, {
+                duration: duration,
+                ease: 'power2.inOut'
+            });
+            zoomAnimation.play();
         });
 
         sphere.add(cubeModel);
