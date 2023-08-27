@@ -120,13 +120,6 @@ export default {
         let planeMixer;
         let isFPVActive = false;
 
-        let PLANE_ROTATION_X = 0;
-        let PLANE_ROTATION_Y = 0;
-        let PLANE_ROTATION_Z = 0;
-        let isPlaneRotXPositive = true;
-        let isPlaneRotYPositive = true;
-        let isPlaneRotZPositive = true;
-
         loader.load(Plane, (gltf) => {
             const animations = gltf.animations;
             planeModel = gltf.scene;
@@ -149,33 +142,26 @@ export default {
                 action.play();
             }
 
-            PLANE_ROTATION_X = 0.001;
-            setInterval(() => {
-                if (isPlaneRotXPositive) {
-                    PLANE_ROTATION_X = Math.abs(PLANE_ROTATION_X);
-                } else {
-                    PLANE_ROTATION_X = -Math.abs(PLANE_ROTATION_X);
-                }
-                isPlaneRotXPositive = !isPlaneRotXPositive;
-            }, 1800);
-            PLANE_ROTATION_Y = 0.001;
-            setInterval(() => {
-                if (isPlaneRotYPositive) {
-                    PLANE_ROTATION_Y = Math.abs(PLANE_ROTATION_Y);
-                } else {
-                    PLANE_ROTATION_Y = -Math.abs(PLANE_ROTATION_Y);
-                }
-                isPlaneRotYPositive = !isPlaneRotYPositive;
-            }, 2000);
-            PLANE_ROTATION_Z = 0.001;
-            setInterval(() => {
-                if (isPlaneRotZPositive) {
-                    PLANE_ROTATION_Z = Math.abs(PLANE_ROTATION_Z);
-                } else {
-                    PLANE_ROTATION_Z = -Math.abs(PLANE_ROTATION_Z);
-                }
-                isPlaneRotZPositive = !isPlaneRotZPositive;
-            }, 2200);
+            let initialPitch = 0; // ASSE x
+            let initialYaw = planeModel.rotation.y; // ASSE y
+            let initialRoll = 0; // ASSE z
+            const planeAnimation = gsap.to(planeModel.rotation, {
+                duration: 3.5,
+                repeat: -1,
+                ease: 'power2.inOut',
+                onUpdate: () => {
+                    const progress = planeAnimation.progress();
+
+                    // TODO inclinazione muso non funziona perche Y ruotato
+
+                    const pitch = initialPitch + Math.sin(progress * Math.PI * 2) * 0.02;
+                    const yaw = initialYaw + Math.cos(progress * Math.PI * 2) * 0.01;
+                    const roll = initialRoll + Math.sin(progress * Math.PI * 2) * 0.04;
+
+                    planeModel.rotation.set(pitch, yaw, roll);
+                },
+            });
+            planeAnimation.play();
 
             interactionManager.add(planeModel);
             planeModel.addEventListener('click', (event) => {
@@ -196,21 +182,19 @@ export default {
                 gsap.to(camera.position, {
                     duration: 0.5,
                     x: 0.4,
-                    y: -0.15,
+                    y: -0.14,
                     z: 0,
                     ease: 'power2.inOut',
+                }).play();
+                if (!selectedChild) {
+                    return;
+                }
+                gsap.to(selectedChild.material, {
+                    duration: 0.5,
+                    opacity: 0.3,
+                    ease: 'power2.inOut',
                     onComplete: () => {
-                        if (!selectedChild) {
-                            return;
-                        }
-                        gsap.to(selectedChild.material, {
-                            duration: 0.5,
-                            opacity: 0.3,
-                            ease: 'power2.inOut',
-                            onComplete: () => {
-                                interactionManager.add(sphere);
-                            }
-                        }).play();
+                        interactionManager.add(sphere);
                     }
                 }).play();
             });
@@ -515,11 +499,6 @@ export default {
             if (planeMixer) {
                 const deltaTime = planeClock.getDelta();
                 planeMixer.update(deltaTime);
-            }
-            if (planeModel) {
-                planeModel.rotation.x += PLANE_ROTATION_X;
-                planeModel.rotation.y += PLANE_ROTATION_Y;
-                planeModel.rotation.z += PLANE_ROTATION_Z;
             }
             if (dragonMixer_1) {
                 const deltaTime = dragonClock_1.getDelta();
