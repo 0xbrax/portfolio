@@ -267,23 +267,26 @@ export default {
                 dragonMixer_1 = new THREE.AnimationMixer(dragonModel_1);
                 const clip = animations[0];
                 const action = dragonMixer_1.clipAction(clip);
-                action.play();
 
+                action.play();
+                gsap.to(cubeModel.position, {
+                    duration: 1.25,
+                    repeat: 1,
+                    yoyo: true,
+                    y: cubeModel.position.y - 0.05,
+                    ease: 'power2.out',
+                    yoyoEase: 'power4.out'
+                }).play();
                 dragonMixer_1.addEventListener('loop', (event) => {
                     cubeModel.position.set(-0.55, -0.1, -0.8);
-                    CUBE_POSITION_Y = 0.0002;
-                    setTimeout(() => {
-                        CUBE_POSITION_Y = -0.0005;
-                    }, 50);
-                    setTimeout(() => {
-                        CUBE_POSITION_Y = -0.0002;
-                    }, 1050);
-                    setTimeout(() => {
-                        CUBE_POSITION_Y = 0.0005;
-                    }, 1300);
-                    setTimeout(() => {
-                        CUBE_POSITION_Y = 0.0002;
-                    }, 2300);
+                    gsap.to(cubeModel.position, {
+                        duration: 1.25,
+                        repeat: 1,
+                        yoyo: true,
+                        y: cubeModel.position.y - 0.05,
+                        ease: 'power2.out',
+                        yoyoEase: 'power4.out'
+                    }).play();
                 });
             }
 
@@ -521,9 +524,6 @@ export default {
             if (dragonMixer_1) {
                 const deltaTime = dragonClock_1.getDelta();
                 dragonMixer_1.update(deltaTime);
-            }
-            if (cubeModel) {
-                cubeModel.position.y += CUBE_POSITION_Y;
             }
             if (dragonMixer_2) {
                 const deltaTime = dragonClock_2.getDelta();
