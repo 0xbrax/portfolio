@@ -126,7 +126,9 @@ export default {
 
             planeModel.scale.set(0.5, 0.5, 0.5);
             planeModel.position.set(0.4, -0.2, 0);
-            planeModel.rotation.y = -Math.PI / 2;
+
+            const rotazioneY = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), -Math.PI / 2);
+            planeModel.quaternion.multiply(rotazioneY);
 
             planeModel.traverse((child) => {
                 if (child.isMesh && child.name === 'Cube_1_Body_0') {
@@ -142,26 +144,42 @@ export default {
                 action.play();
             }
 
-            let initialPitch = 0; // ASSE x
-            let initialYaw = planeModel.rotation.y; // ASSE y
-            let initialRoll = 0; // ASSE z
-            const planeAnimation = gsap.to(planeModel.rotation, {
-                duration: 3.5,
+            // ASSE x
+            const planeAnimationPitch = gsap.to(planeModel.quaternion, {
+                duration: 4,
                 repeat: -1,
                 ease: 'power2.inOut',
                 onUpdate: () => {
-                    const progress = planeAnimation.progress();
-
-                    // TODO inclinazione muso non funziona perche Y ruotato
-
-                    const pitch = initialPitch + Math.sin(progress * Math.PI * 2) * 0.02;
-                    const yaw = initialYaw + Math.cos(progress * Math.PI * 2) * 0.01;
-                    const roll = initialRoll + Math.sin(progress * Math.PI * 2) * 0.04;
-
-                    planeModel.rotation.set(pitch, yaw, roll);
+                    const progress = planeAnimationPitch.progress();
+                    const pitch = Math.sin(progress * Math.PI * 2) * 0.0006;
+                    const pitchQuaternion = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), pitch);
+                    planeModel.quaternion.multiply(pitchQuaternion);
                 },
-            });
-            planeAnimation.play();
+            }).play();
+            // ASSE y
+            const planeAnimationYaw = gsap.to(planeModel.quaternion, {
+                duration: 4.8,
+                repeat: -1,
+                ease: 'power2.inOut',
+                onUpdate: () => {
+                    const progress = planeAnimationYaw.progress();
+                    const yaw = Math.sin(progress * Math.PI * 2) * 0.0008;
+                    const yawQuaternion = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
+                    planeModel.quaternion.multiply(yawQuaternion);
+                },
+            }).play();
+            // ASSE z
+            const planeAnimationRoll = gsap.to(planeModel.quaternion, {
+                duration: 3.6,
+                repeat: -1,
+                ease: 'power2.inOut',
+                onUpdate: () => {
+                    const progress = planeAnimationRoll.progress();
+                    const roll = Math.sin(progress * Math.PI * 2) * 0.001;
+                    const rollQuaternion = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), roll);
+                    planeModel.quaternion.multiply(rollQuaternion);
+                },
+            }).play();
 
             interactionManager.add(planeModel);
             planeModel.addEventListener('click', (event) => {
