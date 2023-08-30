@@ -127,8 +127,8 @@ export default {
             planeModel.scale.set(0.5, 0.5, 0.5);
             planeModel.position.set(0.4, -0.2, 0);
 
-            const rotazioneY = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), -Math.PI / 2);
-            planeModel.quaternion.multiply(rotazioneY);
+            const rotationY = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), -Math.PI / 2);
+            planeModel.quaternion.multiply(rotationY);
 
             planeModel.traverse((child) => {
                 if (child.isMesh && child.name === 'Cube_1_Body_0') {
@@ -188,6 +188,7 @@ export default {
 
                 controls.target.set(0, 0, 0);
                 controls.enabled = false;
+                controls.enableDamping = false;
 
                 let selectedChild;
                 planeModel.traverse((child) => {
@@ -224,6 +225,8 @@ export default {
                 camera.position.set(0.8, 0.2, 0);
                 controls.target.set(0, 0, 0);
                 controls.enabled = true;
+                controls.enableDamping = true;
+
                 planeModel.traverse((child) => {
                     if (child.isMesh && child.name === 'Cube_3_Glass_0') {
                         child.material.transparent = false;
@@ -245,8 +248,6 @@ export default {
         const dragonClock_1 = new THREE.Clock();
         let dragonModel_1;
         let dragonMixer_1;
-
-        let CUBE_POSITION_Y = 0;
 
         loader.load(Dragon, (gltf) => {
             const animations = gltf.animations;
@@ -274,8 +275,8 @@ export default {
                     repeat: 1,
                     yoyo: true,
                     y: cubeModel.position.y - 0.05,
-                    ease: 'power2.out',
-                    yoyoEase: 'power4.out'
+                    ease: 'power1.out',
+                    yoyoEase: 'power3.out'
                 }).play();
                 dragonMixer_1.addEventListener('loop', (event) => {
                     cubeModel.position.set(-0.55, -0.1, -0.8);
@@ -284,8 +285,8 @@ export default {
                         repeat: 1,
                         yoyo: true,
                         y: cubeModel.position.y - 0.05,
-                        ease: 'power2.out',
-                        yoyoEase: 'power4.out'
+                        ease: 'power1.out',
+                        yoyoEase: 'power3.out'
                     }).play();
                 });
             }
@@ -338,7 +339,6 @@ export default {
                     controls.enabled = true;
                 }
             });
-
             zoomAnimation.to({}, {
                 duration: duration,
                 ease: 'power2.inOut'
@@ -346,7 +346,7 @@ export default {
             zoomAnimation.play();
         });
 
-        sphere.add(cubeModel);
+        scene.add(cubeModel);
 
 
 
