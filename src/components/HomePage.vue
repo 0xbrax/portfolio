@@ -382,6 +382,25 @@ export default {
 
 
 
+
+        // TRUCK GROUP
+        const truckGroup = new THREE.Group();
+
+        truckGroup.scale.set(1, 1, 1);
+        truckGroup.position.set(-0.1, -0.2, -0.5);
+
+        gsap.to(truckGroup.position, {
+            repeat: -1,
+            yoyo: true,
+            duration: 4,
+            x: truckGroup.position.x + 0.1,
+            y: truckGroup.position.y - 0.1,
+            z: truckGroup.position.z + 0.05,
+            ease: 'linear',
+        }).play();
+
+        scene.add(truckGroup);
+
         // ICECREAM TRUCK MODEL
         let truckModel;
 
@@ -392,7 +411,8 @@ export default {
             truckModel.position.set(-0.6, 0.5, 1.1);
             truckModel.rotation.y = -Math.PI / 2;
 
-            scene.add(truckModel);
+            //scene.add(truckModel);
+            truckGroup.add(truckModel);
         });
 
         // ROCKET MODEL
@@ -418,7 +438,8 @@ export default {
                 }
             });
 
-            scene.add(rocketModel);
+            //scene.add(rocketModel);
+            truckGroup.add(rocketModel);
         });
 
         // ROCKET CYLINDER MODEL
@@ -428,7 +449,8 @@ export default {
         cylinderModel.position.set(-0.47, 0.45, 1.1);
         cylinderModel.rotation.z = Math.PI / 2;
 
-        scene.add(cylinderModel);
+        //scene.add(cylinderModel);
+        truckGroup.add(cylinderModel);
 
         // ROCKET FLAME MODEL
         const flameClock = new THREE.Clock();
@@ -450,8 +472,13 @@ export default {
                 action.play();
             }
 
-            scene.add(flameModel);
+            //scene.add(flameModel);
+            truckGroup.add(flameModel);
         });
+
+
+
+
 
 
 
