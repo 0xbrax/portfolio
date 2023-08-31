@@ -1,5 +1,15 @@
 <template>
     <div id="main-container">
+        <div id="canvas">
+            <div id="ui-controls">
+                <div>
+                    CONTROLS {{ backgroundMusicLevel }}
+                </div>
+
+                <input type="range" id="backgroundMusicInput" v-model="backgroundMusicLevel" min="0" max="100" />
+            </div>
+        </div>
+
         <div id="loading-screen" v-if="isEnterClicked === false">
             <img id="logo-img" src="../assets/image/LOGO Brax bianco no sfondo.png" alt="Brax">
 
@@ -14,7 +24,6 @@
                 </div>
             </div>
         </div>
-        <div id="canvas"></div>
     </div>
 </template>
 
@@ -68,7 +77,7 @@ export default {
             renderer.domElement
         );
 
-        // BACKGROUND VIDEO
+        // VIDEO
         const video = document.createElement('video');
         video.src = CLoudsSunset;
         video.autoplay = true;
@@ -78,6 +87,9 @@ export default {
         const videoTexture = new THREE.VideoTexture(video);
         videoTexture.minFilter = THREE.LinearFilter;
         videoTexture.magFilter = THREE.LinearFilter;
+
+        // AUDIO
+        const backgroundMusicLevel = ref(0);
 
         // 3D SPHERE
         const sphereGeometry = new THREE.SphereGeometry(500, 60, 40);
@@ -125,7 +137,7 @@ export default {
             planeModel = gltf.scene;
 
             planeModel.scale.set(0.5, 0.5, 0.5);
-            planeModel.position.set(0.4, -0.2, 0);
+            planeModel.position.set(0.35, -0.2, 0);
 
             const rotationY = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), -Math.PI / 2);
             planeModel.quaternion.multiply(rotationY);
@@ -151,7 +163,7 @@ export default {
                 ease: 'power2.inOut',
                 onUpdate: () => {
                     const progress = planeAnimationPitch.progress();
-                    const pitch = Math.sin(progress * Math.PI * 2) * 0.0006;
+                    const pitch = Math.sin(progress * Math.PI * 2) * 0.0003;
                     const pitchQuaternion = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), pitch);
                     planeModel.quaternion.multiply(pitchQuaternion);
                 },
@@ -163,7 +175,7 @@ export default {
                 ease: 'power2.inOut',
                 onUpdate: () => {
                     const progress = planeAnimationYaw.progress();
-                    const yaw = Math.sin(progress * Math.PI * 2) * 0.0008;
+                    const yaw = Math.sin(progress * Math.PI * 2) * 0.0002;
                     const yawQuaternion = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
                     planeModel.quaternion.multiply(yawQuaternion);
                 },
@@ -175,7 +187,7 @@ export default {
                 ease: 'power2.inOut',
                 onUpdate: () => {
                     const progress = planeAnimationRoll.progress();
-                    const roll = Math.sin(progress * Math.PI * 2) * 0.001;
+                    const roll = Math.sin(progress * Math.PI * 2) * 0.0005;
                     const rollQuaternion = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), roll);
                     planeModel.quaternion.multiply(rollQuaternion);
                 },
@@ -200,7 +212,7 @@ export default {
 
                 gsap.to(camera.position, {
                     duration: 0.5,
-                    x: 0.4,
+                    x: 0.36,
                     y: -0.14,
                     z: 0,
                     ease: 'power2.inOut',
@@ -393,8 +405,8 @@ export default {
             repeat: -1,
             yoyo: true,
             duration: 4,
-            x: truckGroup.position.x + 0.1,
-            y: truckGroup.position.y - 0.1,
+            x: truckGroup.position.x + 0.05,
+            y: truckGroup.position.y - 0.05,
             z: truckGroup.position.z + 0.05,
             ease: 'linear',
         }).play();
@@ -586,12 +598,19 @@ export default {
         onMounted(() => {
             const canvas = document.getElementById('canvas');
             canvas.appendChild(renderer.domElement);
+
+            const rangeInput = document.getElementById('backgroundMusicInput');
+            rangeInput.addEventListener('input', () => {
+                const value = (rangeInput.value - rangeInput.min) / (rangeInput.max - rangeInput.min) * 100;
+                rangeInput.style.background = `linear-gradient(to right, #ff0000 0%, #ff0000 ${value}%, #ffffff ${value}%, #ffffff 100%)`;
+            });
         })
 
         return {
             progress,
             isEnterClicked,
-            doEnter
+            doEnter,
+            backgroundMusicLevel
         }
     }
 }
