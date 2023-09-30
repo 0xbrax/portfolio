@@ -29,6 +29,7 @@
 
 <script>
 import { onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -54,6 +55,9 @@ export default {
     name: "HomePage",
 
     setup() {
+        // UTILS
+        const router = useRouter();
+
         // LOADER
         const loadingManager = new THREE.LoadingManager();
         const progress = ref(0);
@@ -331,6 +335,12 @@ export default {
 
         interactionManager.add(cubeModel);
         cubeModel.addEventListener('click', (event) => {
+
+            console.log('CLICK')
+
+
+
+
             controls.enabled = false;
 
             // ANIMATION
