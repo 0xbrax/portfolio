@@ -4,7 +4,7 @@
             <nav
                 class="container-md d-flex justify-content-between align-items-center"
             >
-                <a href="#"> GO BACK </a>
+                <router-link to="/">Go to Home</router-link>
 
                 <div class="visualizer-container d-flex align-items-end"></div>
             </nav>
@@ -482,13 +482,15 @@
     export default {
         name: "PikaRide",
         setup() {
-            onMounted(() => {
-                import("@/assets/projects/pikaride/js/pikaride.js");
+            onMounted( async() => {
+                console.log('PRE')
+                await import('@/assets/projects/pikaride/js/pikaride.js');
+                console.log('POST')
             });
         },
     };
 </script>
 
-<style scoped>
+<style>
     @import "@/assets/projects/pikaride/css/pikaride.css";
 </style>

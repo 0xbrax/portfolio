@@ -10,7 +10,7 @@
             </div>
         </div>
 
-        <div id="loading-screen" v-if="isEnterClicked === false">
+        <div id="loading-screen" v-if="isEnterClicked === false && !router.options.history.state.back?.includes('projects')">
             <img id="logo-img" src="../assets/image/LOGO Brax bianco no sfondo.png" alt="Brax">
 
             <div id="enter-btn" @click="progress === 100 ? doEnter() : undefined" :class="{ 'active': progress === 100 }">
@@ -359,6 +359,7 @@ export default {
                 },
                 onComplete: () => {
                     controls.enabled = true;
+                    router.push('/projects/pikaride');
                 }
             });
             zoomAnimation.to({}, {
@@ -609,6 +610,10 @@ export default {
             const canvas = document.getElementById('canvas');
             canvas.appendChild(renderer.domElement);
 
+            if (router.options.history.state.back?.includes('projects')) {
+                doEnter();
+            }
+
             const rangeInput = document.getElementById('backgroundMusicInput');
             rangeInput.addEventListener('input', () => {
                 const value = (rangeInput.value - rangeInput.min) / (rangeInput.max - rangeInput.min) * 100;
@@ -619,6 +624,7 @@ export default {
         return {
             progress,
             isEnterClicked,
+            router,
             doEnter,
             backgroundMusicLevel
         }

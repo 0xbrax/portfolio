@@ -115,7 +115,7 @@ header nav {
     border: 5px solid black;
     color: black;
 
-    background-image: url("../src/assets/projects/pikaride/img/2D-city-back_2x_01-edit.png");
+    background-image: url("../img/2D-city-back_2x_01-edit.png");
     background-repeat: repeat-x;
     background-position: left 0px bottom 0%;
     background-size: contain;
@@ -661,7 +661,7 @@ header nav {
 }
 
 #info-container {
-    background-image: url("../src/assets/projects/pikaride/img/paper-planes-bg_3x.png");
+    background-image: url("../img/paper-planes-bg_3x.png");
     background-size: auto 100%;
     background-repeat: repeat-x;
     background-position: center;
@@ -672,7 +672,7 @@ header nav {
     position: relative;
     width: 20rem;
     height: 20rem;
-    background: url("../src/assets/projects/pikaride/img/Dreampool.png")
+    background: url("../img/Dreampool.png")
         no-repeat 100% 50%;
     background-size: 120%;
     border-radius: 50%;

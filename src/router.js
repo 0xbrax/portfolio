@@ -11,4 +11,6 @@ const router = createRouter({
     routes,
 });
 
+router.options.history.state.back = null;
+
 export default router;

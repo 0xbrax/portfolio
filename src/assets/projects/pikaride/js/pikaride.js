@@ -1,3 +1,5 @@
+console.log('WEEEE Pikaride js')
+
 const nicknameContainer = document.getElementById('nickname-container');
 let nickname = document.getElementById('nickname');
 const nameSender = document.getElementById('nickname-sender');
@@ -1292,15 +1294,3 @@ function requestToPlay() {
         }
     });
 }
-
-
-
-//////// PRELOAD PAGE ////////
-
-let preloadPage = document.getElementById('preload-page');
-window.addEventListener('load', function() {
-    setTimeout(function() {
-        preloadPage.style.display = 'none';
-        document.body.style.overflow = 'auto';
-    }, 2130);
-});
