@@ -478,14 +478,13 @@
 
 <script>
     import { onMounted } from "vue";
+    import { pikarideModule } from '@/assets/projects/pikaride/js/pikaride.js';
 
     export default {
         name: "PikaRide",
         setup() {
-            onMounted( async() => {
-                console.log('PRE')
-                await import('@/assets/projects/pikaride/js/pikaride.js');
-                console.log('POST')
+            onMounted(async () => {
+                await pikarideModule();
             });
         },
     };

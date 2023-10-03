@@ -1,4 +1,5 @@
-console.log('WEEEE Pikaride js')
+// MODULE START
+export const pikarideModule = () => {
 
 const nicknameContainer = document.getElementById('nickname-container');
 let nickname = document.getElementById('nickname');
@@ -1293,4 +1294,7 @@ function requestToPlay() {
             playGame();
         }
     });
+}
+
+// MODULE END
 }
