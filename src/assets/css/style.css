@@ -97,7 +97,7 @@ body {
 }
 
 
-#ui-controls {
+#ui-ux-controls {
     background: transparent;
     position: absolute;
     bottom: 5%;
@@ -120,4 +120,12 @@ input[type="range"]::-webkit-slider-thumb {
     background-color: #ff0000;
     border-radius: 50%;
     cursor: pointer;
+}
+
+
+#projects-handler {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }

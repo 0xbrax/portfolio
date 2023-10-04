@@ -1,12 +1,24 @@
 <template>
     <div id="main-container">
         <div id="canvas">
-            <div id="ui-controls">
+            <div id="ui-ux-controls">
                 <div>
                     CONTROLS {{ backgroundMusicLevel }}
                 </div>
 
                 <input type="range" id="backgroundMusicInput" v-model="backgroundMusicLevel" min="0" max="100" />
+            </div>
+
+            <div 
+                v-if="whatProject"
+                id="projects-handler"
+            >
+                <div 
+                    @click="projectsEventHandler()"
+                    class="project-btn"
+                >
+                    OPEN PROJECT
+                </div>
             </div>
         </div>
 
@@ -57,6 +69,14 @@ export default {
     setup() {
         // UTILS
         const router = useRouter();
+        const whatProject = ref(null);
+        const projectsEventHandler = () => {
+            switch (whatProject.value) {
+                case 'pikaride':
+                    router.push('/projects/pikaride');
+                    break;
+            }
+        }
 
         // LOADER
         const loadingManager = new THREE.LoadingManager();
@@ -199,6 +219,14 @@ export default {
 
             interactionManager.add(planeModel);
             planeModel.addEventListener('click', (event) => {
+                if (whatProject.value !== null) {
+                    camera.position.set(0.8, 0.2, 0);
+                    controls.target.set(0, 0, 0);
+                    whatProject.value = null;
+
+                    return;
+                }
+
                 interactionManager.remove(planeModel);
                 isFPVActive = true;
 
@@ -238,6 +266,7 @@ export default {
                 if (isFPVActive === false) {
                     return;
                 }
+
                 camera.position.set(0.8, 0.2, 0);
                 controls.target.set(0, 0, 0);
                 controls.enabled = true;
@@ -333,11 +362,21 @@ export default {
         const cubeModel = new THREE.Mesh(cubeGeometry, cubeMaterials);
         cubeModel.position.set(-0.55, -0.1, -0.8);
 
+
+
+
+
+
+
+
+
+
+
+
         interactionManager.add(cubeModel);
         cubeModel.addEventListener('click', (event) => {
 
             console.log('CLICK')
-
 
 
 
@@ -359,7 +398,7 @@ export default {
                 },
                 onComplete: () => {
                     controls.enabled = true;
-                    router.push('/projects/pikaride');
+                    whatProject.value = 'pikaride';
                 }
             });
             zoomAnimation.to({}, {
@@ -626,6 +665,8 @@ export default {
             isEnterClicked,
             router,
             doEnter,
+            whatProject,
+            projectsEventHandler,
             backgroundMusicLevel
         }
     }

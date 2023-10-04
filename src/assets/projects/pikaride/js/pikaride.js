@@ -93,26 +93,32 @@ let liveRecord = [];
 let worldRecord = document.getElementById('world-record');
 const leaderboardID = 'cfqyXSB5PmTHj6UnnYS2';
 
-let keyState = {};
+const keyState = {};
 
 //////// PAPER PLANE DRAW ////////
 
-let paths = document.querySelectorAll('.paper-plane-path');
+const paperPlane = document.getElementById('paper-plane');
+const paths = document.querySelectorAll('.paper-plane-path');
+paperPlane.style.display = 'none';
 
 fillSvgPaths();
 document.addEventListener('scroll', fillSvgPaths);
 
-function fillSvgPaths() {
-    let scrollPercentage = (document.documentElement.scrollTop + document.body.scrollTop) / (document.documentElement.scrollHeight - document.documentElement.clientHeight);
+function fillSvgPaths(event) {
+    if (event && paperPlane.style.display === 'none') {
+        paperPlane.style.display = 'block';
+    }
+
+    const scrollPercentage = (document.documentElement.scrollTop + document.body.scrollTop) / (document.documentElement.scrollHeight - document.documentElement.clientHeight);
 
     for (let i = 0; i < paths.length; i++) {
-        let path = paths[i];
-        let pathLength = path.getTotalLength();
+        const path = paths[i];
+        const pathLength = path.getTotalLength();
 
         path.style.strokeDasharray = pathLength;
         path.style.strokeDashoffset = pathLength;
 
-        let drawLength = pathLength * scrollPercentage;
+        const drawLength = pathLength * scrollPercentage;
 
         path.style.strokeDashoffset = pathLength - drawLength;
     }
@@ -126,7 +132,7 @@ const visualizerContainer = document.querySelector(".visualizer-container");
 const musicBarsNumber = 16;
 
 for (let i = 0; i < musicBarsNumber; i++ ) {
-    const bar = document.createElement("DIV");
+    const bar = document.createElement("div");
     bar.setAttribute("id", "bar" + i);
     bar.setAttribute("class", "visualizer-container__bar");
     visualizerContainer.appendChild(bar);
