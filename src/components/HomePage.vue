@@ -10,7 +10,7 @@
             </div>
 
             <div 
-                v-if="whatProject"
+                v-if="whatProject !== null && whatProject !== 'LOADING'"
                 id="projects-handler"
             >
                 <div 
@@ -61,7 +61,8 @@ import Linkedin from '../assets/other/linkedin_logo.glb';
 import Twitter from '../assets/other/twitter_logo.glb';
 import Instagram from '../assets/other/instagram_logo.glb';
 
-import TestIMG from '../assets/image/crash-bandicoot1.jpg';
+import PikaRideImg from '../assets/projects/pikaride/pikaride.jpg';
+import StarwayImg from '../assets/projects/starway/starway.jpg';
 
 export default {
     name: "HomePage",
@@ -154,6 +155,7 @@ export default {
         const planeClock = new THREE.Clock();
         let planeModel;
         let planeMixer;
+        let selectedChild;
         let isFPVActive = false;
 
         loader.load(Plane, (gltf) => {
@@ -217,30 +219,43 @@ export default {
                 },
             }).play();
 
+            planeModel.traverse((child) => {
+                if (child.isMesh && child.name === 'Cube_3_Glass_0') {
+                    selectedChild = child;
+                }
+            });
+
             interactionManager.add(planeModel);
             planeModel.addEventListener('click', (event) => {
                 if (whatProject.value !== null) {
-                    camera.position.set(0.8, 0.2, 0);
-                    controls.target.set(0, 0, 0);
                     whatProject.value = null;
+
+                    gsap.to(camera.position, {
+                        duration: 0.7,
+                        x: 0.8,
+                        y: 0.2,
+                        z: 0,
+                        ease: 'power2.inOut',
+                    }).play();
+
+                    gsap.to(controls.target, {
+                        duration: 0.7,
+                        x: 0,
+                        y: 0,
+                        z: 0,
+                        ease: 'power2.inOut',
+                    }).play();
 
                     return;
                 }
 
                 interactionManager.remove(planeModel);
                 isFPVActive = true;
+                selectedChild.material.transparent = true;
 
                 controls.target.set(0, 0, 0);
                 controls.enabled = false;
                 controls.enableDamping = false;
-
-                let selectedChild;
-                planeModel.traverse((child) => {
-                    if (child.isMesh && child.name === 'Cube_3_Glass_0') {
-                        selectedChild = child;
-                        selectedChild.material.transparent = true;
-                    }
-                });
 
                 gsap.to(camera.position, {
                     duration: 0.5,
@@ -249,9 +264,7 @@ export default {
                     z: 0,
                     ease: 'power2.inOut',
                 }).play();
-                if (!selectedChild) {
-                    return;
-                }
+
                 gsap.to(selectedChild.material, {
                     duration: 0.5,
                     opacity: 0.3,
@@ -263,25 +276,41 @@ export default {
             });
 
             sphere.addEventListener('click', (event) => {
-                if (isFPVActive === false) {
+                if (isFPVActive === false || whatProject.value === 'LOADING') {
                     return;
                 }
 
-                camera.position.set(0.8, 0.2, 0);
-                controls.target.set(0, 0, 0);
-                controls.enabled = true;
-                controls.enableDamping = true;
+                gsap.to(camera.position, {
+                    duration: 0.5,
+                    x: 0.8,
+                    y: 0.2,
+                    z: 0,
+                    ease: 'power2.inOut',
+                }).play();
 
-                planeModel.traverse((child) => {
-                    if (child.isMesh && child.name === 'Cube_3_Glass_0') {
-                        child.material.transparent = false;
-                        child.material.opacity = 1;
+                gsap.to(controls.target, {
+                    duration: 0.5,
+                    x: 0,
+                    y: 0,
+                    z: 0,
+                    ease: 'power2.inOut',
+                }).play();
+
+                gsap.to(selectedChild.material, {
+                    duration: 0.5,
+                    opacity: 1,
+                    ease: 'power2.inOut',
+                    onComplete: () => {
+                        selectedChild.material.transparent = false;
+
+                        controls.enabled = true;
+                        controls.enableDamping = true;
+
+                        isFPVActive = false;
+                        interactionManager.remove(sphere);
+                        interactionManager.add(planeModel);
                     }
-                });
-
-                isFPVActive = false;
-                interactionManager.remove(sphere);
-                interactionManager.add(planeModel);
+                }).play();
             });
 
             scene.add(planeModel);
@@ -338,17 +367,24 @@ export default {
 
             interactionManager.add(dragonModel_1);
             dragonModel_1.addEventListener('click', (event) => {
-                console.log('CLICKKKK')
+
+
+
+                console.log('CLICKKKK DRAGO')
             });
 
             scene.add(dragonModel_1);
         });
 
         // CUBE MODEL 1
-        const texture = textureLoader.load(TestIMG);
-        const materialCube = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+        const texture = new THREE.TextureLoader().load(PikaRideImg, texture => {
+            texture.colorSpace = THREE.SRGBColorSpace;
+            texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+            texture.magFilter = THREE.LinearFilter;
+            texture.minFilter = THREE.NearestFilter;
+        });
+        const materialCube = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
         const materialImage = new THREE.MeshBasicMaterial({ map: texture });
-
         const cubeMaterials = [
             materialCube, // Front
             materialCube, // Back
@@ -362,25 +398,32 @@ export default {
         const cubeModel = new THREE.Mesh(cubeGeometry, cubeMaterials);
         cubeModel.position.set(-0.55, -0.1, -0.8);
 
-
-
-
-
-
-
-
-
-
-
-
         interactionManager.add(cubeModel);
         cubeModel.addEventListener('click', (event) => {
-
-            console.log('CLICK')
-
-
+            if (whatProject.value !== null) {
+                return;
+            }
 
             controls.enabled = false;
+            whatProject.value = 'LOADING';
+
+            if (isFPVActive === true) {
+                gsap.to(selectedChild.material, {
+                    duration: 0.5,
+                    opacity: 1,
+                    ease: 'power2.inOut',
+                    onComplete: () => {
+                        selectedChild.material.transparent = false;
+
+                        controls.enabled = true;
+                        controls.enableDamping = true;
+
+                        isFPVActive = false;
+                        interactionManager.remove(sphere);
+                        interactionManager.add(planeModel);
+                    }
+                }).play();
+            }
 
             // ANIMATION
             const distance = 0.5;
