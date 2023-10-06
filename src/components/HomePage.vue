@@ -2,6 +2,7 @@
     <div id="main-container">
         <div id="canvas">
             <div id="ui-ux-controls">
+                <!-- TODO -->
                 <div>
                     CONTROLS {{ backgroundMusicLevel }}
                 </div>
@@ -17,7 +18,14 @@
                     @click="projectsEventHandler()"
                     class="project-btn"
                 >
-                    OPEN PROJECT
+                    Open
+                </div>
+
+                <div
+                    @click="projectsEventHandler('back')"
+                    class="back-btn"
+                >
+                    <i class="fa-solid fa-rotate-left"></i>
                 </div>
             </div>
         </div>
@@ -71,10 +79,19 @@ export default {
         // UTILS
         const router = useRouter();
         const whatProject = ref(null);
-        const projectsEventHandler = () => {
+        const projectsEventHandler = (action) => {
+            if (action === 'back') {
+                goBackToPlane();
+
+                return;
+            }
+
             switch (whatProject.value) {
                 case 'pikaride':
                     router.push('/projects/pikaride');
+                    break;
+                case 'starway':
+                    window.open('https://starway.page', '_blank');
                     break;
             }
         }
@@ -125,9 +142,9 @@ export default {
 
         // AMBIENT LIGHT
         const ambientLight = new THREE.AmbientLight(0xffffff, 1);
-        scene.add(ambientLight);
         const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
         directionalLight.position.set(1, 1, 1);
+        scene.add(ambientLight);
         scene.add(directionalLight);
 
         // CAMERA & CONTROLS
@@ -142,7 +159,7 @@ export default {
         controls.panSpeed = 1;
 
         // WINDOW RESIZE
-        function onWindowResize() {
+        const onWindowResize = () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
@@ -228,23 +245,7 @@ export default {
             interactionManager.add(planeModel);
             planeModel.addEventListener('click', (event) => {
                 if (whatProject.value !== null) {
-                    whatProject.value = null;
-
-                    gsap.to(camera.position, {
-                        duration: 0.7,
-                        x: 0.8,
-                        y: 0.2,
-                        z: 0,
-                        ease: 'power2.inOut',
-                    }).play();
-
-                    gsap.to(controls.target, {
-                        duration: 0.7,
-                        x: 0,
-                        y: 0,
-                        z: 0,
-                        ease: 'power2.inOut',
-                    }).play();
+                    goBackToPlane();
 
                     return;
                 }
@@ -296,30 +297,54 @@ export default {
                     ease: 'power2.inOut',
                 }).play();
 
-                gsap.to(selectedChild.material, {
-                    duration: 0.5,
-                    opacity: 1,
-                    ease: 'power2.inOut',
-                    onComplete: () => {
-                        selectedChild.material.transparent = false;
-
-                        controls.enabled = true;
-                        controls.enableDamping = true;
-
-                        isFPVActive = false;
-                        interactionManager.remove(sphere);
-                        interactionManager.add(planeModel);
-                    }
-                }).play();
+                planeWindowReset();
             });
 
             scene.add(planeModel);
         });
 
+        const goBackToPlane = () => {
+            whatProject.value = null;
+
+            gsap.to(camera.position, {
+                duration: 0.7,
+                x: 0.8,
+                y: 0.2,
+                z: 0,
+                ease: 'power2.inOut',
+            }).play();
+
+            gsap.to(controls.target, {
+                duration: 0.7,
+                x: 0,
+                y: 0,
+                z: 0,
+                ease: 'power2.inOut',
+            }).play();
+        }
+
+        const planeWindowReset = () => {
+            gsap.to(selectedChild.material, {
+                duration: 0.5,
+                opacity: 1,
+                ease: 'power2.inOut',
+                onComplete: () => {
+                    selectedChild.material.transparent = false;
+
+                    controls.enabled = true;
+                    controls.enableDamping = true;
+
+                    isFPVActive = false;
+                    interactionManager.remove(sphere);
+                    interactionManager.add(planeModel);
+                }
+            }).play();
+        }
+
 
 
         // DRAGON + CUBE + PROJECT CONTAINER
-
+        // dragon
         const createDragon = async (color, cubeModel) => {
             let dragonModel;
             let dragonMixer;
@@ -376,36 +401,57 @@ export default {
             return { dragonModel, dragonMixer, dragonAction };
         }
 
+        // cube
         const createCube = async (color, project) => {
             let image;
+            let text;
             switch (project) {
                 case 'PIKARIDE':
                     image = PIKARIDEimage;
+                    text = 'Pikaride';
                     break;
                 case 'STARWAY':
                     image = STARWAYimage;
+                    text = 'Starway';
                     break;
             }
 
             const texture = await new Promise((resolve) => {
                 textureLoader.load(image, texture => {
                     resolve(texture);
-
-                    texture.colorSpace = THREE.SRGBColorSpace;
-                    texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
-                    texture.magFilter = THREE.LinearFilter;
-                    texture.minFilter = THREE.NearestFilter;
                 });
             });
 
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = 512;
+            canvas.height = 512;
+
+            context.font = '50px Ubuntu, sans-serif';
+            context.textAlign = 'center';
+            const textMetrics = context.measureText(text);
+            const textHeight = textMetrics.actualBoundingBoxAscent + textMetrics.actualBoundingBoxDescent;
+            context.drawImage(texture.image, 0, 0, 512, 512);
+            const TEXT_BACKGROUND_HEIGHT = textHeight + 24;
+            context.fillStyle = '#' + color.toString(16).padStart(6, '0');
+            context.fillRect(0, canvas.height - TEXT_BACKGROUND_HEIGHT, canvas.width, TEXT_BACKGROUND_HEIGHT);
+            context.fillStyle = '#ffffff';
+            context.fillText(text, canvas.width / 2, canvas.height - ((textHeight / 2) - 2));
+
+            const canvasTexture = new THREE.CanvasTexture(canvas);
+            canvasTexture.colorSpace = THREE.SRGBColorSpace;
+            canvasTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+            canvasTexture.magFilter = THREE.LinearFilter;
+            canvasTexture.minFilter = THREE.NearestFilter;
             const materialCube = new THREE.MeshBasicMaterial({ color: color });
-            const materialImage = new THREE.MeshBasicMaterial({ map: texture });
+            const materialImage = new THREE.MeshBasicMaterial({ map: canvasTexture });
+
             const cubeMaterials = [
                 materialCube, // Front
                 materialCube, // Back
                 materialCube, // Top
                 materialCube, // Bottom
-                materialImage, // Right
+                materialImage, // Right -- [4]
                 materialCube  // Left
             ];
 
@@ -416,6 +462,7 @@ export default {
             return { cubeModel };
         }
 
+        // project container
         const createProjectContainer = async (group, color, project) => {
             const { cubeModel } = await createCube(color, project);
             const { dragonModel, dragonMixer, dragonAction } = await createDragon(color, cubeModel);
@@ -425,30 +472,14 @@ export default {
 
             interactionManager.add(cubeModel);
             cubeModel.addEventListener('click', (event) => {
-                if (whatProject.value !== null) {
-                    // TODO
-                    //return;
+                controls.enabled = false;
+
+                if (whatProject.value !== project.toLowerCase()) {
+                    whatProject.value = 'LOADING';
                 }
 
-                controls.enabled = false;
-                whatProject.value = 'LOADING';
-
                 if (isFPVActive === true) {
-                    gsap.to(selectedChild.material, {
-                        duration: 0.5,
-                        opacity: 1,
-                        ease: 'power2.inOut',
-                        onComplete: () => {
-                            selectedChild.material.transparent = false;
-
-                            controls.enabled = true;
-                            controls.enableDamping = true;
-
-                            isFPVActive = false;
-                            interactionManager.remove(sphere);
-                            interactionManager.add(planeModel);
-                        }
-                    }).play();
+                    planeWindowReset();
                 }
 
                 // ANIMATION
@@ -516,7 +547,6 @@ export default {
         // TRUCK GROUP
         const truckGroup = new THREE.Group();
         truckGroup.position.set(-0.1, -0.2, -0.5);
-
         scene.add(truckGroup);
 
         gsap.to(truckGroup.position, {
@@ -539,7 +569,6 @@ export default {
             truckModel.position.set(-0.6, 0.5, 1.1);
             truckModel.rotation.y = -Math.PI / 2;
 
-            //scene.add(truckModel);
             truckGroup.add(truckModel);
         });
 
@@ -566,7 +595,6 @@ export default {
                 }
             });
 
-            //scene.add(rocketModel);
             truckGroup.add(rocketModel);
         });
 
@@ -577,7 +605,6 @@ export default {
         cylinderModel.position.set(-0.47, 0.45, 1.1);
         cylinderModel.rotation.z = Math.PI / 2;
 
-        //scene.add(cylinderModel);
         truckGroup.add(cylinderModel);
 
         // ROCKET FLAME MODEL
@@ -600,7 +627,6 @@ export default {
                 action.play();
             }
 
-            //scene.add(flameModel);
             truckGroup.add(flameModel);
         });
 
