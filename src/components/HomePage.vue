@@ -2,7 +2,7 @@
     <div id="main-container">
         <div id="canvas">
             <div id="ui-ux-controls">
-                <!-- TODO -->
+                <!---- TODO ---->
                 <div>
                     CONTROLS {{ backgroundMusicLevel }}
                 </div>
@@ -79,6 +79,7 @@ export default {
         // UTILS
         const router = useRouter();
         const whatProject = ref(null);
+
         const projectsEventHandler = (action) => {
             if (action === 'back') {
                 goBackToPlane();
@@ -92,8 +93,14 @@ export default {
                     break;
                 case 'starway':
                     window.open('https://starway.page', '_blank');
+                    goBackToPlane('force');
                     break;
             }
+        }
+
+        //////// TODO
+        const getRandomNumber = (min, max) => {
+            return Math.random() * (max - min) + min;
         }
 
         // LOADER
@@ -243,7 +250,7 @@ export default {
             });
 
             interactionManager.add(planeModel);
-            planeModel.addEventListener('click', (event) => {
+            planeModel.addEventListener('click', () => {
                 if (whatProject.value !== null) {
                     goBackToPlane();
 
@@ -276,7 +283,7 @@ export default {
                 }).play();
             });
 
-            sphere.addEventListener('click', (event) => {
+            sphere.addEventListener('click', () => {
                 if (isFPVActive === false || whatProject.value === 'LOADING') {
                     return;
                 }
@@ -303,8 +310,15 @@ export default {
             scene.add(planeModel);
         });
 
-        const goBackToPlane = () => {
+        const goBackToPlane = (mode) => {
             whatProject.value = null;
+
+            if (mode === 'force') {
+                camera.position.set(0.8, 0.2, 0);
+                controls.target.set(0, 0, 0);
+
+                return;
+            }
 
             gsap.to(camera.position, {
                 duration: 0.7,
@@ -359,7 +373,7 @@ export default {
 
                     dragonModel.scale.set(0.5, 0.5, 0.5);
                     dragonModel.position.set(-0.7, 0.1, -0.8);
-                    dragonModel.rotation.y = Math.PI / 2;
+                    dragonModel.rotation.y = -Math.PI / 2;
 
                     dragonModel.traverse((child) => {
                         if (child.isMesh) {
@@ -384,7 +398,7 @@ export default {
                         }).play();
 
                         dragonMixer.addEventListener('loop', (event) => {
-                            cubeModel.position.set(-0.55, -0.1, -0.8);
+                            cubeModel.position.set(-0.80, -0.1, -0.8);
                             gsap.to(cubeModel.position, {
                                 duration: 1.25,
                                 repeat: 1,
@@ -457,7 +471,7 @@ export default {
 
             const cubeGeometry = new THREE.BoxGeometry(0.5, 0.5, 0.05);
             const cubeModel = new THREE.Mesh(cubeGeometry, cubeMaterials);
-            cubeModel.position.set(-0.55, -0.1, -0.8);
+            cubeModel.position.set(-0.80, -0.1, -0.8);
 
             return { cubeModel };
         }
@@ -471,7 +485,7 @@ export default {
             group.add(cubeModel);
 
             interactionManager.add(cubeModel);
-            cubeModel.addEventListener('click', (event) => {
+            cubeModel.addEventListener('click', () => {
                 controls.enabled = false;
 
                 if (whatProject.value !== project.toLowerCase()) {
@@ -490,7 +504,7 @@ export default {
                 const elementPosition = group.position.clone();
 
                 // SYNC with cubeModel position in group
-                elementPosition.x += -0.55;
+                elementPosition.x += -0.80;
                 elementPosition.y += -0.1;
                 elementPosition.z += -0.8;
 
@@ -537,7 +551,6 @@ export default {
         const dragonClock_2 = new THREE.Clock();
         let project_2;
         let dragonMixer_2;
-
 
 
 
@@ -635,7 +648,6 @@ export default {
 
 
 
-
         // GITHUB MODEL
         let githubModel;
 
@@ -647,6 +659,11 @@ export default {
             githubModel.rotation.y = Math.PI / 1;
 
             scene.add(githubModel);
+
+            interactionManager.add(githubModel);
+            githubModel.addEventListener('click', () => {
+                window.open('https://github.com/0xbrax', '_blank');
+            });
         });
 
         // LINKEDIN MODEL
@@ -660,6 +677,11 @@ export default {
             linkedinModel.rotation.y = Math.PI / 1;
 
             scene.add(linkedinModel);
+
+            interactionManager.add(linkedinModel);
+            linkedinModel.addEventListener('click', () => {
+                window.open('https://www.linkedin.com/in/marco-braccini', '_blank');
+            });
         });
 
         // TWITTER MODEL
@@ -673,6 +695,11 @@ export default {
             twitterModel.rotation.y = Math.PI / 1;
 
             scene.add(twitterModel);
+
+            interactionManager.add(twitterModel);
+            twitterModel.addEventListener('click', () => {
+                window.open('https://twitter.com/0xbrax', '_blank');
+            });
         });
 
         // INSTAGRAM MODEL
@@ -686,11 +713,12 @@ export default {
             instagramModel.rotation.y = Math.PI / 2;
 
             scene.add(instagramModel);
+
+            interactionManager.add(instagramModel);
+            instagramModel.addEventListener('click', () => {
+                window.open('https://www.instagram.com/0xbrax', '_blank');
+            });
         });
-
-
-
-
 
 
 
@@ -715,8 +743,6 @@ export default {
                 flameMixer.update(deltaTime);
             }
 
-
-
             controls.update();
             interactionManager.update();
             renderer.render(scene, camera);
@@ -724,13 +750,13 @@ export default {
             requestAnimationFrame(animate);
         }
 
-        const getRandomNumber = (min, max) => {
-            return Math.random() * (max - min) + min;
-        }
         const doEnter = () => {
             isEnterClicked.value = true;
             video.play();
         }
+
+
+
 
 
 
@@ -743,18 +769,15 @@ export default {
 
 
 
-
             project_1 = await createProjectContainer(projectGroup_1, PROJECT_COLOR_1, PROJECT_NAME_1);
             dragonMixer_1 = project_1.dragonMixer;
-            projectGroup_1.position.set(1.0, 0.5, -0.1);
+            projectGroup_1.position.set(1.5, 0.5, -0.1);
             scene.add(projectGroup_1);
-
 
             project_2 = await createProjectContainer(projectGroup_2, PROJECT_COLOR_2, PROJECT_NAME_2);
             dragonMixer_2 = project_2.dragonMixer;
-            projectGroup_2.position.set(-0.5, 0.5, -0.1);
+            projectGroup_2.position.set(0, 0.5, -0.1);
             scene.add(projectGroup_2);
-
 
 
 

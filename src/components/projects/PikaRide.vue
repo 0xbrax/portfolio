@@ -437,7 +437,7 @@
                         ></a>
                         <a
                             class="text-primary ms-2"
-                            href="https://www.linkedin.com/in/marco-braccini/"
+                            href="https://www.linkedin.com/in/marco-braccini"
                             target="_blank"
                             ><i class="fa-brands fa-linkedin"></i
                         ></a>
