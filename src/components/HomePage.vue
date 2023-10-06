@@ -61,11 +61,11 @@ import Linkedin from '../assets/other/linkedin_logo.glb';
 import Twitter from '../assets/other/twitter_logo.glb';
 import Instagram from '../assets/other/instagram_logo.glb';
 
-import PikaRideImg from '../assets/projects/pikaride/pikaride.jpg';
-import StarwayImg from '../assets/projects/starway/starway.jpg';
+import PIKARIDEimage from '../assets/projects/pikaride/pikaride.jpg';
+import STARWAYimage from '../assets/projects/starway/starway.jpg';
 
 export default {
-    name: "HomePage",
+    name: 'HomePage',
 
     setup() {
         // UTILS
@@ -318,181 +318,206 @@ export default {
 
 
 
-        // DRAGON MODEL 1
+        // DRAGON + CUBE + PROJECT CONTAINER
+
+        const createDragon = async (color, cubeModel) => {
+            let dragonModel;
+            let dragonMixer;
+            let dragonAction;
+
+            await new Promise((resolve) => {
+                loader.load(Dragon, (gltf) => {
+                    resolve(gltf);
+
+                    const animations = gltf.animations;
+                    dragonModel = gltf.scene;
+
+                    dragonModel.scale.set(0.5, 0.5, 0.5);
+                    dragonModel.position.set(-0.7, 0.1, -0.8);
+                    dragonModel.rotation.y = Math.PI / 2;
+
+                    dragonModel.traverse((child) => {
+                        if (child.isMesh) {
+                            child.material.color.set(color);
+                            child.material.map = null;
+                        }
+                    });
+
+                    if (animations && animations.length) {
+                        dragonMixer = new THREE.AnimationMixer(dragonModel);
+                        const clip = animations[0];
+                        dragonAction = dragonMixer.clipAction(clip);
+                        dragonAction.play();
+
+                        gsap.to(cubeModel.position, {
+                            duration: 1.25,
+                            repeat: 1,
+                            yoyo: true,
+                            y: cubeModel.position.y - 0.05,
+                            ease: 'power1.out',
+                            yoyoEase: 'power3.out'
+                        }).play();
+
+                        dragonMixer.addEventListener('loop', (event) => {
+                            cubeModel.position.set(-0.55, -0.1, -0.8);
+                            gsap.to(cubeModel.position, {
+                                duration: 1.25,
+                                repeat: 1,
+                                yoyo: true,
+                                y: cubeModel.position.y - 0.05,
+                                ease: 'power1.out',
+                                yoyoEase: 'power3.out'
+                            }).play();
+                        });
+                    }
+                });
+            });
+
+            return { dragonModel, dragonMixer, dragonAction };
+        }
+
+        const createCube = async (color, project) => {
+            let image;
+            switch (project) {
+                case 'PIKARIDE':
+                    image = PIKARIDEimage;
+                    break;
+                case 'STARWAY':
+                    image = STARWAYimage;
+                    break;
+            }
+
+            const texture = await new Promise((resolve) => {
+                textureLoader.load(image, texture => {
+                    resolve(texture);
+
+                    texture.colorSpace = THREE.SRGBColorSpace;
+                    texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+                    texture.magFilter = THREE.LinearFilter;
+                    texture.minFilter = THREE.NearestFilter;
+                });
+            });
+
+            const materialCube = new THREE.MeshBasicMaterial({ color: color });
+            const materialImage = new THREE.MeshBasicMaterial({ map: texture });
+            const cubeMaterials = [
+                materialCube, // Front
+                materialCube, // Back
+                materialCube, // Top
+                materialCube, // Bottom
+                materialImage, // Right
+                materialCube  // Left
+            ];
+
+            const cubeGeometry = new THREE.BoxGeometry(0.5, 0.5, 0.05);
+            const cubeModel = new THREE.Mesh(cubeGeometry, cubeMaterials);
+            cubeModel.position.set(-0.55, -0.1, -0.8);
+
+            return { cubeModel };
+        }
+
+        const createProjectContainer = async (group, color, project) => {
+            const { cubeModel } = await createCube(color, project);
+            const { dragonModel, dragonMixer, dragonAction } = await createDragon(color, cubeModel);
+
+            group.add(dragonModel);
+            group.add(cubeModel);
+
+            interactionManager.add(cubeModel);
+            cubeModel.addEventListener('click', (event) => {
+                if (whatProject.value !== null) {
+                    // TODO
+                    //return;
+                }
+
+                controls.enabled = false;
+                whatProject.value = 'LOADING';
+
+                if (isFPVActive === true) {
+                    gsap.to(selectedChild.material, {
+                        duration: 0.5,
+                        opacity: 1,
+                        ease: 'power2.inOut',
+                        onComplete: () => {
+                            selectedChild.material.transparent = false;
+
+                            controls.enabled = true;
+                            controls.enableDamping = true;
+
+                            isFPVActive = false;
+                            interactionManager.remove(sphere);
+                            interactionManager.add(planeModel);
+                        }
+                    }).play();
+                }
+
+                // ANIMATION
+                const DISTANCE = 0.5;
+                const DURATION = 0.7;
+                const initialCameraPosition = camera.position.clone();
+                const initialControlsRotation = controls.target.clone();
+                const elementPosition = group.position.clone();
+
+                // SYNC with cubeModel position in group
+                elementPosition.x += -0.55;
+                elementPosition.y += -0.1;
+                elementPosition.z += -0.8;
+
+                const newCameraPosition = elementPosition.clone().add(new THREE.Vector3(0, 0, DISTANCE));
+
+                const zoomAnimation = gsap.timeline({
+                    onUpdate: () => {
+                        const progress = zoomAnimation.progress();
+                        controls.target.lerpVectors(initialControlsRotation, elementPosition, progress);
+                        camera.position.lerpVectors(initialCameraPosition, newCameraPosition, progress);
+                    },
+                    onComplete: () => {
+                        controls.enabled = true;
+                        whatProject.value = project.toLowerCase();
+                    }
+                });
+                zoomAnimation.to({}, {
+                    duration: DURATION,
+                    ease: 'power2.inOut'
+                });
+                zoomAnimation.play();
+            });
+
+            return { dragonModel, dragonMixer, dragonAction };
+        }
+
+
+
+
+
+
+        // PROJECT MODEL 1
+        const PROJECT_NAME_1 = 'PIKARIDE';
+        const PROJECT_COLOR_1 = 0x00ff00;
+        const projectGroup_1 = new THREE.Group();
         const dragonClock_1 = new THREE.Clock();
-        let dragonModel_1;
+        let project_1;
         let dragonMixer_1;
 
-        loader.load(Dragon, (gltf) => {
-            const animations = gltf.animations;
-            dragonModel_1 = gltf.scene;
-
-            dragonModel_1.scale.set(0.5, 0.5, 0.5);
-            dragonModel_1.position.set(-0.7, 0.1, -0.8);
-            dragonModel_1.rotation.y = Math.PI / 2;
-
-            dragonModel_1.traverse((child) => {
-                if (child.isMesh) {
-                    child.material.color.set(0x00ff00);
-                    child.material.map = null;
-                }
-            });
-
-            if (animations && animations.length) {
-                dragonMixer_1 = new THREE.AnimationMixer(dragonModel_1);
-                const clip = animations[0];
-                const action = dragonMixer_1.clipAction(clip);
-
-                action.play();
-                gsap.to(cubeModel.position, {
-                    duration: 1.25,
-                    repeat: 1,
-                    yoyo: true,
-                    y: cubeModel.position.y - 0.05,
-                    ease: 'power1.out',
-                    yoyoEase: 'power3.out'
-                }).play();
-                dragonMixer_1.addEventListener('loop', (event) => {
-                    cubeModel.position.set(-0.55, -0.1, -0.8);
-                    gsap.to(cubeModel.position, {
-                        duration: 1.25,
-                        repeat: 1,
-                        yoyo: true,
-                        y: cubeModel.position.y - 0.05,
-                        ease: 'power1.out',
-                        yoyoEase: 'power3.out'
-                    }).play();
-                });
-            }
-
-            interactionManager.add(dragonModel_1);
-            dragonModel_1.addEventListener('click', (event) => {
-
-
-
-                console.log('CLICKKKK DRAGO')
-            });
-
-            scene.add(dragonModel_1);
-        });
-
-        // CUBE MODEL 1
-        const texture = new THREE.TextureLoader().load(PikaRideImg, texture => {
-            texture.colorSpace = THREE.SRGBColorSpace;
-            texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
-            texture.magFilter = THREE.LinearFilter;
-            texture.minFilter = THREE.NearestFilter;
-        });
-        const materialCube = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-        const materialImage = new THREE.MeshBasicMaterial({ map: texture });
-        const cubeMaterials = [
-            materialCube, // Front
-            materialCube, // Back
-            materialCube, // Top
-            materialCube, // Bottom
-            materialImage, // Right
-            materialCube  // Left
-        ];
-
-        const cubeGeometry = new THREE.BoxGeometry(0.5, 0.5, 0.05);
-        const cubeModel = new THREE.Mesh(cubeGeometry, cubeMaterials);
-        cubeModel.position.set(-0.55, -0.1, -0.8);
-
-        interactionManager.add(cubeModel);
-        cubeModel.addEventListener('click', (event) => {
-            if (whatProject.value !== null) {
-                return;
-            }
-
-            controls.enabled = false;
-            whatProject.value = 'LOADING';
-
-            if (isFPVActive === true) {
-                gsap.to(selectedChild.material, {
-                    duration: 0.5,
-                    opacity: 1,
-                    ease: 'power2.inOut',
-                    onComplete: () => {
-                        selectedChild.material.transparent = false;
-
-                        controls.enabled = true;
-                        controls.enableDamping = true;
-
-                        isFPVActive = false;
-                        interactionManager.remove(sphere);
-                        interactionManager.add(planeModel);
-                    }
-                }).play();
-            }
-
-            // ANIMATION
-            const distance = 0.5;
-            const duration = 0.7;
-            const initialCameraPosition = camera.position.clone();
-            const initialControlsRotation = controls.target.clone();
-            const elementPosition = cubeModel.position.clone();
-            const newCameraPosition = elementPosition.clone().add(new THREE.Vector3(0, 0, distance));
-
-            const zoomAnimation = gsap.timeline({
-                onUpdate: () => {
-                    const progress = zoomAnimation.progress();
-                    controls.target.lerpVectors(initialControlsRotation, elementPosition, progress);
-                    camera.position.lerpVectors(initialCameraPosition, newCameraPosition, progress);
-                },
-                onComplete: () => {
-                    controls.enabled = true;
-                    whatProject.value = 'pikaride';
-                }
-            });
-            zoomAnimation.to({}, {
-                duration: duration,
-                ease: 'power2.inOut'
-            });
-            zoomAnimation.play();
-        });
-
-        scene.add(cubeModel);
-
-
-
-        // DRAGON MODEL 2
+        // PROJECT MODEL 2
+        const PROJECT_NAME_2 = 'STARWAY';
+        const PROJECT_COLOR_2 = 0xff00ff;
+        const projectGroup_2 = new THREE.Group();
         const dragonClock_2 = new THREE.Clock();
-        let dragonModel_2;
+        let project_2;
         let dragonMixer_2;
 
-        loader.load(Dragon, (gltf) => {
-            const animations = gltf.animations;
-            dragonModel_2 = gltf.scene;
 
-            dragonModel_2.scale.set(0.5, 0.5, 0.5);
-            dragonModel_2.position.set(0.7, 0.1, -0.8);
-            dragonModel_2.rotation.y = Math.PI / 2;
 
-            dragonModel_2.traverse((child) => {
-                if (child.isMesh) {
-                    child.material.color.set(0xff00ff);
-                    child.material.map = null;
-                }
-            });
-
-            if (animations && animations.length) {
-                dragonMixer_2 = new THREE.AnimationMixer(dragonModel_2);
-                const clip = animations[0];
-                const action = dragonMixer_2.clipAction(clip);
-                action.play();
-            }
-
-            scene.add(dragonModel_2);
-        });
 
 
 
 
         // TRUCK GROUP
         const truckGroup = new THREE.Group();
-
-        truckGroup.scale.set(1, 1, 1);
         truckGroup.position.set(-0.1, -0.2, -0.5);
+
+        scene.add(truckGroup);
 
         gsap.to(truckGroup.position, {
             repeat: -1,
@@ -503,8 +528,6 @@ export default {
             z: truckGroup.position.z + 0.05,
             ease: 'linear',
         }).play();
-
-        scene.add(truckGroup);
 
         // ICECREAM TRUCK MODEL
         let truckModel;
@@ -688,9 +711,26 @@ export default {
         // INIT
         animate();
 
-        onMounted(() => {
+        onMounted(async () => {
             const canvas = document.getElementById('canvas');
             canvas.appendChild(renderer.domElement);
+
+
+
+
+            project_1 = await createProjectContainer(projectGroup_1, PROJECT_COLOR_1, PROJECT_NAME_1);
+            dragonMixer_1 = project_1.dragonMixer;
+            projectGroup_1.position.set(1.0, 0.5, -0.1);
+            scene.add(projectGroup_1);
+
+
+            project_2 = await createProjectContainer(projectGroup_2, PROJECT_COLOR_2, PROJECT_NAME_2);
+            dragonMixer_2 = project_2.dragonMixer;
+            projectGroup_2.position.set(-0.5, 0.5, -0.1);
+            scene.add(projectGroup_2);
+
+
+
 
             if (router.options.history.state.back?.includes('projects')) {
                 doEnter();
