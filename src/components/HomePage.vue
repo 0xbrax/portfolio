@@ -1,13 +1,36 @@
 <template>
     <div id="main-container">
         <div id="canvas">
-            <div id="ui-ux-controls">
-                <!---- TODO ---->
-                <div>
-                    CONTROLS {{ backgroundMusicLevel }}
-                </div>
+            <div id="ui-ux-controls-container">
+                <!--
+                <i class="fa-solid fa-gear"></i>
+                -->
 
-                <input type="range" id="backgroundMusicInput" v-model="backgroundMusicLevel" min="0" max="100" />
+                <div id="ui-ux-controls">
+                        <div class="d-flex justify-btw align-ctr">
+                        <div class="relative">
+                            <i 
+                                class="fa-solid fa-plane pointer"
+                                @click="airplaneIdleFXLevel !== '0' ? airplaneIdleFXLevel = '0' : airplaneIdleFXLevel = '100'"
+                            ></i>
+
+                            <div v-if="airplaneIdleFXLevel === '0'" class="no-volume"></div>
+                        </div>
+                        <input type="range" class="audio" v-model="airplaneIdleFXLevel" ref="airplaneIdleFXRef" min="0" max="100" />
+                    </div>
+
+                    <div class="d-flex justify-btw align-ctr mt-10">
+                        <div class="relative">
+                            <i 
+                                class="fa-solid fa-music pointer"
+                                @click="backgroundMusicLevel !== '0' ? backgroundMusicLevel = '0' : backgroundMusicLevel = '100'"
+                            ></i>
+
+                            <div v-if="backgroundMusicLevel === '0'" class="no-volume"></div>
+                        </div>
+                        <input type="range" class="audio" v-model="backgroundMusicLevel" ref="backgroundMusicRef" min="0" max="100" />
+                    </div>
+                </div>
             </div>
 
             <div 
@@ -48,7 +71,7 @@
 </template>
 
 <script>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -56,7 +79,9 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { InteractionManager } from 'three.interactive';
 import { gsap } from 'gsap';
 
-import CLoudsSunset from '../assets/video/360vr_clouds_sunset.mp4';
+import CLoudsSunsetVideo from '../assets/video/360vr_clouds_sunset.mp4';
+import PositivePopAudioTrack from '../assets/audio/sfmusic_positive_pop.mp3';
+import AirplaneIdleAudioFX from '../assets/audio/airplane_idle_fx.mp3';
 
 import Plane from '../assets/other/cartoon_plane.glb';
 import Dragon from '../assets/other/dragon_flying_small.glb';
@@ -80,29 +105,6 @@ export default {
         const router = useRouter();
         const whatProject = ref(null);
 
-        const projectsEventHandler = (action) => {
-            if (action === 'back') {
-                goBackToPlane();
-
-                return;
-            }
-
-            switch (whatProject.value) {
-                case 'pikaride':
-                    router.push('/projects/pikaride');
-                    break;
-                case 'starway':
-                    window.open('https://starway.page', '_blank');
-                    goBackToPlane('force');
-                    break;
-            }
-        }
-
-        //////// TODO
-        const getRandomNumber = (min, max) => {
-            return Math.random() * (max - min) + min;
-        }
-
         // LOADER
         const loadingManager = new THREE.LoadingManager();
         const progress = ref(0);
@@ -113,7 +115,7 @@ export default {
         };
 
         // SCENE
-        const loader = new GLTFLoader(loadingManager);
+        const modelLoader = new GLTFLoader(loadingManager);
         const textureLoader = new THREE.TextureLoader();
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -128,7 +130,7 @@ export default {
 
         // VIDEO
         const video = document.createElement('video');
-        video.src = CLoudsSunset;
+        video.src = CLoudsSunsetVideo;
         video.autoplay = true;
         video.loop = true;
         video.playbackRate = 1;
@@ -138,7 +140,23 @@ export default {
         videoTexture.magFilter = THREE.LinearFilter;
 
         // AUDIO
-        const backgroundMusicLevel = ref(0);
+        const backgroundMusic = document.createElement('audio');
+        backgroundMusic.src = PositivePopAudioTrack;
+        const backgroundMusicLevel = ref('100');
+        const backgroundMusicRef = ref(null);
+        backgroundMusic.addEventListener('ended', () => {
+            backgroundMusic.currentTime = 0;
+            backgroundMusic.play();
+        });
+
+        const airplaneIdleFX = document.createElement('audio');
+        airplaneIdleFX.src = AirplaneIdleAudioFX;
+        const airplaneIdleFXLevel = ref('50');
+        const airplaneIdleFXRef = ref(null);
+        airplaneIdleFX.addEventListener('ended', () => {
+            airplaneIdleFX.currentTime = 0;
+            airplaneIdleFX.play();
+        });
 
         // 3D SPHERE
         const sphereGeometry = new THREE.SphereGeometry(500, 60, 40);
@@ -182,7 +200,7 @@ export default {
         let selectedChild;
         let isFPVActive = false;
 
-        loader.load(Plane, (gltf) => {
+        modelLoader.load(Plane, (gltf) => {
             const animations = gltf.animations;
             planeModel = gltf.scene;
 
@@ -365,7 +383,7 @@ export default {
             let dragonAction;
 
             await new Promise((resolve) => {
-                loader.load(Dragon, (gltf) => {
+                modelLoader.load(Dragon, (gltf) => {
                     resolve(gltf);
 
                     const animations = gltf.animations;
@@ -575,7 +593,7 @@ export default {
         // ICECREAM TRUCK MODEL
         let truckModel;
 
-        loader.load(Truck, (gltf) => {
+        modelLoader.load(Truck, (gltf) => {
             truckModel = gltf.scene;
 
             truckModel.scale.set(0.1, 0.1, 0.1);
@@ -588,7 +606,7 @@ export default {
         // ROCKET MODEL
         let rocketModel;
 
-        loader.load(Rocket, (gltf) => {
+        modelLoader.load(Rocket, (gltf) => {
             rocketModel = gltf.scene;
 
             rocketModel.scale.set(0.3, 0.3, 0.3);
@@ -625,7 +643,7 @@ export default {
         let flameModel;
         let flameMixer;
 
-        loader.load(Flame, (gltf) => {
+        modelLoader.load(Flame, (gltf) => {
             const animations = gltf.animations;
             flameModel = gltf.scene;
 
@@ -651,7 +669,7 @@ export default {
         // GITHUB MODEL
         let githubModel;
 
-        loader.load(Github, (gltf) => {
+        modelLoader.load(Github, (gltf) => {
             githubModel = gltf.scene;
 
             githubModel.scale.set(0.05, 0.05, 0.05);
@@ -669,7 +687,7 @@ export default {
         // LINKEDIN MODEL
         let linkedinModel;
 
-        loader.load(Linkedin, (gltf) => {
+        modelLoader.load(Linkedin, (gltf) => {
             linkedinModel = gltf.scene;
 
             linkedinModel.scale.set(0.5, 0.5, 0.5);
@@ -687,7 +705,7 @@ export default {
         // TWITTER MODEL
         let twitterModel;
 
-        loader.load(Twitter, (gltf) => {
+        modelLoader.load(Twitter, (gltf) => {
             twitterModel = gltf.scene;
 
             twitterModel.scale.set(0.01, 0.01, 0.01);
@@ -705,7 +723,7 @@ export default {
         // INSTAGRAM MODEL
         let instagramModel;
 
-        loader.load(Instagram, (gltf) => {
+        modelLoader.load(Instagram, (gltf) => {
             instagramModel = gltf.scene;
 
             instagramModel.scale.set(0.3, 0.3, 0.3);
@@ -753,15 +771,64 @@ export default {
         const doEnter = () => {
             isEnterClicked.value = true;
             video.play();
+            backgroundMusic.play();
+            airplaneIdleFX.play();
         }
 
+        const projectsEventHandler = (action) => {
+            if (action === 'back') {
+                goBackToPlane();
 
+                return;
+            }
+
+            switch (whatProject.value) {
+                case 'pikaride':
+                    router.push('/projects/pikaride');
+                    break;
+                case 'starway':
+                    window.open('https://starway.page', '_blank');
+                    goBackToPlane('force');
+                    break;
+            }
+        }
+
+        const initRangeInput = (rangeInput, val) => {
+            const value = (parseInt(val) - parseInt(rangeInput.min)) / (parseInt(rangeInput.max) - parseInt(rangeInput.min)) * 100;
+            rangeInput.style.background = `linear-gradient(to right, #ff0000 0%, #ff0000 ${value}%, #ffffff ${value}%, #ffffff 100%)`;
+        }
+
+        //////// TODO
+        const getRandomNumber = (min, max) => {
+            return Math.random() * (max - min) + min;
+        }
 
 
 
 
         // INIT
         animate();
+
+        watch(
+            () => backgroundMusicLevel.value,
+            (val) => {
+                backgroundMusic.volume = parseInt(val) / 100;
+                if (backgroundMusicRef.value) initRangeInput(backgroundMusicRef.value, val);
+            },
+            {
+                immediate: true
+            }
+        );
+        watch(
+            () => airplaneIdleFXLevel.value,
+            (val) => {
+                airplaneIdleFX.volume = parseInt(val) / 100;
+                if (airplaneIdleFXRef.value) initRangeInput(airplaneIdleFXRef.value, val);
+            },
+            {
+                immediate: true
+            }
+        );
 
         onMounted(async () => {
             const canvas = document.getElementById('canvas');
@@ -785,11 +852,10 @@ export default {
                 doEnter();
             }
 
-            const rangeInput = document.getElementById('backgroundMusicInput');
-            rangeInput.addEventListener('input', () => {
-                const value = (rangeInput.value - rangeInput.min) / (rangeInput.max - rangeInput.min) * 100;
-                rangeInput.style.background = `linear-gradient(to right, #ff0000 0%, #ff0000 ${value}%, #ffffff ${value}%, #ffffff 100%)`;
-            });
+
+
+            initRangeInput(backgroundMusicRef.value, backgroundMusicLevel.value);
+            initRangeInput(airplaneIdleFXRef.value, airplaneIdleFXLevel.value);
         })
 
         return {
@@ -799,7 +865,10 @@ export default {
             doEnter,
             whatProject,
             projectsEventHandler,
-            backgroundMusicLevel
+            backgroundMusicRef,
+            backgroundMusicLevel,
+            airplaneIdleFXRef,
+            airplaneIdleFXLevel
         }
     }
 }
