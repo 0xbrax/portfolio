@@ -4,7 +4,7 @@
             <nav
                 class="container-md d-flex justify-content-between align-items-center"
             >
-                <router-link to="/">Go to Home</router-link>
+                <router-link to="/"><h2>Go to Home</h2></router-link>
 
                 <div class="visualizer-container d-flex align-items-end"></div>
             </nav>
@@ -318,7 +318,7 @@
                         class="btn btn-warning mx-2 d-flex align-items-center"
                     >
                         <span class="me-2">SoundFX</span
-                        ><i class="ri-sound-module-fill"></i>
+                        ><i class="fa-solid fa-music"></i>
                     </button>
                     <button
                         id="play-btn"
@@ -339,13 +339,13 @@
                         class="btn btn-warning mx-2 d-flex align-items-center"
                     >
                         <span class="me-2">MusicBG</span
-                        ><i class="ri-sound-module-fill align-middle"></i>
+                        ><i class="fa-solid fa-music"></i>
                     </button>
                 </div>
 
                 <h4 class="text-center mt-2 px-3">...or just take a break</h4>
 
-                <div class="d-flex justify-content-center mt-0 mb-1">
+                <div id="food-truck-main" class="d-flex justify-content-center mt-0 mb-1">
                     <div id="food-truck-container" class="position-relative">
                         <img
                             src="@/assets/projects/pikaride/img/food-truck edit big menu.png"
@@ -405,56 +405,7 @@
                     </div>
                 </div>
 
-                <h4 class="text-center mt-2 px-3">
-                    Anyway, you can find me around the web! xoxo
-                </h4>
-
-                <div
-                    id="info-container"
-                    class="d-flex justify-content-center mt-4"
-                >
-                    <div class="badge">
-                        <div class="text">Hallo</div>
-
-                        <a
-                            href="https://opensea.io/assets/ethereum/0x495f947276749ce646f68ac8c248420045cb7b5e/91909880063035989946426545430640419443565129360941632704534706326623437717505"
-                            target="_blank"
-                            id="nft-link"
-                            class="position-absolute fs-4"
-                        >
-                            <i class="fa-brands fa-ethereum"></i>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="text-center mt-4 mb-3">
-                    <div class="fs-3">
-                        <a
-                            class="text-primary"
-                            href="https://www.instagram.com/0xbrax"
-                            target="_blank"
-                            ><i class="fa-brands fa-square-instagram"></i
-                        ></a>
-                        <a
-                            class="text-primary ms-2"
-                            href="https://www.linkedin.com/in/marco-braccini"
-                            target="_blank"
-                            ><i class="fa-brands fa-linkedin"></i
-                        ></a>
-                        <a
-                            class="text-primary ms-2"
-                            href="https://github.com/0xbrax"
-                            target="_blank"
-                            ><i class="fa-brands fa-square-github"></i
-                        ></a>
-                        <a
-                            class="text-primary ms-2"
-                            href="https://twitter.com/0xbrax"
-                            target="_blank"
-                            ><i class="fa-brands fa-square-twitter"></i
-                        ></a>
-                    </div>
-                    <div class="text-center text-secondary">0xbrax</div>
+                <div id="info-container">
                 </div>
             </section>
 

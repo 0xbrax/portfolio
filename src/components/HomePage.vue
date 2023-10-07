@@ -1,12 +1,13 @@
 <template>
     <div id="main-container">
         <div id="canvas">
-            <div id="ui-ux-controls-container">
-                <!--
-                <i class="fa-solid fa-gear"></i>
-                -->
+            <div id="ui-ux-control-container" :class="['d-flex', isMobile ? 'column-rev align-start' : 'align-end']">
+                <i 
+                    class="fa-solid fa-gear"
+                    @click="isControlShown = !isControlShown"
+                ></i>
 
-                <div id="ui-ux-controls" :class="{ 'rotate-90-origin': isMobile }">
+                <div id="ui-ux-control" :class="[isMobile ? 'rotate--90-origin mb-10' : 'ml-10', {'active': isControlShown }]">
                     <div class="d-flex justify-btw align-ctr">
                         <div :class="['relative', { 'rotate-90': isMobile }]">
                             <i 
@@ -107,6 +108,7 @@ export default {
         const isMobile = isDeviceMobile();
         const router = useRouter();
         const whatProject = ref(null);
+        const isControlShown = ref(false);
 
         // LOADER
         const loadingManager = new THREE.LoadingManager();
@@ -878,6 +880,7 @@ export default {
             doEnter,
             whatProject,
             projectsEventHandler,
+            isControlShown,
             backgroundMusicRef,
             backgroundMusicLevel,
             airplaneIdleFXRef,

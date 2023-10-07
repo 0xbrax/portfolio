@@ -14,6 +14,10 @@ body {
     font-family: 'Ubuntu', sans-serif;
     color: #000000;
 }
+a {
+    color: inherit; /* blue colors for links too */
+    text-decoration: inherit; /* no underline */
+}
 
 
 
@@ -29,18 +33,36 @@ body {
 .column {
     flex-direction: column;
 }
+.column-rev {
+    flex-direction: column-reverse;
+}
 .justify-ctr {
     justify-content: center;
 }
 .justify-btw {
     justify-content: space-between;
 }
+.align-start {
+    align-items: start;
+}
 .align-ctr {
     align-items: center;
+}
+.align-end {
+    align-items: end;
 }
 
 .mt-10 {
     margin-top: 10px;
+}
+.mb-10 {
+    margin-bottom: 10px;
+}
+.ml-10 {
+    margin-left: 10px;
+}
+.mr-10 {
+    margin-right: 10px;
 }
 
 .pointer {
@@ -50,10 +72,11 @@ body {
 .rotate-90 {
     transform: rotate(90deg);
 }
-.rotate-90-origin {
-    transform: rotate(-90deg);
-    transform-origin: 25% 50%;
+.rotate--90-origin {
+    transform: rotate(-90deg) translateY(100%);
+    transform-origin: 0 100%;
 }
+/********/
 
 
 
@@ -91,8 +114,8 @@ body {
     animation: gradient 2.8s ease infinite;
 }
 @keyframes gradient {
-    0%, 100% {
-        background-position: 0% 50%;
+    from, to {
+        background-position: 0 50%;
     }
     50% {
         background-position: 100% 50%;
@@ -140,22 +163,31 @@ body {
 }
 
 
-#ui-ux-controls-container {
+#ui-ux-control-container {
     position: absolute;
     bottom: 25px;
     left: 25px;
 }
-#ui-ux-controls-container .fa-gear {
+#ui-ux-control-container .fa-gear {
     font-size: 30px;
     background-color: rgba(255, 255, 255, 0.5);
     border-radius: 50%;
     padding: 10px;
+    cursor: pointer;
 }
 
-
-#ui-ux-controls {
+#ui-ux-control {
     background-color: rgba(255, 255, 255, 0.5);
     border-radius: 10px;
+    max-width: 0;
+    opacity: 0;
+    padding: 0;
+    overflow: hidden;
+    transition: all 0.2s ease-in-out;
+}
+#ui-ux-control.active {
+    max-width: 100%;
+    opacity: 1;
     padding: 25px;
 }
 input[type="range"].audio {
@@ -180,14 +212,14 @@ input[type="range"].audio::-webkit-slider-thumb {
 
 .no-volume {
     position: absolute;
-    bottom: 0%;
+    bottom: 0;
     left: 0;
     width: 27px;
     height: 3px;
     background-color: #ff0000;
     border-radius: 5px;
-    transform: rotate(-45deg);
-    transform-origin: 0% 0%;
+    transform: rotate(-45deg) translate(-5%, -50%);
+    transform-origin: 0 0;
 }
 
 

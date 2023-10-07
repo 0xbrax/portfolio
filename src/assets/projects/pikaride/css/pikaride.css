@@ -1,12 +1,13 @@
 #pika-ride {
     background-color: var(--main-purple-col);
+    min-height: 100vh;
 }
 
 main {
     background: linear-gradient(
         180deg,
-        var(--pink-col) 56%,
-        var(--blue-col) 56%
+        var(--pink-col) 58%,
+        var(--blue-col) 58%
     );
 }
 
@@ -437,7 +438,7 @@ header nav {
 
 .custom-shape-edit-top {
     width: 100%;
-    height: 400px;
+    height: 300px;
     background-color: var(--sec-purple-col);
     position: absolute;
     top: 0;
@@ -445,7 +446,7 @@ header nav {
 }
 .custom-shape-divider-top-1669183005 {
     position: absolute;
-    top: 400px;
+    top: 300px;
     left: 0;
     width: 150%;
     overflow: hidden;
@@ -463,7 +464,7 @@ header nav {
 
 .custom-shape-edit-bottom {
     width: 100%;
-    height: 250px;
+    height: 100px;
     background-color: var(--green-col);
     position: absolute;
     bottom: 0;
@@ -471,7 +472,7 @@ header nav {
 }
 .custom-shape-divider-bottom-1669183688 {
     position: absolute;
-    bottom: 250px;
+    bottom: 100px;
     left: 0;
     width: 150%;
     overflow: hidden;
@@ -489,6 +490,12 @@ header nav {
     fill: var(--green-col);
 }
 
+#food-truck-main {
+    background-image: url("../img/paper-planes-bg_3x.png");
+    background-size: auto 100%;
+    background-repeat: repeat-x;
+    background-position: center;
+}
 #food-truck-container-img {
     height: 280px;
 }
@@ -658,66 +665,6 @@ header nav {
     top: 0;
     left: 50%;
     transform: translateX(-50%);
-}
-
-#info-container {
-    background-image: url("../img/paper-planes-bg_3x.png");
-    background-size: auto 100%;
-    background-repeat: repeat-x;
-    background-position: center;
-}
-
-.badge {
-    display: block;
-    position: relative;
-    width: 20rem;
-    height: 20rem;
-    background: url("../img/Dreampool.png")
-        no-repeat 100% 50%;
-    background-size: 120%;
-    border-radius: 50%;
-    transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
-    box-shadow: 0px 0.5rem 1rem rgba(0, 0, 0, 0.75);
-}
-.badge:hover {
-    box-shadow: 0px 0.5rem 2rem rgba(0, 0, 0, 0.75);
-    background-position: 0% 50%;
-}
-.badge:hover .text {
-    transform: rotate(-45deg) translate(0px) rotate(-315deg);
-    background: rgba(171, 135, 255, 0.5);
-    width: 20rem;
-    letter-spacing: 1rem;
-    line-height: 20rem;
-    height: 20rem;
-    margin-top: -10rem;
-    margin-left: -10rem;
-    transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1),
-        letter-spacing 1.5s ease-out;
-}
-.badge .text {
-    display: block;
-    position: absolute;
-    width: 10rem;
-    height: 10rem;
-    line-height: 10rem;
-    left: 50%;
-    top: 50%;
-    margin-top: -5rem;
-    margin-left: -5rem;
-    font-size: 2rem;
-    text-align: center;
-    color: #fff;
-    border-radius: 50%;
-    background: var(--main-purple-col);
-    transform: rotate(-180deg) translate(-10rem) rotate(180deg);
-    box-shadow: 0px 0.5rem 1rem rgba(0, 0, 0, 0.5);
-    transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
-}
-
-#nft-link {
-    bottom: 5px;
-    right: 10px;
 }
 
 /***** MEDIA QUERY *****/
