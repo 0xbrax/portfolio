@@ -26,6 +26,9 @@ body {
 .d-flex {
     display: flex;
 }
+.column {
+    flex-direction: column;
+}
 .justify-ctr {
     justify-content: center;
 }
@@ -42,6 +45,14 @@ body {
 
 .pointer {
     cursor: pointer;
+}
+
+.rotate-90 {
+    transform: rotate(90deg);
+}
+.rotate-90-origin {
+    transform: rotate(-90deg);
+    transform-origin: 25% 50%;
 }
 
 
@@ -131,8 +142,8 @@ body {
 
 #ui-ux-controls-container {
     position: absolute;
-    bottom: 5%;
-    left: 5%;
+    bottom: 25px;
+    left: 25px;
 }
 #ui-ux-controls-container .fa-gear {
     font-size: 30px;

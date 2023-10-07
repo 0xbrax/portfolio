@@ -6,9 +6,9 @@
                 <i class="fa-solid fa-gear"></i>
                 -->
 
-                <div id="ui-ux-controls">
-                        <div class="d-flex justify-btw align-ctr">
-                        <div class="relative">
+                <div id="ui-ux-controls" :class="{ 'rotate-90-origin': isMobile }">
+                    <div class="d-flex justify-btw align-ctr">
+                        <div :class="['relative', { 'rotate-90': isMobile }]">
                             <i 
                                 class="fa-solid fa-plane pointer"
                                 @click="airplaneIdleFXLevel !== '0' ? airplaneIdleFXLevel = '0' : airplaneIdleFXLevel = '100'"
@@ -20,7 +20,7 @@
                     </div>
 
                     <div class="d-flex justify-btw align-ctr mt-10">
-                        <div class="relative">
+                        <div :class="['relative', { 'rotate-90': isMobile }]">
                             <i 
                                 class="fa-solid fa-music pointer"
                                 @click="backgroundMusicLevel !== '0' ? backgroundMusicLevel = '0' : backgroundMusicLevel = '100'"
@@ -78,6 +78,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { InteractionManager } from 'three.interactive';
 import { gsap } from 'gsap';
+import { isDeviceMobile } from '../assets/js/utils.js';
 
 import CLoudsSunsetVideo from '../assets/video/360vr_clouds_sunset.mp4';
 import PositivePopAudioTrack from '../assets/audio/sfmusic_positive_pop.mp3';
@@ -88,6 +89,7 @@ import Dragon from '../assets/other/dragon_flying_small.glb';
 import Truck from '../assets/other/icecream_truck.glb';
 import Rocket from '../assets/other/rocket_ship.glb';
 import Flame from '../assets/other/flame_animation.glb';
+import Dreampool from '../assets/image/Dreampool.png';
 
 import Github from '../assets/other/github_logo.glb';
 import Linkedin from '../assets/other/linkedin_logo.glb';
@@ -102,6 +104,7 @@ export default {
 
     setup() {
         // UTILS
+        const isMobile = isDeviceMobile();
         const router = useRouter();
         const whatProject = ref(null);
 
@@ -515,7 +518,7 @@ export default {
                 }
 
                 // ANIMATION
-                const DISTANCE = 0.5;
+                const DISTANCE = isMobile ? 0.8 : 0.5;
                 const DURATION = 0.7;
                 const initialCameraPosition = camera.position.clone();
                 const initialControlsRotation = controls.target.clone();
@@ -603,6 +606,26 @@ export default {
             truckGroup.add(truckModel);
         });
 
+        // DREAMPOOOL
+        textureLoader.load(Dreampool, texture => {
+            texture.colorSpace = THREE.SRGBColorSpace;
+            texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+            texture.magFilter = THREE.LinearFilter;
+            texture.minFilter = THREE.NearestFilter;
+
+            const material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
+            const geometry = new THREE.PlaneGeometry(0.155, 0.155); 
+            const mesh = new THREE.Mesh(geometry, material);
+
+            mesh.position.set(-0.249, 0.67, 1.1);
+            mesh.rotation.y = Math.PI / 2;
+
+            truckGroup.add(mesh);
+
+            interactionManager.add(mesh);
+            mesh.addEventListener('click', () => window.open('https://opensea.io/assets/ethereum/0x495f947276749ce646f68ac8c248420045cb7b5e/91909880063035989946426545430640419443565129360941632704534706326623437717505', '_blank'));
+        });
+
         // ROCKET MODEL
         let rocketModel;
 
@@ -629,7 +652,7 @@ export default {
             truckGroup.add(rocketModel);
         });
 
-        // ROCKET CYLINDER MODEL
+        // ROCKET CYLINDER MODEL 1
         const cylinderMaterial = new THREE.MeshBasicMaterial({ color: 0x4d4d4d });
         const cylinderGeometry = new THREE.CylinderGeometry(0.05, 0.05, 0.05, 32);
         const cylinderModel = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
@@ -679,9 +702,7 @@ export default {
             scene.add(githubModel);
 
             interactionManager.add(githubModel);
-            githubModel.addEventListener('click', () => {
-                window.open('https://github.com/0xbrax', '_blank');
-            });
+            githubModel.addEventListener('click', () => window.open('https://github.com/0xbrax', '_blank'));
         });
 
         // LINKEDIN MODEL
@@ -697,9 +718,7 @@ export default {
             scene.add(linkedinModel);
 
             interactionManager.add(linkedinModel);
-            linkedinModel.addEventListener('click', () => {
-                window.open('https://www.linkedin.com/in/marco-braccini', '_blank');
-            });
+            linkedinModel.addEventListener('click', () => window.open('https://www.linkedin.com/in/marco-braccini', '_blank'));
         });
 
         // TWITTER MODEL
@@ -715,9 +734,7 @@ export default {
             scene.add(twitterModel);
 
             interactionManager.add(twitterModel);
-            twitterModel.addEventListener('click', () => {
-                window.open('https://twitter.com/0xbrax', '_blank');
-            });
+            twitterModel.addEventListener('click', () => window.open('https://twitter.com/0xbrax', '_blank'));
         });
 
         // INSTAGRAM MODEL
@@ -733,9 +750,7 @@ export default {
             scene.add(instagramModel);
 
             interactionManager.add(instagramModel);
-            instagramModel.addEventListener('click', () => {
-                window.open('https://www.instagram.com/0xbrax', '_blank');
-            });
+            instagramModel.addEventListener('click', () => window.open('https://www.instagram.com/0xbrax', '_blank'));
         });
 
 
@@ -798,10 +813,7 @@ export default {
             rangeInput.style.background = `linear-gradient(to right, #ff0000 0%, #ff0000 ${value}%, #ffffff ${value}%, #ffffff 100%)`;
         }
 
-        //////// TODO
-        const getRandomNumber = (min, max) => {
-            return Math.random() * (max - min) + min;
-        }
+
 
 
 
@@ -859,6 +871,7 @@ export default {
         })
 
         return {
+            isMobile,
             progress,
             isEnterClicked,
             router,
