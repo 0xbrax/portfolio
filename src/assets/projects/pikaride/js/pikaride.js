@@ -1,5 +1,9 @@
+import router from '@/router.js';
+
 // MODULE START
 export const pikarideModule = () => {
+
+
 
 const nicknameContainer = document.getElementById('nickname-container');
 let nickname = document.getElementById('nickname');
@@ -1301,6 +1305,21 @@ function requestToPlay() {
         }
     });
 }
+
+
+
+// GO BACK BTN
+const goBackBtn = document.getElementById('go-back-btn');
+goBackBtn.addEventListener('click', () => {
+    backMusic.pause();
+    backMusic.currentTime = 0;
+
+
+
+    // TODO bug del sound visualizer che si sdoppia ogni volta che rientri nel progetto, funziona solo quello nuovo creato
+
+    router.push('/');
+});
 
 // MODULE END
 }

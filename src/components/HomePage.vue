@@ -3,7 +3,7 @@
         <div id="canvas">
             <div id="ui-ux-control-container" :class="['d-flex', isMobile ? 'column-rev align-start' : 'align-end']">
                 <i 
-                    class="fa-solid fa-gear"
+                    :class="['fa-solid fa-gear', { 'active-mobile': isControlShown && isMobile, 'active-desktop': isControlShown && !isMobile }]"
                     @click="isControlShown = !isControlShown"
                 ></i>
 
@@ -54,7 +54,7 @@
             </div>
         </div>
 
-        <div id="loading-screen" v-if="isEnterClicked === false && !router.options.history.state.back?.includes('projects')">
+        <div id="loading-screen" v-if="!isEnterClicked && !router.options.history.state.back?.includes('projects')">
             <img id="logo-img" src="../assets/image/LOGO Brax bianco no sfondo.png" alt="Brax">
 
             <div id="enter-btn" @click="progress === 100 ? doEnter() : undefined" :class="{ 'active': progress === 100 }">
@@ -801,11 +801,17 @@ export default {
 
             switch (whatProject.value) {
                 case 'pikaride':
+                    backgroundMusic.pause();
+                    backgroundMusic.currentTime = 0;
+
+                    airplaneIdleFX.pause();
+                    airplaneIdleFX.currentTime = 0;
+
                     router.push('/projects/pikaride');
                     break;
                 case 'starway':
-                    window.open('https://starway.page', '_blank');
                     goBackToPlane('force');
+                    window.open('https://starway.page', '_blank');
                     break;
             }
         }

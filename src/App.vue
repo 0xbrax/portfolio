@@ -13,7 +13,7 @@ export default {
 </script>
 
 <style scoped>
-/* installa preprocessore sass ??*/
+/* TODO installa preprocessore sass ??*/
 .fade-enter-active, .fade-leave-active {
   transition: opacity 0.5s;
 }

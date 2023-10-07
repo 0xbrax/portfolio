@@ -4,7 +4,7 @@
             <nav
                 class="container-md d-flex justify-content-between align-items-center"
             >
-                <router-link to="/"><h2>Go to Home</h2></router-link>
+                <h2 id="go-back-btn" class="pointer">Go to Home</h2>
 
                 <div class="visualizer-container d-flex align-items-end"></div>
             </nav>

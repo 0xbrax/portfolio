@@ -13,10 +13,11 @@
 body {
     font-family: 'Ubuntu', sans-serif;
     color: #000000;
+    overflow-x: hidden; /* TODO check quando cambi rotta barra orizzontale */
 }
 a {
-    color: inherit; /* blue colors for links too */
-    text-decoration: inherit; /* no underline */
+    color: inherit;
+    text-decoration: inherit;
 }
 
 
@@ -174,6 +175,13 @@ a {
     border-radius: 50%;
     padding: 10px;
     cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+}
+#ui-ux-control-container .fa-gear.active-desktop {
+    transform: rotate(-30deg);
+}
+#ui-ux-control-container .fa-gear.active-mobile {
+    transform: rotate(30deg);
 }
 
 #ui-ux-control {
