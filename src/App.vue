@@ -1,6 +1,6 @@
 <template>
   <router-view v-slot="{ Component }">
-    <transition name="fade">
+    <transition name="main-fade">
       <component :is="Component" />
     </transition>
   </router-view>
@@ -12,12 +12,11 @@ export default {
 };
 </script>
 
-<style scoped>
-/* TODO installa preprocessore sass ??*/
-.fade-enter-active, .fade-leave-active {
+<style>
+.main-fade-enter-active, .main-fade-leave-active {
   transition: opacity 0.5s;
 }
-.fade-enter, .fade-leave-to {
+.main-fade-enter, .main-fade-leave-to {
   opacity: 0;
 }
 </style>

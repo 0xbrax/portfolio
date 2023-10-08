@@ -133,6 +133,7 @@ function fillSvgPaths(event) {
 //////// AUDIO VISUALIZER ////////
 
 const visualizerContainer = document.querySelector(".visualizer-container");
+visualizerContainer.innerHTML = '';
 const musicBarsNumber = 16;
 
 for (let i = 0; i < musicBarsNumber; i++ ) {
@@ -1313,10 +1314,6 @@ const goBackBtn = document.getElementById('go-back-btn');
 goBackBtn.addEventListener('click', () => {
     backMusic.pause();
     backMusic.currentTime = 0;
-
-
-
-    // TODO bug del sound visualizer che si sdoppia ogni volta che rientri nel progetto, funziona solo quello nuovo creato
 
     router.push('/');
 });

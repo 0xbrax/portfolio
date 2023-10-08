@@ -3,33 +3,26 @@
         <div id="canvas">
             <div id="ui-ux-control-container" :class="['d-flex', isMobile ? 'column-rev align-start' : 'align-end']">
                 <i 
-                    :class="['fa-solid fa-gear', { 'active-mobile': isControlShown && isMobile, 'active-desktop': isControlShown && !isMobile }]"
+                    :class="['fas fa-gear', { 'active-mobile': isControlShown && isMobile, 'active-desktop': isControlShown && !isMobile }]"
                     @click="isControlShown = !isControlShown"
                 ></i>
 
                 <div id="ui-ux-control" :class="[isMobile ? 'rotate--90-origin mb-10' : 'ml-10', {'active': isControlShown }]">
-                    <div class="d-flex justify-btw align-ctr">
+                    <div 
+                        v-for="(el, i) in audioArray"
+                        :key="el"
+                        :class="['d-flex justify-btw align-ctr', { 'mt-10': i === audioArray.length - 1 }]"
+                    >
                         <div :class="['relative', { 'rotate-90': isMobile }]">
                             <i 
-                                class="fa-solid fa-plane pointer"
-                                @click="airplaneIdleFXLevel !== '0' ? airplaneIdleFXLevel = '0' : airplaneIdleFXLevel = '100'"
+                                :class="[audioObject[`${el}Icon`], 'pointer']"
+                                @click="audioObject[`${el}Level`] !== '0' ? audioObject[`${el}Level`] = '0' : audioObject[`${el}Level`] = '100'"
                             ></i>
 
-                            <div v-if="airplaneIdleFXLevel === '0'" class="no-volume"></div>
+                            <div v-if="audioObject[`${el}Level`] === '0'" class="no-volume"></div>
                         </div>
-                        <input type="range" class="audio" v-model="airplaneIdleFXLevel" ref="airplaneIdleFXRef" min="0" max="100" />
-                    </div>
 
-                    <div class="d-flex justify-btw align-ctr mt-10">
-                        <div :class="['relative', { 'rotate-90': isMobile }]">
-                            <i 
-                                class="fa-solid fa-music pointer"
-                                @click="backgroundMusicLevel !== '0' ? backgroundMusicLevel = '0' : backgroundMusicLevel = '100'"
-                            ></i>
-
-                            <div v-if="backgroundMusicLevel === '0'" class="no-volume"></div>
-                        </div>
-                        <input type="range" class="audio" v-model="backgroundMusicLevel" ref="backgroundMusicRef" min="0" max="100" />
+                        <input type="range" class="audio" v-model="audioObject[`${el}Level`].value" :ref="ref => audioObject.inputRef.value.push(ref)" min="0" max="100" />
                     </div>
                 </div>
             </div>
@@ -49,7 +42,7 @@
                     @click="projectsEventHandler('back')"
                     class="back-btn"
                 >
-                    <i class="fa-solid fa-rotate-left"></i>
+                    <i class="fas fa-rotate-left"></i>
                 </div>
             </div>
         </div>
@@ -145,23 +138,36 @@ export default {
         videoTexture.magFilter = THREE.LinearFilter;
 
         // AUDIO
-        const backgroundMusic = document.createElement('audio');
-        backgroundMusic.src = PositivePopAudioTrack;
-        const backgroundMusicLevel = ref('100');
-        const backgroundMusicRef = ref(null);
-        backgroundMusic.addEventListener('ended', () => {
-            backgroundMusic.currentTime = 0;
-            backgroundMusic.play();
-        });
+        const audioArray = ['backgroundMusic', 'airplaneIdleFX'];
+        const audioObject = {};
+        audioObject.inputRef = ref([]);
 
-        const airplaneIdleFX = document.createElement('audio');
-        airplaneIdleFX.src = AirplaneIdleAudioFX;
-        const airplaneIdleFXLevel = ref('50');
-        const airplaneIdleFXRef = ref(null);
-        airplaneIdleFX.addEventListener('ended', () => {
-            airplaneIdleFX.currentTime = 0;
-            airplaneIdleFX.play();
-        });
+        for (let i = 0; i < audioArray.length; i++) {
+            let audioSource;
+            let audioVolume;
+            let audioIcon;
+            switch (audioArray[i]) {
+                case 'backgroundMusic':
+                    audioSource = PositivePopAudioTrack;
+                    audioVolume = '100';
+                    audioIcon = 'fas fa-music';
+                    break;
+                case 'airplaneIdleFX':
+                    audioSource = AirplaneIdleAudioFX;
+                    audioVolume = '50';
+                    audioIcon = 'fas fa-plane';
+                    break;
+            }
+
+            audioObject[audioArray[i]] = document.createElement('audio');
+            audioObject[audioArray[i]].src = audioSource;
+            audioObject[`${audioArray[i]}Level`] = ref(audioVolume);
+            audioObject[`${audioArray[i]}Icon`] = audioIcon;
+            audioObject[audioArray[i]].addEventListener('ended', () => {
+                audioObject[audioArray[i]].currentTime = 0;
+                audioObject[audioArray[i]].play();
+            })
+        }
 
         // 3D SPHERE
         const sphereGeometry = new THREE.SphereGeometry(500, 60, 40);
@@ -788,8 +794,11 @@ export default {
         const doEnter = () => {
             isEnterClicked.value = true;
             video.play();
-            backgroundMusic.play();
-            airplaneIdleFX.play();
+
+
+            for (let i = 0; i < audioArray.length; i++) {
+                audioObject[audioArray[i]].play();
+            }
         }
 
         const projectsEventHandler = (action) => {
@@ -801,11 +810,10 @@ export default {
 
             switch (whatProject.value) {
                 case 'pikaride':
-                    backgroundMusic.pause();
-                    backgroundMusic.currentTime = 0;
-
-                    airplaneIdleFX.pause();
-                    airplaneIdleFX.currentTime = 0;
+                    for (let i = 0; i < audioArray.length; i++) {
+                        audioObject[audioArray[i]].pause();
+                        audioObject[audioArray[i]].currentTime = 0;
+                    }
 
                     router.push('/projects/pikaride');
                     break;
@@ -829,26 +837,41 @@ export default {
         // INIT
         animate();
 
-        watch(
-            () => backgroundMusicLevel.value,
-            (val) => {
-                backgroundMusic.volume = parseInt(val) / 100;
-                if (backgroundMusicRef.value) initRangeInput(backgroundMusicRef.value, val);
-            },
-            {
-                immediate: true
-            }
-        );
-        watch(
-            () => airplaneIdleFXLevel.value,
-            (val) => {
-                airplaneIdleFX.volume = parseInt(val) / 100;
-                if (airplaneIdleFXRef.value) initRangeInput(airplaneIdleFXRef.value, val);
-            },
-            {
-                immediate: true
-            }
-        );
+
+
+
+        /*const watchKeys = ['personal', 'residence', 'document', 'security'];
+        watchKeys.forEach(el => {
+            watch(
+                () => query[el],
+                (val) => {
+                    if (JSON.stringify(val) === JSON.stringify(queryCopy[el])) {
+                        differentRegisterDataKeys.value.delete(el);
+                    } else {
+                        differentRegisterDataKeys.value.add(el);
+                    }
+                },
+                {
+                    deep: true
+                }
+            );
+        });*/
+
+
+
+
+        for (let i = 0; i < audioArray.length; i++) {
+            watch(
+                () => audioObject[`${audioArray[i]}Level`].value,
+                (val) => {
+                    audioObject[audioArray[i]].volume = parseInt(val) / 100;
+                    if (audioObject.inputRef.value[i]) initRangeInput(audioObject.inputRef.value[i], val);
+                },
+                {
+                    immediate: true,
+                }
+            );
+        }
 
         onMounted(async () => {
             const canvas = document.getElementById('canvas');
@@ -874,8 +897,12 @@ export default {
 
 
 
-            initRangeInput(backgroundMusicRef.value, backgroundMusicLevel.value);
-            initRangeInput(airplaneIdleFXRef.value, airplaneIdleFXLevel.value);
+            for (let i = 0; i < audioArray.length; i++) {
+                audioObject[audioArray[i]].pause();
+                audioObject[audioArray[i]].currentTime = 0;
+
+                initRangeInput(audioObject.inputRef.value[i], audioObject[`${audioArray[i]}Level`].value);
+            }
         })
 
         return {
@@ -887,10 +914,8 @@ export default {
             whatProject,
             projectsEventHandler,
             isControlShown,
-            backgroundMusicRef,
-            backgroundMusicLevel,
-            airplaneIdleFXRef,
-            airplaneIdleFXLevel
+            audioArray,
+            audioObject
         }
     }
 }
