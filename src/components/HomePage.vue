@@ -837,29 +837,6 @@ export default {
         // INIT
         animate();
 
-
-
-
-        /*const watchKeys = ['personal', 'residence', 'document', 'security'];
-        watchKeys.forEach(el => {
-            watch(
-                () => query[el],
-                (val) => {
-                    if (JSON.stringify(val) === JSON.stringify(queryCopy[el])) {
-                        differentRegisterDataKeys.value.delete(el);
-                    } else {
-                        differentRegisterDataKeys.value.add(el);
-                    }
-                },
-                {
-                    deep: true
-                }
-            );
-        });*/
-
-
-
-
         for (let i = 0; i < audioArray.length; i++) {
             watch(
                 () => audioObject[`${audioArray[i]}Level`].value,
