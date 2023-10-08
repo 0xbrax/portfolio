@@ -138,7 +138,7 @@ export default {
         videoTexture.magFilter = THREE.LinearFilter;
 
         // AUDIO
-        const audioArray = ['backgroundMusic', 'airplaneIdleFX'];
+        const audioArray = ['airplaneIdleFX', 'backgroundMusic'];
         const audioObject = {};
         audioObject.inputRef = ref([]);
 
