@@ -13,7 +13,6 @@
 body {
     font-family: 'Ubuntu', sans-serif;
     color: #000000;
-    overflow-x: hidden; /* TODO check quando cambi rotta barra orizzontale */
 }
 a {
     color: inherit;

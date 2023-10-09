@@ -16,13 +16,22 @@
                         <div :class="['relative', { 'rotate-90': isMobile }]">
                             <i 
                                 :class="[audioObject[`${el}Icon`], 'pointer']"
-                                @click="audioObject[`${el}Level`] !== '0' ? audioObject[`${el}Level`] = '0' : audioObject[`${el}Level`] = '100'"
+                                @click="audioObject[`${el}Level`].value !== '0' ? audioObject[`${el}Level`].value = '0' : audioObject[`${el}Level`].value = '100'"
                             ></i>
 
-                            <div v-if="audioObject[`${el}Level`] === '0'" class="no-volume"></div>
+                            <div v-if="audioObject[`${el}Level`].value === '0'" class="no-volume"></div>
                         </div>
 
-                        <input type="range" class="audio" v-model="audioObject[`${el}Level`].value" :ref="ref => audioObject.inputRef.value.push(ref)" min="0" max="100" />
+                        <input 
+                            type="range" 
+                            class="audio" 
+                            v-model="audioObject[`${el}Level`].value" 
+                            :ref="ref => audioObject.inputRef.value.push(ref)" 
+                            @touchmove.prevent="onTouchMoveInputHandler($event, el, i)"
+                            min="0" 
+                            max="100"
+                            step="1"
+                        />
                     </div>
                 </div>
             </div>
@@ -142,11 +151,11 @@ export default {
         const audioObject = {};
         audioObject.inputRef = ref([]);
 
-        for (let i = 0; i < audioArray.length; i++) {
+        audioArray.forEach(el => {
             let audioSource;
             let audioVolume;
             let audioIcon;
-            switch (audioArray[i]) {
+            switch (el) {
                 case 'backgroundMusic':
                     audioSource = PositivePopAudioTrack;
                     audioVolume = '100';
@@ -159,15 +168,15 @@ export default {
                     break;
             }
 
-            audioObject[audioArray[i]] = document.createElement('audio');
-            audioObject[audioArray[i]].src = audioSource;
-            audioObject[`${audioArray[i]}Level`] = ref(audioVolume);
-            audioObject[`${audioArray[i]}Icon`] = audioIcon;
-            audioObject[audioArray[i]].addEventListener('ended', () => {
-                audioObject[audioArray[i]].currentTime = 0;
-                audioObject[audioArray[i]].play();
-            })
-        }
+            audioObject[el] = document.createElement('audio');
+            audioObject[el].src = audioSource;
+            audioObject[`${el}Level`] = ref(audioVolume);
+            audioObject[`${el}Icon`] = audioIcon;
+            audioObject[el].addEventListener('ended', () => {
+                audioObject[el].currentTime = 0;
+                audioObject[el].play();
+            });
+        });
 
         // 3D SPHERE
         const sphereGeometry = new THREE.SphereGeometry(500, 60, 40);
@@ -795,10 +804,9 @@ export default {
             isEnterClicked.value = true;
             video.play();
 
-
-            for (let i = 0; i < audioArray.length; i++) {
-                audioObject[audioArray[i]].play();
-            }
+            audioArray.forEach(el => {
+                audioObject[el].play();
+            });
         }
 
         const projectsEventHandler = (action) => {
@@ -810,10 +818,10 @@ export default {
 
             switch (whatProject.value) {
                 case 'pikaride':
-                    for (let i = 0; i < audioArray.length; i++) {
-                        audioObject[audioArray[i]].pause();
-                        audioObject[audioArray[i]].currentTime = 0;
-                    }
+                    audioArray.forEach(el => {
+                        audioObject[el].pause();
+                        audioObject[el].currentTime = 0;
+                    });
 
                     router.push('/projects/pikaride');
                     break;
@@ -829,6 +837,20 @@ export default {
             rangeInput.style.background = `linear-gradient(to right, #ff0000 0%, #ff0000 ${value}%, #ffffff ${value}%, #ffffff 100%)`;
         }
 
+        const onTouchMoveInputHandler = (event, el, i) => {
+            const touch = event.touches[0];
+            const rect = audioObject.inputRef.value[i].getBoundingClientRect();
+            let percent;
+            if (isMobile) {
+                const offsetY = rect.bottom - touch.clientY;
+                percent = percent = Math.min(100, Math.max(0, (offsetY / rect.height) * 100));
+            } else {
+                const offsetX = touch.clientX - rect.left;
+                percent = Math.min(100, Math.max(0, (offsetX / rect.width) * 100));
+            }
+            audioObject[`${el}Level`].value = percent.toFixed(0).toString();
+        }
+
 
 
 
@@ -837,18 +859,18 @@ export default {
         // INIT
         animate();
 
-        for (let i = 0; i < audioArray.length; i++) {
+        audioArray.forEach((el, i) => {
             watch(
-                () => audioObject[`${audioArray[i]}Level`].value,
+                () => audioObject[`${el}Level`].value,
                 (val) => {
-                    audioObject[audioArray[i]].volume = parseInt(val) / 100;
+                    audioObject[el].volume = parseInt(val) / 100;
                     if (audioObject.inputRef.value[i]) initRangeInput(audioObject.inputRef.value[i], val);
                 },
                 {
                     immediate: true,
                 }
             );
-        }
+        });
 
         onMounted(async () => {
             const canvas = document.getElementById('canvas');
@@ -874,12 +896,12 @@ export default {
 
 
 
-            for (let i = 0; i < audioArray.length; i++) {
-                audioObject[audioArray[i]].pause();
-                audioObject[audioArray[i]].currentTime = 0;
+            audioArray.forEach((el, i) => {
+                audioObject[el].pause();
+                audioObject[el].currentTime = 0;
 
-                initRangeInput(audioObject.inputRef.value[i], audioObject[`${audioArray[i]}Level`].value);
-            }
+                initRangeInput(audioObject.inputRef.value[i], audioObject[`${el}Level`].value);
+            });
         })
 
         return {
@@ -892,7 +914,8 @@ export default {
             projectsEventHandler,
             isControlShown,
             audioArray,
-            audioObject
+            audioObject,
+            onTouchMoveInputHandler
         }
     }
 }
