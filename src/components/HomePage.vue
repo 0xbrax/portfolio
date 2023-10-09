@@ -1,5 +1,5 @@
 <template>
-    <div id="main-container">
+    <div id="home-page">
         <div id="canvas">
             <div id="ui-ux-control-container" :class="['d-flex', isMobile ? 'column-rev align-start' : 'align-end']">
                 <i 
@@ -13,13 +13,14 @@
                         :key="el"
                         :class="['d-flex justify-btw align-ctr', { 'mt-10': i === audioArray.length - 1 }]"
                     >
-                        <div :class="['relative', { 'rotate-90': isMobile }]">
+                        <div 
+                            @click="audioObject[`${el}Level`].value !== '0' ? audioObject[`${el}Level`].value = '0' : audioObject[`${el}Level`].value = '100'"
+                            :class="['relative pointer', { 'rotate-90': isMobile }]">
                             <i 
-                                :class="[audioObject[`${el}Icon`], 'pointer']"
-                                @click="audioObject[`${el}Level`].value !== '0' ? audioObject[`${el}Level`].value = '0' : audioObject[`${el}Level`].value = '100'"
+                                :class="audioObject[`${el}Icon`]"
                             ></i>
 
-                            <div v-if="audioObject[`${el}Level`].value === '0'" class="no-volume"></div>
+                            <div v-if="audioObject[`${el}Level`].value === '0'" class="no-volume pointer"></div>
                         </div>
 
                         <input 
@@ -460,7 +461,7 @@ export default {
             switch (project) {
                 case 'PIKARIDE':
                     image = PIKARIDEimage;
-                    text = 'Pikaride';
+                    text = 'Pika Ride';
                     break;
                 case 'STARWAY':
                     image = STARWAYimage;
@@ -650,7 +651,7 @@ export default {
             rocketModel = gltf.scene;
 
             rocketModel.scale.set(0.3, 0.3, 0.3);
-            rocketModel.position.set(-0.53, 0.45, 1.1);
+            rocketModel.position.set(-0.53, 0.455, 1.11);
             rocketModel.rotation.x = Math.PI / 1;
             rocketModel.rotation.y = -Math.PI / 1;
             rocketModel.rotation.z = -Math.PI / 4;
@@ -673,7 +674,7 @@ export default {
         const cylinderMaterial = new THREE.MeshBasicMaterial({ color: 0x4d4d4d });
         const cylinderGeometry = new THREE.CylinderGeometry(0.05, 0.05, 0.05, 32);
         const cylinderModel = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
-        cylinderModel.position.set(-0.47, 0.45, 1.1);
+        cylinderModel.position.set(-0.47, 0.455, 1.1);
         cylinderModel.rotation.z = Math.PI / 2;
 
         truckGroup.add(cylinderModel);
@@ -688,7 +689,7 @@ export default {
             flameModel = gltf.scene;
 
             flameModel.scale.set(0.1, 0.3, 0.1);
-            flameModel.position.set(-0.53, 0.45, 1.1);
+            flameModel.position.set(-0.53, 0.455, 1.1);
             flameModel.rotation.z = -Math.PI / 2;
 
             if (animations && animations.length) {
@@ -824,6 +825,7 @@ export default {
                     });
 
                     router.push('/projects/pikaride');
+                    document.title = '0xbrax | Pika Ride';
                     break;
                 case 'starway':
                     goBackToPlane('force');
@@ -857,6 +859,7 @@ export default {
 
 
         // INIT
+        document.title = '0xbrax | 404 LOL';
         animate();
 
         audioArray.forEach((el, i) => {
@@ -897,9 +900,6 @@ export default {
 
 
             audioArray.forEach((el, i) => {
-                audioObject[el].pause();
-                audioObject[el].currentTime = 0;
-
                 initRangeInput(audioObject.inputRef.value[i], audioObject[`${el}Level`].value);
             });
         })
@@ -920,3 +920,115 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+#ui-ux-control-container {
+    position: absolute;
+    bottom: 25px;
+    left: 25px;
+}
+#ui-ux-control-container .fa-gear {
+    font-size: 25px;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+#ui-ux-control-container .fa-gear:hover {
+    background-color: rgba(255, 255, 255, 0.8);
+}
+#ui-ux-control-container .fa-gear.active-desktop {
+    transform: rotate(-30deg);
+}
+#ui-ux-control-container .fa-gear.active-mobile {
+    transform: rotate(30deg);
+}
+
+#ui-ux-control {
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 10px;
+    max-width: 0;
+    opacity: 0;
+    padding: 0;
+    overflow: hidden;
+    transition: all 0.2s ease-in-out;
+}
+#ui-ux-control.active {
+    max-width: 100%;
+    opacity: 1;
+    padding: 25px;
+}
+input[type="range"].audio {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 150px;
+    height: 10px;
+    background-color: #ffffff;
+    border-radius: 5px;
+    outline: none;
+    margin-left: 10px;
+}
+input[type="range"].audio::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background-color: #ff0000;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.no-volume {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 27px;
+    height: 3px;
+    background-color: #ff0000;
+    border-radius: 5px;
+    transform: rotate(-45deg) translate(-5%, -50%);
+    transform-origin: 0 0;
+}
+
+
+#projects-handler {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.project-btn,
+.back-btn {
+    background-color: rgba(255, 255, 255, 1);
+    cursor: pointer;
+    border: 2px solid #000000;
+    transition: background-color 0.2s ease-in-out;
+}
+.project-btn:hover,
+.back-btn:hover {
+    background-color: rgba(255, 255, 255, 0.8);
+}
+.project-btn {
+    border-radius: 15px;
+    padding: 10px 15px;
+    text-transform: uppercase;
+    font-size: 20px;
+}
+.back-btn {
+    margin-top: 15px;
+    border-radius: 50%;
+    width: 35px;
+    aspect-ratio: 1 / 1;
+    position: relative;
+}
+.back-btn i {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+</style>

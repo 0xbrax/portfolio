@@ -4,7 +4,7 @@
             <nav
                 class="container-md d-flex justify-content-between align-items-center"
             >
-                <h2 id="go-back-btn" class="pointer">Go to Home</h2>
+                <h3 id="go-back-btn" class="pointer">Go to HOME</h3>
 
                 <div class="visualizer-container d-flex align-items-end"></div>
             </nav>
@@ -428,19 +428,34 @@
 </template>
 
 <script>
-    import { onMounted } from "vue";
-    import { pikarideModule } from '@/assets/projects/pikaride/js/pikaride.js';
+import { onMounted, onUnmounted } from 'vue';
+import { pikarideModule } from '@/assets/projects/pikaride/js/pikaride.js';
 
-    export default {
-        name: "PikaRide",
-        setup() {
-            onMounted(async () => {
-                await pikarideModule();
-            });
-        },
-    };
+export default {
+    name: 'PikaRide',
+    setup() {
+        const bootstrapCSS = document.createElement('link');
+        bootstrapCSS.rel = 'stylesheet';
+        bootstrapCSS.id = 'bootstrapCSS';
+        bootstrapCSS.href = `${__ASSETS_URL__}css/bootstrap.css`;
+        document.head.appendChild(bootstrapCSS);
+
+        const pikarideCSS = document.createElement('link');
+        pikarideCSS.rel = 'stylesheet';
+        pikarideCSS.id = 'pikarideCSS';
+        pikarideCSS.href = `${__ASSETS_URL__}projects/pikaride/css/pikaride.css`;
+        document.head.appendChild(pikarideCSS);
+
+        onMounted(async () => {
+            await pikarideModule();
+        });
+        onUnmounted(() => {
+            // Wait for main-fade transition
+            setTimeout(() => {
+                bootstrapCSS.remove();
+                pikarideCSS.remove();
+            }, 1000);
+        })
+    },
+};
 </script>
-
-<style>
-    @import "@/assets/projects/pikaride/css/pikaride.css";
-</style>

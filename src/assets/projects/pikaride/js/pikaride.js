@@ -595,7 +595,7 @@ let isPikachuAlive = setInterval(function() {
 getLeaderboard(leaderboardID);
 let getWorldRecord = setInterval(function() {
     getLeaderboard(leaderboardID);
-}, 60_000);
+}, 120_000);
 
 function playGame() {
     if (pikachu.classList.contains('kill')) {

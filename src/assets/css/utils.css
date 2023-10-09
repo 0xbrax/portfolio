@@ -1,0 +1,76 @@
+/**** RESET ****/
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+:root {
+    --main-purple-col: #AB87FF;
+    --sec-purple-col: #D59AF2;
+    --pink-col: #FFB6D1;
+    --blue-col: #B4E1FF;
+    --green-col: #C1FF9B;
+}
+body {
+    font-family: 'Ubuntu', sans-serif;
+    color: #000000;
+}
+/********/
+
+
+
+/**** UTILS ****/
+.relative {
+    position: relative;
+}
+
+.d-flex {
+    display: flex;
+}
+.column {
+    flex-direction: column;
+}
+.column-rev {
+    flex-direction: column-reverse;
+}
+.justify-ctr {
+    justify-content: center;
+}
+.justify-btw {
+    justify-content: space-between;
+}
+.align-start {
+    align-items: start;
+}
+.align-ctr {
+    align-items: center;
+}
+.align-end {
+    align-items: end;
+}
+
+.mt-10 {
+    margin-top: 10px;
+}
+.mb-10 {
+    margin-bottom: 10px;
+}
+.ml-10 {
+    margin-left: 10px;
+}
+.mr-10 {
+    margin-right: 10px;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.rotate-90 {
+    transform: rotate(90deg);
+}
+.rotate--90-origin {
+    transform: rotate(-90deg) translateY(100%);
+    transform-origin: 0 100%;
+}
+/********/
