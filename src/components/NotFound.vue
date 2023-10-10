@@ -1,14 +1,16 @@
 <template>
     <div id="not-found" class="d-flex wrap justify-ctr align-ctr">
-        <div class="w-100 text-ctr">
-            404 error, go back home PUSH ROUTER (title: Oh, no...)
-        </div>
+        <h2 class="w-100 text-ctr py-20">
+            Oh, no... 404 error, page not found.
+        </h2>
+
+        <router-link class="home-btn" to="/">Go back home!</router-link>
 
         <div class="img-container w-100 text-ctr relative">
             <img class="avatar-body relative" src="@/assets/image/cute-villain-crying-edit-noeyes.png" />
             <img class="avatar-eyes" src="@/assets/image/cute-villain-crying-edit-eyes-nobg.png" />
 
-            <div class="left-tear" ref="leftTear"></div>
+            <div class="left-tear" ref="leftTear" @animationiteration="() => console.log('anim')"></div>
             <div class="right-tear" ref="rightTear"></div>
             <div class="tears-lake"></div>
         </div>
@@ -17,6 +19,7 @@
 
 <script>
 import { ref, onMounted } from 'vue';
+
 export default {
     name: 'NotFound',
 
@@ -24,15 +27,21 @@ export default {
         const leftTear = ref(null);
         const rightTear = ref(null);
 
-        const TEARS_OPACITY = '0.7';
+        const TEARS_OPACITY = '0.8';
         const TEARS_PRIMARY_COLOR = '0,138,255';
         const TEARS_SECONDARY_COLOR = '0,211,255';
-        const TEARS_ANIM_DURATION = 1300;
+        const TEARS_ANIM_DURATION = 1700;
 
+        const tearsAnimationDelay = (array, indexArray) => {
+            const arr = [...array];
+            const temp = [...arr.filter((el, i) => indexArray.includes(i))];
+            arr.splice(indexArray[0], indexArray.length);
+            arr.splice(0, 0, ...temp);
+            return arr;
+        }
 
-
-        const tearsAnimation = (tearRef) => {
-            const animKeyframes = [
+        const tearsAnimation = (tearRef, delay) => {
+            let animKeyframes = [
                 {
                     background: `linear-gradient(180deg, rgba(${TEARS_SECONDARY_COLOR},${TEARS_OPACITY}) 0%, rgba(${TEARS_SECONDARY_COLOR},${TEARS_OPACITY}) 10%, rgba(${TEARS_PRIMARY_COLOR},${TEARS_OPACITY}) 10%, rgba(${TEARS_PRIMARY_COLOR},${TEARS_OPACITY}) 100%)`
                 },
@@ -65,6 +74,10 @@ export default {
                 },
             ];
 
+            if (delay) {
+                animKeyframes = tearsAnimationDelay(animKeyframes, [9]);
+            }
+
             const animProperties = {
                 duration: TEARS_ANIM_DURATION,
                 iterations: Infinity,
@@ -78,7 +91,7 @@ export default {
             rightTear.value.style.background = `linear-gradient(180deg, rgba(${TEARS_PRIMARY_COLOR},${TEARS_OPACITY}) 0%, rgba(${TEARS_PRIMARY_COLOR},${TEARS_OPACITY}) 10%, rgba(${TEARS_SECONDARY_COLOR},${TEARS_OPACITY}) 10%, rgba(${TEARS_SECONDARY_COLOR},${TEARS_OPACITY}) 20%, rgba(${TEARS_PRIMARY_COLOR},${TEARS_OPACITY}) 20%, rgba(${TEARS_PRIMARY_COLOR},${TEARS_OPACITY}) 100%)`;
 
             tearsAnimation(leftTear.value);
-            tearsAnimation(rightTear.value);
+            tearsAnimation(rightTear.value, true);
         });
 
         return {
@@ -94,14 +107,36 @@ export default {
     width: 100%;
     height: 100vh;
     overflow: hidden;
+
+    background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 70%, rgba(0,138,255,0.8) 70%, rgba(0,138,255,0.8) 100%);
+}
+
+
+.home-btn {
+    border-radius: 15px;
+    padding: 10px 15px;
+    text-transform: uppercase;
+    font-size: 20px;
+    background-color: rgba(0,138,255,1);
+    color: #ffffff;
+    cursor: pointer;
+    border: 2px solid #000000;
+    transition: background-color 0.2s ease-in-out;
+}
+.home-btn:hover {
+    background-color: rgba(0,211,255,1);
+}
+
+.img-container {
+    background-color: #ffffff;
 }
 
 .avatar-body {
-    width: 20%;
+    width: 40%;
     z-index: 10;
 }
 .avatar-eyes {
-    width: 12%;
+    width: 24%;
 
     position: absolute;
     top: 15%;
@@ -111,8 +146,8 @@ export default {
 }
 
 .left-tear {
-    width: 4%;
-    height: 100%;
+    width: 8%;
+    height: 50%;
 
     position: absolute;
     z-index: 11;
@@ -120,8 +155,8 @@ export default {
     left: 44%;
 }
 .right-tear {
-    width: 4%;
-    height: 100%;
+    width: 8%;
+    height: 50%;
 
     position: absolute;
     z-index: 11;
@@ -130,7 +165,7 @@ export default {
 }
 
 .tears-lake {
-    background-color: rgba(0, 138, 255, 0.7);
+    background-color: rgba(0,138,255,0.8);
     width: 100%;
     height: 20%;
 
@@ -138,5 +173,20 @@ export default {
     z-index: 13;
     bottom: 0;
     left: 0;
+}
+
+@media all and (min-width: 768px) {
+    .avatar-body {
+        width: 20%;
+    }
+    .avatar-eyes {
+        width: 12%;
+    }
+    .left-tear {
+        width: 4%
+    }
+    .right-tear {
+        width: 4%;
+    }
 }
 </style>

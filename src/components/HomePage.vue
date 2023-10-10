@@ -209,7 +209,7 @@
                 switch (el) {
                     case "backgroundMusic":
                         audioSource = PositivePopAudioTrack;
-                        audioVolume = "100";
+                        audioVolume = "100"; // TODO get from pinia store and update
                         audioIcon = "fas fa-music";
                         break;
                     case "airplaneIdleFX":
