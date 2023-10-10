@@ -447,6 +447,9 @@ export default {
         pikarideCSS.href = `${__ASSETS_URL__}projects/pikaride/css/pikaride.css`;
         document.head.appendChild(pikarideCSS);
 
+        // INIT
+        document.title = "0xbrax | Pika Ride";
+
         onMounted(async () => {
             await pikarideModule();
         });

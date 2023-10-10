@@ -69,6 +69,13 @@
                 </div>
             </div>
 
+            <i 
+                v-show="isFPVActiveComplete"
+                id="random-wizard" 
+                class="fa-solid fa-hat-wizard" 
+                @click="router.push(`/IsKetchupACondimentOrDippingSauce-${Date.now()}-randomURL`)"
+            ></i>
+
             <div
                 v-if="whatProject !== null && whatProject !== 'LOADING'"
                 id="projects-handler"
@@ -270,6 +277,7 @@
             let planeMixer;
             let selectedChild;
             let isFPVActive = false;
+            const isFPVActiveComplete = ref(false);
 
             modelLoader.load(Plane, (gltf) => {
                 const animations = gltf.animations;
@@ -392,6 +400,7 @@
                         ease: "power2.inOut",
                         onComplete: () => {
                             interactionManager.add(sphere);
+                            isFPVActiveComplete.value = true;
                         },
                     }).play();
                 });
@@ -454,6 +463,8 @@
             };
 
             const planeWindowReset = () => {
+                isFPVActiveComplete.value = false;
+
                 gsap.to(selectedChild.material, {
                     duration: 0.5,
                     opacity: 1,
@@ -919,6 +930,10 @@
                 isEnterClicked.value = true;
                 video.play();
 
+                if (router.options.history.state.back && !router.options.history.state.back.includes('projects')) {
+                    return;
+                }
+
                 audioArray.forEach((el) => {
                     audioObject[el].play();
                 });
@@ -978,7 +993,7 @@
             };
 
             // INIT
-            document.title = "0xbrax | 404 LOL";
+            document.title = "0xbrax | Home";
             animate();
 
             audioArray.forEach((el, i) => {
@@ -1041,6 +1056,7 @@
                 audioArray,
                 audioObject,
                 onTouchMoveInputHandler,
+                isFPVActiveComplete
             };
         },
     };
@@ -1052,7 +1068,8 @@
         bottom: 25px;
         left: 25px;
     }
-    #ui-ux-control-container .fa-gear {
+    #ui-ux-control-container .fa-gear,
+    #random-wizard {
         font-size: 25px;
         background-color: rgba(255, 255, 255, 0.5);
         border-radius: 50%;
@@ -1060,7 +1077,8 @@
         cursor: pointer;
         transition: all 0.2s ease-in-out;
     }
-    #ui-ux-control-container .fa-gear:hover {
+    #ui-ux-control-container .fa-gear:hover,
+    #random-wizard:hover {
         background-color: rgba(255, 255, 255, 0.8);
     }
     #ui-ux-control-container .fa-gear.active-desktop {
@@ -1103,7 +1121,6 @@
         border-radius: 50%;
         cursor: pointer;
     }
-
     .no-volume {
         position: absolute;
         bottom: 0;
@@ -1114,6 +1131,12 @@
         border-radius: 5px;
         transform: rotate(-45deg) translate(-5%, -50%);
         transform-origin: 0 0;
+    }
+
+    #random-wizard {
+        position: absolute;
+        bottom: 25px;
+        right: 25px;
     }
 
     #projects-handler {
