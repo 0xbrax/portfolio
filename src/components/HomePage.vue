@@ -128,6 +128,7 @@
 <script>
     import { onMounted, ref, watch } from "vue";
     import { useRouter } from "vue-router";
+    import { useSettingsStore } from '@/store.js';
     import * as THREE from "three";
     import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
     import { OrbitControls } from "three/addons/controls/OrbitControls.js";
@@ -159,8 +160,9 @@
 
         setup() {
             // UTILS
-            const isMobile = isDeviceMobile();
+            const settingsStore = useSettingsStore();
             const router = useRouter();
+            const isMobile = isDeviceMobile();
             const whatProject = ref(null);
             const isControlShown = ref(false);
 
@@ -216,12 +218,12 @@
                 switch (el) {
                     case "backgroundMusic":
                         audioSource = PositivePopAudioTrack;
-                        audioVolume = "100"; // TODO get from pinia store and update
+                        audioVolume = settingsStore.audioLevels[el];
                         audioIcon = "fas fa-music";
                         break;
                     case "airplaneIdleFX":
                         audioSource = AirplaneIdleAudioFX;
-                        audioVolume = "50";
+                        audioVolume = settingsStore.audioLevels[el];
                         audioIcon = "fas fa-plane";
                         break;
                 }
@@ -1001,6 +1003,7 @@
                     () => audioObject[`${el}Level`].value,
                     (val) => {
                         audioObject[el].volume = parseInt(val) / 100;
+                        settingsStore.updateAudioLevel(el, val);
                         if (audioObject.inputRef.value[i])
                             initRangeInput(audioObject.inputRef.value[i], val);
                     },
