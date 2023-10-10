@@ -602,6 +602,9 @@ function playGame() {
         return;
     }
 
+    disableScroll();
+    disableResize();
+
     levelCounter = 1;
     gameContainer.style.backgroundImage = `url(${__ASSETS_URL__}projects/pikaride/img/2D-city-back_2x_01-edit.png)`;
     scoreContainer.style.color = 'black';
@@ -737,6 +740,9 @@ function resetGame() {
 }
 
 function die() {
+    enableScroll();
+    enableResize();
+
     isGamePlaying = false;
     isPikachuSuperSaiyan = false;
     isSuperCarActive = false;
@@ -1180,11 +1186,24 @@ function setNewPlayerScore(id, player, score) {
     );
 };
 async function getLeaderboard(id) {
-    const response = await fetch(
-        `https://us-central1-js-capstone-backend.cloudfunctions.net/api/games/${id}/scores`,
-    );
-    const dataText = await response.text();
-    const parsedData = JSON.parse(dataText);
+    let parsedData;
+    try {
+        const response = await fetch(
+            `https://us-central1-js-capstone-backend.cloudfunctions.net/api/games/${id}/scores`,
+        );
+        const dataText = await response.text();
+
+        parsedData = JSON.parse(dataText);
+    } catch {
+        bestScoreView.innerHTML = '';
+        for (let i = 0; i < 5; i++) {
+            let divScore = document.createElement('div');
+            bestScoreView.append(divScore);
+            divScore.innerHTML = `0 by ---`;
+        }
+        worldRecord.innerHTML = `World record: <span class="fw-bold">0</span> by <span class="fw-bold">---</span>`;
+        return;
+    }
 
     let realTimeWorldRecord = parsedData.result;
     let worldRecordCounter = 0;
@@ -1305,6 +1324,22 @@ function requestToPlay() {
             playGame();
         }
     });
+}
+
+
+
+// UPGRADE
+function disableScroll() {
+    document.body.style.overflow = 'hidden';
+}
+function enableScroll() {
+    document.body.style.overflow = 'auto';
+}
+function disableResize() {
+    window.addEventListener('resize', () => window.resizeTo(window.innerWidth, window.innerHeight));
+}
+function enableResize() {
+    window.removeEventListener('resize', () => window.resizeTo(window.innerWidth, window.innerHeight));
 }
 
 

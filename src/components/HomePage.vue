@@ -373,7 +373,9 @@
                 });
 
                 interactionManager.add(planeModel);
-                planeModel.addEventListener("click", () => {
+                planeModel.addEventListener("click", (event) => {
+                    event.stopPropagation();
+
                     if (whatProject.value !== null) {
                         goBackToPlane();
 
@@ -407,7 +409,9 @@
                     }).play();
                 });
 
-                sphere.addEventListener("click", () => {
+                sphere.addEventListener("click", (event) => {
+                    event.stopPropagation();
+
                     if (
                         isFPVActive === false ||
                         whatProject.value === "LOADING"
@@ -629,7 +633,9 @@
                 group.add(cubeModel);
 
                 interactionManager.add(cubeModel);
-                cubeModel.addEventListener("click", () => {
+                cubeModel.addEventListener("click", (event) => {
+                    event.stopPropagation();
+
                     controls.enabled = false;
 
                     if (whatProject.value !== project.toLowerCase()) {
@@ -752,12 +758,13 @@
                 truckGroup.add(mesh);
 
                 interactionManager.add(mesh);
-                mesh.addEventListener("click", () =>
+                mesh.addEventListener("click", (event) => {
+                    event.stopPropagation();
                     window.open(
                         "https://opensea.io/assets/ethereum/0x495f947276749ce646f68ac8c248420045cb7b5e/91909880063035989946426545430640419443565129360941632704534706326623437717505",
                         "_blank"
                     )
-                );
+                });
             });
 
             // ROCKET MODEL
@@ -787,23 +794,42 @@
             });
 
             // ROCKET CYLINDER MODEL 1
-            const cylinderMaterial = new THREE.MeshBasicMaterial({
+            const cylinderMaterial_1 = new THREE.MeshBasicMaterial({
                 color: 0x4d4d4d,
             });
-            const cylinderGeometry = new THREE.CylinderGeometry(
+            const cylinderGeometry_1 = new THREE.CylinderGeometry(
                 0.05,
                 0.05,
-                0.05,
+                0.06,
                 32
             );
-            const cylinderModel = new THREE.Mesh(
-                cylinderGeometry,
-                cylinderMaterial
+            const cylinderModel_1 = new THREE.Mesh(
+                cylinderGeometry_1,
+                cylinderMaterial_1
             );
-            cylinderModel.position.set(-0.47, 0.455, 1.1);
-            cylinderModel.rotation.z = Math.PI / 2;
+            cylinderModel_1.position.set(-0.47, 0.455, 1.1);
+            cylinderModel_1.rotation.z = Math.PI / 2;
 
-            truckGroup.add(cylinderModel);
+            truckGroup.add(cylinderModel_1);
+
+            // ROCKET CYLINDER MODEL 2
+            const cylinderMaterial_2 = new THREE.MeshBasicMaterial({
+                color: 0xaaaaaa,
+            });
+            const cylinderGeometry_2 = new THREE.CylinderGeometry(
+                0.07,
+                0.07,
+                0.01,
+                32
+            );
+            const cylinderModel_2 = new THREE.Mesh(
+                cylinderGeometry_2,
+                cylinderMaterial_2
+            );
+            cylinderModel_2.position.set(-0.54, 0.455, 1.1);
+            cylinderModel_2.rotation.z = Math.PI / 2;
+
+            truckGroup.add(cylinderModel_2);
 
             // ROCKET FLAME MODEL
             const flameClock = new THREE.Clock();
@@ -841,9 +867,10 @@
                 scene.add(githubModel);
 
                 interactionManager.add(githubModel);
-                githubModel.addEventListener("click", () =>
-                    window.open("https://github.com/0xbrax", "_blank")
-                );
+                githubModel.addEventListener("click", (event) => {
+                    event.stopPropagation();
+                    window.open("https://github.com/0xbrax", "_blank");
+                });
             });
 
             // LINKEDIN MODEL
@@ -859,12 +886,10 @@
                 scene.add(linkedinModel);
 
                 interactionManager.add(linkedinModel);
-                linkedinModel.addEventListener("click", () =>
-                    window.open(
-                        "https://www.linkedin.com/in/marco-braccini",
-                        "_blank"
-                    )
-                );
+                linkedinModel.addEventListener("click", (event) => {
+                    event.stopPropagation();
+                    window.open("https://www.linkedin.com/in/marco-braccini", "_blank");
+                });
             });
 
             // TWITTER MODEL
@@ -880,9 +905,10 @@
                 scene.add(twitterModel);
 
                 interactionManager.add(twitterModel);
-                twitterModel.addEventListener("click", () =>
-                    window.open("https://twitter.com/0xbrax", "_blank")
-                );
+                twitterModel.addEventListener("click", (event) => {
+                    event.stopPropagation();
+                    window.open("https://twitter.com/0xbrax", "_blank");
+                });
             });
 
             // INSTAGRAM MODEL
@@ -898,9 +924,10 @@
                 scene.add(instagramModel);
 
                 interactionManager.add(instagramModel);
-                instagramModel.addEventListener("click", () =>
-                    window.open("https://www.instagram.com/0xbrax", "_blank")
-                );
+                instagramModel.addEventListener("click", (event) => {
+                    event.stopPropagation();
+                    window.open("https://www.instagram.com/0xbrax", "_blank");
+                });
             });
 
             const animate = () => {
