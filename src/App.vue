@@ -15,7 +15,7 @@ export default {
 <style>
 .main-fade-enter-active,
 .main-fade-leave-active {
-  transition: opacity 1s;
+  transition: opacity 1s ease-in-out;
 
   position: absolute;
   width: 100%;

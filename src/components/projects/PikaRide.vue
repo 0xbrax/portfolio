@@ -433,6 +433,7 @@ import { pikarideModule } from '@/assets/projects/pikaride/js/pikaride.js';
 
 export default {
     name: 'PikaRide',
+
     setup() {
         const bootstrapCSS = document.createElement('link');
         bootstrapCSS.rel = 'stylesheet';
