@@ -348,7 +348,7 @@
                 <div id="food-truck-main" class="d-flex justify-content-center mt-0 mb-1">
                     <div id="food-truck-container" class="position-relative">
                         <img
-                            src="@/assets/projects/pikaride/img/food-truck edit big menu.png"
+                            src="@/assets/projects/pikaride/img/food-truck_edit-big-menu.png"
                             id="food-truck-container-img"
                         />
 
@@ -379,7 +379,7 @@
                         <img
                             id="truck-kitchen-part"
                             class="position-absolute"
-                            src="@/assets/projects/pikaride/img/food-truck kitchen part edit.png"
+                            src="@/assets/projects/pikaride/img/food-truck_kitchen-part-edit.png"
                         />
 
                         <div

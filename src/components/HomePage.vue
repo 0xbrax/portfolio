@@ -99,7 +99,7 @@
         >
             <img
                 id="logo-img"
-                src="@/assets/image/LOGO Brax bianco no sfondo.png"
+                src="@/assets/image/LOGO-Brax_white-nobg.png"
                 alt="Brax"
             />
 
