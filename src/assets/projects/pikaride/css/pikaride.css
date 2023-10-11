@@ -1,0 +1,705 @@
+#pika-ride {
+    background-color: var(--main-purple-col);
+    min-height: 100vh;
+
+    /**** BOOTSTRAP ****/
+    font-size: var(--bs-body-font-size);
+    font-weight: var(--bs-body-font-weight);
+    line-height: var(--bs-body-line-height);
+    text-align: var(--bs-body-text-align);
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+main {
+    background: linear-gradient(
+        180deg,
+        var(--pink-col) 58%,
+        var(--blue-col) 58%
+    );
+}
+
+main {
+    overflow-x: hidden;
+}
+
+.relative-index-per-bg {
+    position: relative;
+
+    z-index: 500;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+/***** HEADER *****/
+
+header {
+    height: 70px;
+    background-color: var(--main-purple-col);
+}
+
+header nav {
+    height: 100%;
+}
+
+.visualizer-container {
+    height: 50px;
+}
+.visualizer-container__bar {
+    display: inline-block;
+    background: white;
+    margin: 0 1px;
+    width: 5px;
+    height: 5px;
+}
+
+/***** GAME *****/
+
+#game-container {
+    width: 600px;
+    height: 328px;
+    position: relative;
+    background-color: black;
+    border-bottom: 5px solid black;
+}
+
+#nickname-container {
+    width: 66%;
+    height: 40%;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 50px 100px;
+    border-radius: 10px;
+    z-index: 300;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#nickname {
+    width: 110px;
+}
+#nickname-container label {
+    position: absolute;
+    left: 50%;
+    bottom: 8%;
+    transform: translateX(-50%);
+    color: white;
+}
+
+#game-info-container {
+    font-size: 14px;
+    width: 70%;
+    background-color: rgba(0, 0, 0, 0.9);
+    top: 12%;
+    left: 50%;
+    transform: translateX(-50%);
+
+    z-index: 350;
+}
+#game-info-btn {
+    top: 10px;
+    right: 10px;
+
+    width: 26px;
+    aspect-ratio: 1 / 1;
+}
+#game-info-handle {
+    bottom: 83px;
+    left: 10px;
+
+    width: 26px;
+    aspect-ratio: 1 / 1;
+}
+
+#game {
+    width: 600px;
+    height: 250px;
+    position: relative;
+    border: 5px solid black;
+    color: black;
+
+    background-image: url("../img/2D-city-back_2x_01-edit.png");
+    background-repeat: repeat-x;
+    background-position: left 0px bottom 0%;
+    background-size: contain;
+
+    animation: slide 7s infinite linear;
+    animation-play-state: paused;
+}
+@keyframes slide {
+    0% {
+        background-position: left 0px bottom 0%;
+    }
+    100% {
+        background-position: left -480px bottom 0%;
+    }
+}
+
+#score-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding: 5px 10px;
+    width: 100%;
+    z-index: 200;
+}
+
+#mcdonalds {
+    width: 120px;
+    position: absolute;
+    bottom: 26px;
+    right: 0px;
+    z-index: 12;
+    transform-origin: bottom right;
+}
+.takeaway {
+    animation: takeaway 0.5s 0.1s ease-out;
+}
+@keyframes takeaway {
+    0% {
+        transform: rotate(0deg);
+    }
+    50% {
+        transform: rotate(13deg);
+    }
+    100% {
+        transform: rotate(0deg);
+    }
+}
+
+#burger {
+    width: 40px;
+    position: absolute;
+    bottom: 26px;
+    right: 20px;
+    z-index: 11;
+}
+.diet {
+    animation: diet linear;
+}
+@keyframes diet {
+    0% {
+        right: 20px;
+    }
+    100% {
+        right: 555px;
+    }
+}
+
+#monster {
+    width: 100px;
+    position: absolute;
+    bottom: 10px;
+    right: 0px;
+    z-index: 11;
+
+    display: none;
+}
+.attack {
+    animation: attack linear;
+}
+@keyframes attack {
+    0% {
+        right: 0px;
+    }
+    100% {
+        right: 520px;
+    }
+}
+
+#final-boss-container {
+    width: 140px;
+    position: absolute;
+    bottom: 15px;
+    right: 10px;
+    z-index: 51;
+
+    display: none;
+}
+#final-boss {
+    width: 100%;
+}
+.boss-move {
+    animation: boss-move linear;
+}
+@keyframes boss-move {
+    0%,
+    100% {
+        bottom: 15px;
+    }
+    25% {
+        bottom: -15px;
+    }
+    75% {
+        bottom: 75px;
+    }
+}
+#final-boss-life {
+    position: absolute;
+    bottom: 3px;
+    right: 18px;
+    background: linear-gradient(
+        90deg,
+        rgba(255, 0, 0, 1) 0%,
+        rgba(173, 255, 47, 1) 0%
+    );
+    border: 2px solid black;
+    border-radius: 6px;
+    width: 120px;
+    height: 12px;
+
+    display: none;
+}
+#fire-ball {
+    width: 90px;
+    position: absolute;
+    right: 70px;
+    transform: rotate(-23deg);
+}
+.boss-attack {
+    animation: boss-attack linear;
+}
+@keyframes boss-attack {
+    0% {
+        right: 70px;
+        transform: rotate(-23deg);
+    }
+    25% {
+        bottom: 30px;
+        right: 200px;
+        transform: rotate(0deg);
+    }
+    100% {
+        bottom: 30px;
+        right: 510px;
+        transform: rotate(0deg);
+    }
+}
+
+#star {
+    width: 40px;
+    position: absolute;
+    bottom: 170px;
+    right: 0px;
+    z-index: 13;
+    display: none;
+}
+.to-the-moon {
+    animation: to-the-moon 2s linear;
+}
+@keyframes to-the-moon {
+    0% {
+        bottom: 170px;
+        right: 0px;
+    }
+    33% {
+        bottom: 126px;
+        right: 200px;
+    }
+    100% {
+        bottom: 126px;
+        right: 555px;
+    }
+}
+
+#pikachu-container {
+    width: 100px;
+    position: absolute;
+    bottom: 26px;
+    left: 24px;
+    z-index: 91;
+}
+#pikachu {
+    width: 100%;
+    z-index: 92;
+}
+.jump {
+    animation: jump 0.6s cubic-bezier(0.2, 0.65, 0.85, 0.66);
+}
+@keyframes jump {
+    0% {
+        bottom: 26px;
+    }
+    50% {
+        bottom: 126px;
+    }
+    100% {
+        bottom: 26px;
+    }
+}
+.kill {
+    transform: rotateY(180deg) rotate(195deg) translateY(-35px);
+}
+.car-active {
+    transform: rotate(-23deg);
+}
+
+#cloud-text {
+    width: 140px;
+    position: absolute;
+    bottom: 42px;
+    left: 88px;
+    z-index: 93;
+    display: none;
+}
+#cloud-text img {
+    width: 100%;
+    z-index: 94;
+}
+#cloud-text p {
+    width: 100%;
+    position: absolute;
+    bottom: 4px;
+    left: 37px;
+    z-index: 95;
+}
+
+#car {
+    position: absolute;
+    left: 7px;
+    bottom: 4px;
+    z-index: 96;
+    display: none;
+}
+#super-car {
+    width: 118px;
+}
+#wheel-car-left {
+    width: 22px;
+    position: absolute;
+    left: 8px;
+    bottom: -3px;
+    animation: race 1.2s infinite linear;
+    animation-play-state: paused;
+}
+#wheel-car-right {
+    width: 22px;
+    position: absolute;
+    left: 81px;
+    bottom: -3px;
+    animation: race 1.2s infinite linear;
+    animation-play-state: paused;
+}
+@keyframes race {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+#thug-life {
+    width: 44px;
+    position: absolute;
+    left: 46px;
+    bottom: 35px;
+    transform: rotate(-23deg);
+}
+#fire {
+    width: 15px;
+    transform: rotate(270deg) scaleX(0.8) scaleY(1.3);
+    position: absolute;
+    left: -22px;
+    bottom: -2px;
+    display: none;
+}
+
+#lighting-ball {
+    width: 60px;
+    position: absolute;
+    z-index: 201;
+}
+.pika-attack {
+    animation: pika-attack linear;
+}
+@keyframes pika-attack {
+    100% {
+        left: 540px;
+    }
+}
+
+/***** SPECIAL *****/
+
+#paper-plane {
+    width: 80%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-5deg);
+
+    z-index: 50;
+}
+.paper-plane-path {
+    stroke-dasharray: 0;
+    stroke-dashoffset: 0;
+    stroke-width: 20;
+    stroke: #000;
+    fill: none;
+    transition: stroke-dashoffset 1s;
+}
+
+.custom-shape-edit-top {
+    width: 100%;
+    height: 300px;
+    background-color: var(--sec-purple-col);
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.custom-shape-divider-top-1669183005 {
+    position: absolute;
+    top: 300px;
+    left: 0;
+    width: 150%;
+    overflow: hidden;
+    line-height: 0;
+}
+.custom-shape-divider-top-1669183005 svg {
+    position: relative;
+    display: block;
+    width: calc(150% + 1.3px);
+    height: 50px;
+}
+.custom-shape-divider-top-1669183005 .shape-fill {
+    fill: var(--sec-purple-col);
+}
+
+.custom-shape-edit-bottom {
+    width: 100%;
+    height: 100px;
+    background-color: var(--green-col);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+.custom-shape-divider-bottom-1669183688 {
+    position: absolute;
+    bottom: 100px;
+    left: 0;
+    width: 150%;
+    overflow: hidden;
+    line-height: 0;
+    transform: rotate(180deg);
+}
+.custom-shape-divider-bottom-1669183688 svg {
+    position: relative;
+    display: block;
+    width: calc(150% + 1.3px);
+    height: 50px;
+    transform: rotateY(180deg);
+}
+.custom-shape-divider-bottom-1669183688 .shape-fill {
+    fill: var(--green-col);
+}
+
+#food-truck-main {
+    background-image: url("../img/paper-planes-bg_3x.png");
+    background-size: auto 100%;
+    background-repeat: repeat-x;
+    background-position: center;
+}
+#food-truck-container-img {
+    height: 280px;
+}
+#truck-door-container {
+    width: 44px;
+    height: 97px;
+    bottom: 51px;
+    left: 272px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+
+    transform-style: preserve-3d;
+
+    z-index: 311;
+}
+#truck-door-front {
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: #cd181f;
+    box-shadow: inset 0px 0px 0px 1px #000000;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+
+    z-index: 202;
+}
+#truck-door-front img {
+    height: 6px;
+    top: 60px;
+    right: 4px;
+}
+#truck-door-back {
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: #cd181f;
+    box-shadow: inset 0px 0px 0px 1px #000000;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+
+    z-index: 201;
+}
+
+.truck-door-window {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #0ca49b;
+    box-shadow: 0px 0px 0px 2px #000000;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.truck-door-anim {
+    animation: open-door-break 3.4s 0.1s ease forwards;
+}
+@keyframes open-door-break {
+    0% {
+        -webkit-transform: perspective(600) rotateY(0deg);
+        transform-origin: 0% 50%;
+    }
+    20% {
+        -webkit-transform: perspective(600) rotateY(-180deg);
+        transform-origin: 0% 50%;
+    }
+    45% {
+        -webkit-transform: perspective(600) rotateY(-180deg);
+        transform-origin: 0% 50%;
+    }
+    65% {
+        -webkit-transform: perspective(600) rotateY(0deg);
+        transform-origin: 0% 50%;
+    }
+    100% {
+        -webkit-transform: perspective(600) rotateY(0deg);
+        transform-origin: 0% 50%;
+    }
+}
+.truck-door-hover {
+    animation: open-door 1s ease forwards;
+}
+@keyframes open-door {
+    0% {
+        -webkit-transform: perspective(600) rotateY(0deg);
+        transform-origin: 0% 50%;
+    }
+    100% {
+        -webkit-transform: perspective(600) rotateY(-180deg);
+        transform-origin: 0% 50%;
+    }
+}
+#truck-kitchen-part {
+    width: 15.8%;
+    bottom: 17.1%;
+    right: 32.7%;
+
+    z-index: 310;
+}
+#best-score-container {
+    font-size: 10px;
+    top: 151px;
+    left: 29px;
+    transform: skew(10deg);
+}
+#pikachu-static {
+    width: 100px;
+    bottom: 63px;
+    right: 208px;
+    transform: scaleX(1);
+
+    z-index: 309;
+}
+.pikachu-static-anim {
+    animation: pika-food 3s linear forwards;
+}
+@keyframes pika-food {
+    0% {
+        bottom: 63px;
+        right: 208px;
+        transform: scaleX(1);
+    }
+    12% {
+        z-index: 309;
+    }
+    13% {
+        z-index: 320;
+    }
+    15% {
+        bottom: 63px;
+        right: 280px;
+        transform: scaleX(-1);
+    }
+    35% {
+        bottom: 0px;
+        right: 320px;
+        transform: scaleX(-1);
+    }
+    40% {
+        transform: scaleX(1);
+    }
+    90% {
+        bottom: 0px;
+        right: 148px;
+        transform: scaleX(1);
+    }
+    95% {
+        transform: scaleX(-1);
+    }
+    100% {
+        bottom: 66px;
+        right: 108px;
+        transform: scaleX(-1);
+    }
+}
+#pika-food-btn {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/***** MEDIA QUERY *****/
+
+@media all and (min-width: 768px) {
+    .visualizer-container__bar {
+        margin: 0 2px;
+        width: 10px;
+    }
+
+    .paper-plane-path {
+        stroke-dasharray: 0;
+        stroke-dashoffset: 0;
+        stroke-width: 10;
+    }
+
+    .custom-shape-divider-top-1669183005 {
+        width: 100%;
+    }
+    .custom-shape-divider-top-1669183005 svg {
+        width: calc(100% + 1.3px);
+    }
+
+    .custom-shape-divider-bottom-1669183688 {
+        width: 100%;
+    }
+    .custom-shape-divider-bottom-1669183688 svg {
+        width: calc(100% + 1.3px);
+    }
+}
