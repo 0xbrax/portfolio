@@ -1,4 +1,5 @@
 import router from '@/router.js';
+import backMusicAudio from '@/assets/projects/pikaride/audio/Josh Mease - 4 on the Floor 8bit.wav';
 
 // MODULE START
 export const pikarideModule = () => {
@@ -30,7 +31,7 @@ let wheelLeft = document.getElementById('wheel-car-left');
 let wheelRight = document.getElementById('wheel-car-right');
 let carNos = document.getElementById('fire');
 let isSuperCarActive = false;
-const backMusic = new Audio(`${__ASSETS_URL__}projects/pikaride/audio/Josh Mease - 4 on the Floor 8bit.wav`);
+const backMusic = new Audio(backMusicAudio);
 let isBGMusicPlaying = false;
 const jumpSound = new Audio(`${__ASSETS_URL__}projects/pikaride/audio/arcade-8bit-jump-sfx.mp3`);
 const killSound = new Audio(`${__ASSETS_URL__}projects/pikaride/audio/mixkit-retro-game-over-1947-edit.mp3`);
