@@ -47,13 +47,14 @@ header nav {
 .visualizer-container {
     height: 50px;
 }
-.visualizer-container__bar {
+/**** VUE SCOPED fix with JavaScript ****/
+/*.visualizer-container__bar {
     display: inline-block;
     background: white;
     margin: 0 1px;
     width: 5px;
     height: 5px;
-}
+}*/
 
 /***** GAME *****/
 

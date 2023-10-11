@@ -13,6 +13,10 @@ export default {
 </script>
 
 <style>
+/**** TODO Remove it after rework, used in Pikaride only ****/
+@import url("@/assets/css/bootstrap.css");
+/********/
+
 .main-fade-enter-active,
 .main-fade-leave-active {
   transition: opacity 1s ease-in-out;

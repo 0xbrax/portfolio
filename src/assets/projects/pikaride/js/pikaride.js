@@ -139,17 +139,31 @@ const musicBarsNumber = 16;
 for (let i = 0; i < musicBarsNumber; i++ ) {
     const bar = document.createElement("div");
     bar.setAttribute("id", "bar" + i);
-    bar.setAttribute("class", "visualizer-container__bar");
+
+    // FIX style per Vue scoped
+    bar.style.display = 'inline-block';
+    bar.style.backgroundColor = 'white';
+    bar.style.margin = '0 2px';
+    bar.style.width = '10px';
+    bar.style.height = '5px';
+    ////
+
     visualizerContainer.appendChild(bar);
 }
 
-backMusic.addEventListener('play', function() {
-    const ctx = new AudioContext();
-    const audioSource = ctx.createMediaElementSource(backMusic);
-    const analayzer = ctx.createAnalyser();
+let ctx;
+let analayzer;
 
-    audioSource.connect(analayzer);
-    audioSource.connect(ctx.destination);
+backMusic.addEventListener('play', function() {
+
+    if (!ctx) {
+        ctx = new AudioContext();
+        const audioSource = ctx.createMediaElementSource(backMusic);
+        analayzer = ctx.createAnalyser();
+
+        audioSource.connect(analayzer);
+        audioSource.connect(ctx.destination);
+    }
 
     const frequencyData = new Uint8Array(analayzer.frequencyBinCount);
     analayzer.getByteFrequencyData(frequencyData);
