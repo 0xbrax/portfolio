@@ -1,8 +1,12 @@
 <template>
     <div id="not-found" class="d-flex wrap justify-ctr align-ctr">
-        <h2 class="w-100 text-ctr py-20">
-            Oh, no... 404 error, page not found.
-        </h2>
+        <div class="w-100 text-ctr py-20">
+            <h2>
+                Oh no... page not found.
+            </h2>
+            
+            <p class="mt-10">Please be patient, I'm doing my best.</p>
+        </div>
 
         <router-link class="home-btn" to="/">Go back home</router-link>
 
@@ -33,7 +37,7 @@
             const leftTear = ref(null);
             const rightTear = ref(null);
 
-            const TEARS_OPACITY = "0.8";
+            const TEARS_OPACITY = "1";
             const TEARS_PRIMARY_COLOR = "0, 138, 255";
             const TEARS_SECONDARY_COLOR = "0, 211, 255";
             const TEARS_ANIM_DURATION = 1700;
@@ -93,7 +97,7 @@
             };
 
             // INIT
-            document.title = "0xbrax | Oh, no... 404 LOL";
+            document.title = "0xbrax | 404 LOL";
 
             onMounted(() => {
                 leftTear.value.style.background = `linear-gradient(180deg, rgba(${TEARS_PRIMARY_COLOR}, ${TEARS_OPACITY}) 0%, rgba(${TEARS_PRIMARY_COLOR}, ${TEARS_OPACITY}) 10%, rgba(${TEARS_SECONDARY_COLOR}, ${TEARS_OPACITY}) 10%, rgba(${TEARS_SECONDARY_COLOR}, ${TEARS_OPACITY}) 20%, rgba(${TEARS_PRIMARY_COLOR}, ${TEARS_OPACITY}) 20%, rgba(${TEARS_PRIMARY_COLOR}, ${TEARS_OPACITY}) 100%)`;
@@ -114,15 +118,15 @@
 <style>
     #not-found {
         width: 100%;
-        height: 100vh;
+        height: 100dvh;
         overflow: hidden;
 
         background: linear-gradient(
             180deg,
             rgba(255, 255, 255, 0) 0%,
             rgba(255, 255, 255, 0) 70%,
-            rgba(0, 138, 255, 0.8) 70%,
-            rgba(0, 138, 255, 0.8) 100%
+            rgba(0, 138, 255, 1) 70%,
+            rgba(0, 138, 255, 1) 100%
         );
     }
 
@@ -161,24 +165,24 @@
     }
 
     .left-tear {
-        width: 8%;
+        width: 6.5%;
         height: 51%;
 
         position: absolute;
         z-index: 11;
         top: 30%;
-        left: 38.7%;
+        left: 39.4%;
 
         animation: tearsHeight 15s infinite ease-in-out;
     }
     .right-tear {
-        width: 8%;
+        width: 6.5%;
         height: 51%;
 
         position: absolute;
         z-index: 11;
         top: 30%;
-        left: 51.6%;
+        left: 52.1%;
 
         animation: tearsHeight 15s infinite ease-in-out;
     }
@@ -193,7 +197,7 @@
     }
 
     .tears-lake {
-        background-color: rgba(0, 138, 255, 0.8);
+        background-color: rgba(0, 138, 255, 1);
         width: 100%;
         height: 20%;
 
@@ -222,11 +226,11 @@
             width: 12%;
         }
         .left-tear {
-            width: 4%;
-            left: 44%;
+            width: 3.5%;
+            left: 44.2%;
         }
         .right-tear {
-            width: 4%;
+            width: 3.5%;
             left: 50.5%;
         }
     }

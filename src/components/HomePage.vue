@@ -36,9 +36,9 @@
                     >
                         <div
                             @click="
-                                audioObject[`${el}Level`].value !== '0'
-                                    ? (audioObject[`${el}Level`].value = '0')
-                                    : (audioObject[`${el}Level`].value = '100')
+                                audioObject[`${el}Level`] !== '0'
+                                    ? (audioObject[`${el}Level`] = '0')
+                                    : (audioObject[`${el}Level`] = '100')
                             "
                             :class="[
                                 'relative pointer',
@@ -48,7 +48,7 @@
                             <i :class="audioObject[`${el}Icon`]"></i>
 
                             <div
-                                v-if="audioObject[`${el}Level`].value === '0'"
+                                v-if="audioObject[`${el}Level`] === '0'"
                                 class="no-volume pointer"
                             ></div>
                         </div>
@@ -56,8 +56,8 @@
                         <input
                             type="range"
                             class="audio"
-                            v-model="audioObject[`${el}Level`].value"
-                            :ref="(ref) => audioObject.inputRef.value.push(ref)"
+                            v-model="audioObject[`${el}Level`]"
+                            :ref="(ref) => audioObject.inputRef.push(ref)"
                             @touchmove.prevent="
                                 onTouchMoveInputHandler($event, el, i)
                             "
@@ -73,7 +73,7 @@
                 v-show="isFPVActiveComplete"
                 id="random-wizard" 
                 class="fa-solid fa-hat-wizard" 
-                @click="router.push(`/IsKetchupACondimentOrDippingSauce-${Date.now()}-randomURL`)"
+                @click="router.push(`/IsKetchupACondimentOrDippingSauce?IDK=${Date.now()}`)"
             ></i>
 
             <div
@@ -94,7 +94,7 @@
             id="loading-screen"
             v-if="
                 !isEnterClicked &&
-                !router.options.history.state.back?.includes('projects')
+                router.options.history.state.back === null
             "
         >
             <img
@@ -134,26 +134,26 @@
     import { OrbitControls } from "three/addons/controls/OrbitControls.js";
     import { InteractionManager } from "three.interactive";
     import { gsap } from "gsap";
-    import { isDeviceMobile } from "../assets/js/utils.js";
+    import { isDeviceMobile } from "@/assets/js/utils.js";
 
-    import CLoudsSunsetVideo from "../assets/video/360vr_clouds_sunset.mp4";
-    import PositivePopAudioTrack from "../assets/audio/sfmusic_positive_pop.mp3";
-    import AirplaneIdleAudioFX from "../assets/audio/airplane_idle_fx.mp3";
+    import CLoudsSunsetVideo from "@/assets/video/360vr_clouds_sunset.mp4";
+    import PositivePopAudioTrack from "@/assets/audio/sfmusic_positive_pop.mp3";
+    import AirplaneIdleAudioFX from "@/assets/audio/airplane_idle_fx.mp3";
 
-    import Plane from "../assets/other/cartoon_plane.glb";
-    import Dragon from "../assets/other/dragon_flying_small.glb";
-    import Truck from "../assets/other/icecream_truck.glb";
-    import Rocket from "../assets/other/rocket_ship.glb";
-    import Flame from "../assets/other/flame_animation.glb";
-    import Dreampool from "../assets/image/Dreampool.png";
+    import Plane from "@/assets/other/cartoon_plane.glb";
+    import Dragon from "@/assets/other/dragon_flying_small.glb";
+    import Truck from "@/assets/other/icecream_truck.glb";
+    import Rocket from "@/assets/other/rocket_ship.glb";
+    import Flame from "@/assets/other/flame_animation.glb";
+    import Dreampool from "@/assets/image/Dreampool.png";
 
-    import Github from "../assets/other/github_logo.glb";
-    import Linkedin from "../assets/other/linkedin_logo.glb";
-    import Twitter from "../assets/other/twitter_logo.glb";
-    import Instagram from "../assets/other/instagram_logo.glb";
+    import Github from "@/assets/other/github_logo.glb";
+    import Linkedin from "@/assets/other/linkedin_logo.glb";
+    import Twitter from "@/assets/other/twitter_logo.glb";
+    import Instagram from "@/assets/other/instagram_logo.glb";
 
-    import PIKARIDEimage from "../assets/projects/pikaride/pikaride.jpg";
-    import STARWAYimage from "../assets/projects/starway/starway.jpg";
+    import PIKARIDEimage from "@/assets/projects/pikaride/pikaride.jpg";
+    import STARWAYimage from "@/assets/projects/starway/starway.jpg";
 
     export default {
         name: "HomePage",
@@ -208,35 +208,8 @@
 
             // AUDIO
             const audioArray = ["airplaneIdleFX", "backgroundMusic"];
-            const audioObject = {};
+            const audioObject = settingsStore.audioObject;
             audioObject.inputRef = ref([]);
-
-            audioArray.forEach((el) => {
-                let audioSource;
-                let audioVolume;
-                let audioIcon;
-                switch (el) {
-                    case "backgroundMusic":
-                        audioSource = PositivePopAudioTrack;
-                        audioVolume = settingsStore.audioLevels[el];
-                        audioIcon = "fas fa-music";
-                        break;
-                    case "airplaneIdleFX":
-                        audioSource = AirplaneIdleAudioFX;
-                        audioVolume = settingsStore.audioLevels[el];
-                        audioIcon = "fas fa-plane";
-                        break;
-                }
-
-                audioObject[el] = document.createElement("audio");
-                audioObject[el].src = audioSource;
-                audioObject[`${el}Level`] = ref(audioVolume);
-                audioObject[`${el}Icon`] = audioIcon;
-                audioObject[el].addEventListener("ended", () => {
-                    audioObject[el].currentTime = 0;
-                    audioObject[el].play();
-                });
-            });
 
             // 3D SPHERE
             const sphereGeometry = new THREE.SphereGeometry(500, 60, 40);
@@ -861,7 +834,7 @@
                 githubModel = gltf.scene;
 
                 githubModel.scale.set(0.05, 0.05, 0.05);
-                githubModel.position.set(0.6, 0.3, 1.1);
+                githubModel.position.set(0.3, 0.3, 1.1);
                 githubModel.rotation.y = Math.PI / 1;
 
                 scene.add(githubModel);
@@ -879,7 +852,7 @@
             modelLoader.load(Linkedin, (gltf) => {
                 linkedinModel = gltf.scene;
 
-                linkedinModel.scale.set(0.5, 0.5, 0.5);
+                linkedinModel.scale.set(0.6, 0.6, 0.6);
                 linkedinModel.position.set(0.8, 0.3, 1.1);
                 linkedinModel.rotation.y = Math.PI / 1;
 
@@ -898,8 +871,8 @@
             modelLoader.load(Twitter, (gltf) => {
                 twitterModel = gltf.scene;
 
-                twitterModel.scale.set(0.01, 0.01, 0.01);
-                twitterModel.position.set(1.1, 0.5, 1.1);
+                twitterModel.scale.set(0.009, 0.009, 0.009);
+                twitterModel.position.set(1.05, 0.55, 1.1);
                 twitterModel.rotation.y = Math.PI / 1;
 
                 scene.add(twitterModel);
@@ -917,8 +890,8 @@
             modelLoader.load(Instagram, (gltf) => {
                 instagramModel = gltf.scene;
 
-                instagramModel.scale.set(0.3, 0.3, 0.3);
-                instagramModel.position.set(1.6, 0.5, 1.1);
+                instagramModel.scale.set(0.23, 0.23, 0.23);
+                instagramModel.position.set(1.5, 0.51, 1.1);
                 instagramModel.rotation.y = Math.PI / 2;
 
                 scene.add(instagramModel);
@@ -959,7 +932,7 @@
                 isEnterClicked.value = true;
                 video.play();
 
-                if (router.options.history.state.back && !router.options.history.state.back.includes('projects')) {
+                if (router.options.history.state.back !== null && !router.options.history.state.back.includes('projects')) {
                     return;
                 }
 
@@ -1003,7 +976,7 @@
             const onTouchMoveInputHandler = (event, el, i) => {
                 const touch = event.touches[0];
                 const rect =
-                    audioObject.inputRef.value[i].getBoundingClientRect();
+                    audioObject.inputRef[i].getBoundingClientRect();
                 let percent;
                 if (isMobile) {
                     const offsetY = rect.bottom - touch.clientY;
@@ -1018,7 +991,7 @@
                         Math.max(0, (offsetX / rect.width) * 100)
                     );
                 }
-                audioObject[`${el}Level`].value = percent.toFixed(0).toString();
+                audioObject[`${el}Level`] = percent.toFixed(0).toString();
             };
 
             // INIT
@@ -1027,12 +1000,12 @@
 
             audioArray.forEach((el, i) => {
                 watch(
-                    () => audioObject[`${el}Level`].value,
+                    () => audioObject[`${el}Level`],
                     (val) => {
                         audioObject[el].volume = parseInt(val) / 100;
                         settingsStore.updateAudioLevel(el, val);
-                        if (audioObject.inputRef.value[i])
-                            initRangeInput(audioObject.inputRef.value[i], val);
+                        if (audioObject.inputRef[i])
+                            initRangeInput(audioObject.inputRef[i], val);
                     },
                     {
                         immediate: true,
@@ -1061,16 +1034,11 @@
                 projectGroup_2.position.set(0, 0.5, -0.1);
                 scene.add(projectGroup_2);
 
-                if (router.options.history.state.back?.includes("projects")) {
+                if (router.options.history.state.back !== null) {
                     doEnter();
                 }
 
-                audioArray.forEach((el, i) => {
-                    initRangeInput(
-                        audioObject.inputRef.value[i],
-                        audioObject[`${el}Level`].value
-                    );
-                });
+                audioArray.forEach((el, i) => initRangeInput(audioObject.inputRef[i], audioObject[`${el}Level`]));
             });
 
             return {
