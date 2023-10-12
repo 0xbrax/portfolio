@@ -1,5 +1,12 @@
 import router from '@/router.js';
-import backMusicAudio from '@/assets/projects/pikaride/audio/Josh Mease - 4 on the Floor 8bit.wav';
+import backMusicFile from '@/assets/projects/pikaride/audio/Josh Mease - 4 on the Floor 8bit.wav';
+/*import jumpSound = new Audio(`${__ASSETS_URL__}projects/pikaride/audio/arcade-8bit-jump-sfx.mp3`);
+import killSound = new Audio(`${__ASSETS_URL__}projects/pikaride/audio/mixkit-retro-game-over-1947-edit.mp3`);
+import bonusSound = new Audio(`${__ASSETS_URL__}projects/pikaride/audio/mixkit-fairy-arcade-sparkle-866-edit.mp3`);
+import carStart = new Audio(`${__ASSETS_URL__}projects/pikaride/audio/ferrari-laferrari-v12-sound-edit.mp3`);
+import carStop = new Audio(`${__ASSETS_URL__}projects/pikaride/audio/car-horn-sfx.mp3`);
+import superSaiyanSound = new Audio(`${__ASSETS_URL__}projects/pikaride/audio/pikachu-remix-supersaiyan-sfx.mp3`);
+import pikachuSound = new Audio(`${__ASSETS_URL__}projects/pikaride/audio/pikachu-pika-sfx.mp3`);*/
 
 // MODULE START
 export const pikarideModule = () => {
@@ -31,9 +38,9 @@ let wheelLeft = document.getElementById('wheel-car-left');
 let wheelRight = document.getElementById('wheel-car-right');
 let carNos = document.getElementById('fire');
 let isSuperCarActive = false;
-const backMusic = new Audio(backMusicAudio);
+const backMusic = new Audio(backMusicFile);
 let isBGMusicPlaying = false;
-const jumpSound = new Audio(`${__ASSETS_URL__}projects/pikaride/audio/arcade-8bit-jump-sfx.mp3`);
+const jumpSound = new Audio('@/assets/projects/pikaride/audio/arcade-8bit-jump-sfx.mp3');
 const killSound = new Audio(`${__ASSETS_URL__}projects/pikaride/audio/mixkit-retro-game-over-1947-edit.mp3`);
 const bonusSound = new Audio(`${__ASSETS_URL__}projects/pikaride/audio/mixkit-fairy-arcade-sparkle-866-edit.mp3`);
 const carStart = new Audio(`${__ASSETS_URL__}projects/pikaride/audio/ferrari-laferrari-v12-sound-edit.mp3`);
