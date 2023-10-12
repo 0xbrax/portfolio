@@ -1,12 +1,12 @@
 import router from '@/router.js';
 import backMusicFile from '@/assets/projects/pikaride/audio/Josh Mease - 4 on the Floor 8bit.wav';
-/*import jumpSound = new Audio(`${__ASSETS_URL__}projects/pikaride/audio/arcade-8bit-jump-sfx.mp3`);
-import killSound = new Audio(`${__ASSETS_URL__}projects/pikaride/audio/mixkit-retro-game-over-1947-edit.mp3`);
-import bonusSound = new Audio(`${__ASSETS_URL__}projects/pikaride/audio/mixkit-fairy-arcade-sparkle-866-edit.mp3`);
-import carStart = new Audio(`${__ASSETS_URL__}projects/pikaride/audio/ferrari-laferrari-v12-sound-edit.mp3`);
-import carStop = new Audio(`${__ASSETS_URL__}projects/pikaride/audio/car-horn-sfx.mp3`);
-import superSaiyanSound = new Audio(`${__ASSETS_URL__}projects/pikaride/audio/pikachu-remix-supersaiyan-sfx.mp3`);
-import pikachuSound = new Audio(`${__ASSETS_URL__}projects/pikaride/audio/pikachu-pika-sfx.mp3`);*/
+import jumpSoundFile from '@/assets/projects/pikaride/audio/arcade-8bit-jump-sfx.mp3';
+import killSoundFile from '@/assets/projects/pikaride/audio/mixkit-retro-game-over-1947-edit.mp3';
+import bonusSoundFile from '@/assets/projects/pikaride/audio/mixkit-fairy-arcade-sparkle-866-edit.mp3';
+import carStartFile from '@/assets/projects/pikaride/audio/ferrari-laferrari-v12-sound-edit.mp3';
+import carStopFile from '@/assets/projects/pikaride/audio/car-horn-sfx.mp3';
+import superSaiyanSoundFile from '@/assets/projects/pikaride/audio/pikachu-remix-supersaiyan-sfx.mp3';
+import pikachuSoundFile from '@/assets/projects/pikaride/audio/pikachu-pika-sfx.mp3';
 
 // MODULE START
 export const pikarideModule = () => {
@@ -40,13 +40,13 @@ let carNos = document.getElementById('fire');
 let isSuperCarActive = false;
 const backMusic = new Audio(backMusicFile);
 let isBGMusicPlaying = false;
-const jumpSound = new Audio('@/assets/projects/pikaride/audio/arcade-8bit-jump-sfx.mp3');
-const killSound = new Audio(`${__ASSETS_URL__}projects/pikaride/audio/mixkit-retro-game-over-1947-edit.mp3`);
-const bonusSound = new Audio(`${__ASSETS_URL__}projects/pikaride/audio/mixkit-fairy-arcade-sparkle-866-edit.mp3`);
-const carStart = new Audio(`${__ASSETS_URL__}projects/pikaride/audio/ferrari-laferrari-v12-sound-edit.mp3`);
-const carStop = new Audio(`${__ASSETS_URL__}projects/pikaride/audio/car-horn-sfx.mp3`);
-const superSaiyanSound = new Audio(`${__ASSETS_URL__}projects/pikaride/audio/pikachu-remix-supersaiyan-sfx.mp3`);
-const pikachuSound = new Audio(`${__ASSETS_URL__}projects/pikaride/audio/pikachu-pika-sfx.mp3`);
+const jumpSound = new Audio(jumpSoundFile);
+const killSound = new Audio(killSoundFile);
+const bonusSound = new Audio(bonusSoundFile);
+const carStart = new Audio(carStartFile);
+const carStop = new Audio(carStopFile);
+const superSaiyanSound = new Audio(superSaiyanSoundFile);
+const pikachuSound = new Audio(pikachuSoundFile);
 
 const mcdonalds = document.getElementById('mcdonalds');
 const burger = document.getElementById('burger');
