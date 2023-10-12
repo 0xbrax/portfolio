@@ -679,10 +679,10 @@ header nav {
 /***** MEDIA QUERY *****/
 
 @media all and (min-width: 768px) {
-    .visualizer-container__bar {
+    /*.visualizer-container__bar {
         margin: 0 2px;
         width: 10px;
-    }
+    }*/
 
     .paper-plane-path {
         stroke-dasharray: 0;

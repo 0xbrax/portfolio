@@ -1,4 +1,5 @@
 import router from '@/router.js';
+import { isDeviceMobile } from "@/assets/js/utils.js";
 
 import backMusicFile from '@/assets/projects/pikaride/audio/Josh Mease - 4 on the Floor 8bit.wav';
 import jumpSoundFile from '@/assets/projects/pikaride/audio/arcade-8bit-jump-sfx.mp3';
@@ -172,9 +173,15 @@ for (let i = 0; i < musicBarsNumber; i++ ) {
     // FIX style per Vue scoped
     bar.style.display = 'inline-block';
     bar.style.backgroundColor = 'white';
-    bar.style.margin = '0 2px';
-    bar.style.width = '10px';
     bar.style.height = '5px';
+
+    if (isDeviceMobile()) {
+        bar.style.margin = '0 1px';
+        bar.style.width = '5px';
+    } else {
+        bar.style.margin = '0 2px';
+        bar.style.width = '10px';
+    }
     ////
 
     visualizerContainer.appendChild(bar);
