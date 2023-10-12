@@ -137,8 +137,6 @@
     import { isDeviceMobile } from "@/assets/js/utils.js";
 
     import CLoudsSunsetVideo from "@/assets/video/360vr_clouds_sunset.mp4";
-    import PositivePopAudioTrack from "@/assets/audio/sfmusic_positive_pop.mp3";
-    import AirplaneIdleAudioFX from "@/assets/audio/airplane_idle_fx.mp3";
 
     import Plane from "@/assets/other/cartoon_plane.glb";
     import Dragon from "@/assets/other/dragon_flying_small.glb";
@@ -198,7 +196,10 @@
             // VIDEO
             const video = document.createElement("video");
             video.src = CLoudsSunsetVideo;
+            video.setAttribute('playsinline', '');
+            video.setAttribute('webkit-playsinline', '');
             video.autoplay = true;
+            video.muted = true;
             video.loop = true;
             video.playbackRate = 1;
             video.volume = 0;

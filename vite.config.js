@@ -11,8 +11,5 @@ export default defineConfig({
       '@': '/src',
     },
   },
-  assetsInclude: ['**/*.glb'],
-  define: {
-    __ASSETS_URL__: JSON.stringify('/src/assets/'),
-  }
+  assetsInclude: ['**/*.glb']
 });
