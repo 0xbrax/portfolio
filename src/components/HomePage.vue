@@ -84,6 +84,14 @@
                     Open
                 </div>
 
+                <div @click="switchProject('left')" class="left-btn">
+                    <i class="fa-solid fa-angle-left"></i>
+                </div>
+
+                <div @click="switchProject('right')" class="right-btn">
+                    <i class="fa-solid fa-angle-right"></i>
+                </div>
+
                 <div @click="projectsEventHandler('back')" class="back-btn">
                     <i class="fas fa-rotate-left"></i>
                 </div>
@@ -608,7 +616,7 @@
 
                 interactionManager.add(cubeModel);
                 cubeModel.addEventListener("click", (event) => {
-                    event.stopPropagation();
+                    if (event) event.stopPropagation();
 
                     controls.enabled = false;
 
@@ -665,8 +673,34 @@
                     zoomAnimation.play();
                 });
 
-                return { dragonModel, dragonMixer, dragonAction };
+                return { dragonModel, dragonMixer, dragonAction, cubeModel };
             };
+
+            // PROJECTS
+            const projectsArray = ["pikaride", "starway"];
+            const switchProject = (mode) => {
+                const obj = {
+                    cubeModel_1,
+                    cubeModel_2
+                }
+
+                let index = projectsArray.indexOf(whatProject.value);
+                index += 1;
+
+                if (mode === "left") {
+                    if (index === projectsArray.length) index += -1;
+                    else index += 1;
+
+                    obj[`cubeModel_${index}`]._listeners.click[0]();
+                }
+
+                if (mode === "right") {
+                    if (index === projectsArray.length) index += -1;
+                    else index += 1;
+
+                    obj[`cubeModel_${index}`]._listeners.click[0]();
+                }
+            }
 
             // PROJECT MODEL 1
             const PROJECT_NAME_1 = "PIKARIDE";
@@ -675,6 +709,7 @@
             const dragonClock_1 = new THREE.Clock();
             let project_1;
             let dragonMixer_1;
+            let cubeModel_1;
 
             // PROJECT MODEL 2
             const PROJECT_NAME_2 = "STARWAY";
@@ -683,6 +718,7 @@
             const dragonClock_2 = new THREE.Clock();
             let project_2;
             let dragonMixer_2;
+            let cubeModel_2;
 
             // TRUCK GROUP
             const truckGroup = new THREE.Group();
@@ -1023,6 +1059,7 @@
                     PROJECT_NAME_1
                 );
                 dragonMixer_1 = project_1.dragonMixer;
+                cubeModel_1 = project_1.cubeModel;
                 projectGroup_1.position.set(1.5, 0.5, -0.1);
                 scene.add(projectGroup_1);
 
@@ -1032,6 +1069,7 @@
                     PROJECT_NAME_2
                 );
                 dragonMixer_2 = project_2.dragonMixer;
+                cubeModel_2 = project_2.cubeModel;
                 projectGroup_2.position.set(0, 0.5, -0.1);
                 scene.add(projectGroup_2);
 
@@ -1055,7 +1093,8 @@
                 audioArray,
                 audioObject,
                 onTouchMoveInputHandler,
-                isFPVActiveComplete
+                isFPVActiveComplete,
+                switchProject
             };
         },
     };
@@ -1148,14 +1187,18 @@
         align-items: center;
     }
     .project-btn,
-    .back-btn {
+    .back-btn,
+    .left-btn,
+    .right-btn {
         background-color: rgba(255, 255, 255, 1);
         cursor: pointer;
         border: 2px solid #000000;
         transition: background-color 0.2s ease-in-out;
     }
     .project-btn:hover,
-    .back-btn:hover {
+    .back-btn:hover,
+    .left-btn:hover,
+    .right-btn:hover {
         background-color: rgba(255, 255, 255, 0.8);
     }
     .project-btn {
@@ -1166,15 +1209,33 @@
     }
     .back-btn {
         margin-top: 15px;
+    }
+    .back-btn,
+    .left-btn,
+    .right-btn {
         border-radius: 50%;
         width: 35px;
         aspect-ratio: 1 / 1;
         position: relative;
     }
-    .back-btn i {
+    .back-btn i,
+    .left-btn i,
+    .right-btn i {
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
+    }
+    .left-btn,
+    .right-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+    .left-btn {
+        left: -60%;
+    }
+    .right-btn {
+        right: -60%;
     }
 </style>
