@@ -1,4 +1,5 @@
 import router from '@/router.js';
+
 import backMusicFile from '@/assets/projects/pikaride/audio/Josh Mease - 4 on the Floor 8bit.wav';
 import jumpSoundFile from '@/assets/projects/pikaride/audio/arcade-8bit-jump-sfx.mp3';
 import killSoundFile from '@/assets/projects/pikaride/audio/mixkit-retro-game-over-1947-edit.mp3';
@@ -7,6 +8,26 @@ import carStartFile from '@/assets/projects/pikaride/audio/ferrari-laferrari-v12
 import carStopFile from '@/assets/projects/pikaride/audio/car-horn-sfx.mp3';
 import superSaiyanSoundFile from '@/assets/projects/pikaride/audio/pikachu-remix-supersaiyan-sfx.mp3';
 import pikachuSoundFile from '@/assets/projects/pikaride/audio/pikachu-pika-sfx.mp3';
+
+import monsterFlyingFile from '@/assets/projects/pikaride/img/blue-monster-flying.gif';
+import lightBallPulseFile from '@/assets/projects/pikaride/img/lighting-ball-pulse.gif';
+import cityBack02File from '@/assets/projects/pikaride/img/2D-city-back_2x_02-edit.png';
+import finalBossIdleFlapingFile from '@/assets/projects/pikaride/img/phoenix-idle_flaping.gif';
+import finalBossIdleNoFlapingFile from '@/assets/projects/pikaride/img/phoenix-idle_no_flaping.gif';
+
+import finalBossDieFile from '@/assets/projects/pikaride/img/phoenix-die_1800_ms.gif';
+import cityBack04File from '@/assets/projects/pikaride/img/2D-city-back_2x_04-edit.png';
+import finalBossRiseFile from '@/assets/projects/pikaride/img/phoenix-rise_1620_ms.gif';
+import cityBack03File from '@/assets/projects/pikaride/img/2D-city-back_2x_03-edit.png';
+import monsterFlyingSnappingFile from '@/assets/projects/pikaride/img/blue-monster-flying-snapping.gif';
+import cityBack01File from '@/assets/projects/pikaride/img/2D-city-back_2x_01-edit.png';
+
+import pikaSuperNoRunFile from '@/assets/projects/pikaride/img/pikachu-supersaiyan-no-run.gif';
+import pikaSuperRunFile from '@/assets/projects/pikaride/img/pikachu-supersaiyan-run-new.gif';
+import pikaRunStaticFile from '@/assets/projects/pikaride/img/pikachu-run-static-2.png';
+import pikaRunFile from '@/assets/projects/pikaride/img/pikachu-run-new.gif';
+import pikaRunStaticEditFile from '@/assets/projects/pikaride/img/pikachu-run-static-3.png';
+import lightBallRotatingFile from '@/assets/projects/pikaride/img/lighting-ball-rotating.gif';
 
 // MODULE START
 export const pikarideModule = () => {
@@ -294,7 +315,7 @@ burger.addEventListener('animationend', function() {
 
 monster.addEventListener('animationend', function() {
     monster.classList.remove('attack');
-    monster.src = `${__ASSETS_URL__}projects/pikaride/img/blue-monster-flying.gif`;
+    monster.src = monsterFlyingFile;
 
     clearInterval(liveMonster);
 
@@ -351,7 +372,7 @@ pikachuContainer.addEventListener('animationend', function() {
 lightBall.addEventListener('animationend', function() {
     lightBall.classList.remove('pika-attack');
     lightBall.style.display = 'none';
-    lightBall.src = `${__ASSETS_URL__}projects/pikaride/img/lighting-ball-pulse.gif`;
+    lightBall.src = lightBallPulseFile;
 });
 
 killSound.addEventListener('ended', function() {
@@ -482,7 +503,7 @@ let isPikachuAlive = setInterval(function() {
         finalBossContainer.style.display = 'none';
         //////////
 
-        gameContainer.style.backgroundImage = `url(${__ASSETS_URL__}projects/pikaride/img/2D-city-back_2x_02-edit.png)`;
+        gameContainer.style.backgroundImage = `url(${cityBack02File})`;
         scoreContainer.style.color = 'black';
         level.innerHTML = `Level: <span class="fw-bold">\u221e</span>`;
 
@@ -493,7 +514,7 @@ let isPikachuAlive = setInterval(function() {
     } else if (levelCheck === 21) {
         if (finalBossSelected === 2 && liveFireBall === undefined) {
             liveFireBall = setInterval(function() {
-                finalBoss.src = `${__ASSETS_URL__}projects/pikaride/img/phoenix-idle_flaping.gif`;
+                finalBoss.src = finalBossIdleFlapingFile;
                 fireBall.style.display = 'block';
 
                 let finalBossBottom = parseInt(window.getComputedStyle(finalBossContainer).getPropertyValue('bottom'));
@@ -501,7 +522,7 @@ let isPikachuAlive = setInterval(function() {
                 fireBall.classList.add('boss-attack');
 
                 finalBossControl = setTimeout(function() {
-                    finalBoss.src = `${__ASSETS_URL__}projects/pikaride/img/phoenix-idle_no_flaping.gif`;
+                    finalBoss.src = finalBossIdleNoFlapingFile;
 
                     finalBossSelected = 2;
                 }, 890);
@@ -515,7 +536,7 @@ let isPikachuAlive = setInterval(function() {
         if ((lightBallRight + 40) >= (finalBossRight + 20) && lightBallRight <= (finalBossRight + 20) && (lightBallBottom - 18) >= (finalBossBottom + 20) && (lightBallBottom + 8) <= (finalBossBottom + 110)) {
             lightBall.style.display = 'none';
             lightBall.classList.remove('pika-attack');
-            lightBall.src = `${__ASSETS_URL__}projects/pikaride/img/lighting-ball-pulse.gif`;
+            lightBall.src = lightBallPulseFile;
             finalBossLifeControl = finalBossLifeControl + 16.66;
             finalBossLife.style.background = `linear-gradient(90deg, rgba(255, 0, 0, 1) ${finalBossLifeControl}%, rgba(173, 255, 47, 1) ${finalBossLifeControl}%)`;
             finalBossLifeCounter--;
@@ -530,7 +551,7 @@ let isPikachuAlive = setInterval(function() {
                 liveFireBall = undefined;
                 clearTimeout(finalBossControl);
 
-                finalBoss.src = `${__ASSETS_URL__}projects/pikaride/img/phoenix-die_1800_ms.gif`;
+                finalBoss.src = finalBossDieFile;
                 finalBossContainer.classList.remove('boss-move');
 
                 setTimeout(function() {
@@ -562,7 +583,7 @@ let isPikachuAlive = setInterval(function() {
         monster.style.display = 'none';
         //////////
 
-        gameContainer.style.backgroundImage = `url(${__ASSETS_URL__}projects/pikaride/img/2D-city-back_2x_04-edit.png)`;
+        gameContainer.style.backgroundImage = cityBack04File;
         scoreContainer.style.color = 'white';
         levelCounter = 3;
         level.innerHTML = `Level: <span class="fw-bold">${levelCounter}</span>`;
@@ -570,13 +591,13 @@ let isPikachuAlive = setInterval(function() {
         if (finalBossSelected === 0) {
             finalBossLife.style.display = 'block';
             finalBossContainer.style.display = 'block';
-            finalBoss.src = `${__ASSETS_URL__}projects/pikaride/img/phoenix-rise_1620_ms.gif`;
+            finalBoss.src = finalBossRiseFile;
 
             finalBossSelected = 1;
         }
         if (finalBossSelected === 1) {
             setTimeout(function() {
-                finalBoss.src = `${__ASSETS_URL__}projects/pikaride/img/phoenix-idle_no_flaping.gif`;
+                finalBoss.src = finalBossIdleNoFlapingFile;
                 finalBossContainer.classList.add('boss-move');
                 finalBossContainer.style.animationDuration = finalBossMoveTime + 's';
             }, 1610);
@@ -596,14 +617,14 @@ let isPikachuAlive = setInterval(function() {
         burger.style.display = 'none';
         //////////
 
-        gameContainer.style.backgroundImage = `url(${__ASSETS_URL__}projects/pikaride/img/2D-city-back_2x_03-edit.png)`;
+        gameContainer.style.backgroundImage = `url(${cityBack03File})`;
         scoreContainer.style.color = 'white';
         levelCounter = 2;
         level.innerHTML = `Level: <span class="fw-bold">${levelCounter}</span>`;
         monster.style.display = 'block';
         if (liveMonster === undefined && isGamePlaying === true) {
             liveMonster = setInterval(function() {
-                monster.src = `${__ASSETS_URL__}projects/pikaride/img/blue-monster-flying-snapping.gif`;
+                monster.src = monsterFlyingSnappingFile;
                 monster.classList.add('attack');
 
                 monster.style.animationDuration = monsterTime + 's';
@@ -628,7 +649,7 @@ function playGame() {
     disableResize();
 
     levelCounter = 1;
-    gameContainer.style.backgroundImage = `url(${__ASSETS_URL__}projects/pikaride/img/2D-city-back_2x_01-edit.png)`;
+    gameContainer.style.backgroundImage = `url(${cityBack01File})`;
     scoreContainer.style.color = 'black';
     level.innerHTML = `Level: <span class="fw-bold">${levelCounter}</span>`;
 
@@ -637,15 +658,15 @@ function playGame() {
 
     if (isPikachuSuperSaiyan === true) {
         if (isSuperCarActive === true) {
-            pikachu.src = `${__ASSETS_URL__}projects/pikaride/img/pikachu-supersaiyan-no-run.gif`;
+            pikachu.src = pikaSuperNoRunFile;
         } else {
-            pikachu.src = `${__ASSETS_URL__}projects/pikaride/img/pikachu-supersaiyan-run-new.gif`;
+            pikachu.src = pikaSuperRunFile;
         }
     } else {
         if (isSuperCarActive === true) {
-            pikachu.src = `${__ASSETS_URL__}projects/pikaride/img/pikachu-run-static-2.png`;
+            pikachu.src = pikaRunStaticFile;
         } else {
-            pikachu.src = `${__ASSETS_URL__}projects/pikaride/img/pikachu-run-new.gif`;
+            pikachu.src = pikaRunFile;
         }
     }
 
@@ -694,11 +715,11 @@ function resetGame() {
 
     levelCheck = 0;
     levelCounter = 1;
-    gameContainer.style.backgroundImage = `url(${__ASSETS_URL__}projects/pikaride/img/2D-city-back_2x_01-edit.png)`;
+    gameContainer.style.backgroundImage = `url(${cityBack01File})`;
     scoreContainer.style.color = 'black';
     level.innerHTML = `Level: <span class="fw-bold">${levelCounter}</span>`;
 
-    pikachu.src = `${__ASSETS_URL__}projects/pikaride/img/pikachu-run-static-2.png`;
+    pikachu.src = pikaRunStaticFile;
     pikachuContainer.classList.remove('jump');
     pikachu.classList.remove('kill');
     pikachu.classList.remove('car-active');
@@ -711,7 +732,7 @@ function resetGame() {
     gameContainer.style.animationPlayState = 'paused';
     pikachuContainer.style.left = 24 + 'px';
 
-    monster.src = `${__ASSETS_URL__}projects/pikaride/img/blue-monster-flying.gif`;
+    monster.src = monsterFlyingFile;
     monster.style.display = 'none';
     monster.classList.remove('attack');
 
@@ -720,7 +741,7 @@ function resetGame() {
 
     lightBall.style.display = 'none';
     lightBall.classList.remove('pika-attack');
-    lightBall.src = `${__ASSETS_URL__}projects/pikaride/img/lighting-ball-pulse.gif`;
+    lightBall.src = lightBallPulseFile;
 
     finalBossContainer.style.display = 'none';
     finalBossContainer.classList.remove('boss-move');
@@ -769,7 +790,7 @@ function die() {
     isPikachuSuperSaiyan = false;
     isSuperCarActive = false;
 
-    pikachu.src = `${__ASSETS_URL__}projects/pikaride/img/pikachu-run-static-3.png`;
+    pikachu.src = pikaRunStaticEditFile;
     pikachuContainer.classList.remove('jump');
     pikachu.classList.add('kill');
     pikachu.classList.remove('car-active');
@@ -781,7 +802,7 @@ function die() {
     cloudText.style.display = 'none';
     gameContainer.style.animationPlayState = 'paused';
 
-    monster.src = `${__ASSETS_URL__}projects/pikaride/img/blue-monster-flying.gif`;
+    monster.src = monsterFlyingFile;
     monster.classList.remove('attack');
 
     clearInterval(liveMonster);
@@ -798,7 +819,7 @@ function die() {
     liveFireBall = undefined;
     clearTimeout(finalBossControl);
 
-    finalBoss.src = `${__ASSETS_URL__}projects/pikaride/img/phoenix-idle_no_flaping.gif`;
+    finalBoss.src = finalBossIdleNoFlapingFile;
     finalBossSelected = 3;
 
     killSound.play();
@@ -881,25 +902,25 @@ function getSuperSaiyan() {
     if (isGamePlaying === true) {
         if (isPikachuSuperSaiyan === true) {
             if (isSuperCarActive === true) {
-                pikachu.src = `${__ASSETS_URL__}projects/pikaride/img/pikachu-run-static-2.png`;
+                pikachu.src = pikaRunStaticFile;
             } else {
-                pikachu.src = `${__ASSETS_URL__}projects/pikaride/img/pikachu-run-new.gif`;
+                pikachu.src = pikaRunFile;
             }
             isPikachuSuperSaiyan = false;
         } else {
             if (isSuperCarActive === true) {
-                pikachu.src = `${__ASSETS_URL__}projects/pikaride/img/pikachu-supersaiyan-no-run.gif`;
+                pikachu.src = pikaSuperNoRunFile;
             } else {
-                pikachu.src = `${__ASSETS_URL__}projects/pikaride/img/pikachu-supersaiyan-run-new.gif`;
+                pikachu.src = pikaSuperRunFile;
             }
             isPikachuSuperSaiyan = true;
         }
     } else {
         if (isPikachuSuperSaiyan === true) {
-            pikachu.src = `${__ASSETS_URL__}projects/pikaride/img/pikachu-run-static-2.png`;
+            pikachu.src = pikaRunStaticFile;
             isPikachuSuperSaiyan = false;
         } else {
-            pikachu.src = `${__ASSETS_URL__}projects/pikaride/img/pikachu-supersaiyan-no-run.gif`;
+            pikachu.src = pikaSuperNoRunFile;
             isPikachuSuperSaiyan = true;
         }
     }
@@ -929,13 +950,13 @@ function getSuperCar() {
                 superCar.style.display = 'none';
                 isSuperCarActive = false;
 
-                pikachu.src = `${__ASSETS_URL__}projects/pikaride/img/pikachu-supersaiyan-run-new.gif`;
+                pikachu.src = pikaSuperRunFile;
             } else {
                 pikachu.classList.add('car-active');
                 superCar.style.display = 'block';
                 isSuperCarActive = true;
 
-                pikachu.src = `${__ASSETS_URL__}projects/pikaride/img/pikachu-supersaiyan-no-run.gif`;
+                pikachu.src = pikaSuperNoRunFile;
             }
         } else {
             if (isSuperCarActive === true) {
@@ -943,13 +964,13 @@ function getSuperCar() {
                 superCar.style.display = 'none';
                 isSuperCarActive = false;
 
-                pikachu.src = `${__ASSETS_URL__}projects/pikaride/img/pikachu-run-new.gif`;
+                pikachu.src = pikaRunFile;
             } else {
                 pikachu.classList.add('car-active');
                 superCar.style.display = 'block';
                 isSuperCarActive = true;
 
-                pikachu.src = `${__ASSETS_URL__}projects/pikaride/img/pikachu-run-static-2.png`;
+                pikachu.src = pikaRunStaticFile;
             }
         }
     } else {
@@ -959,13 +980,13 @@ function getSuperCar() {
                 superCar.style.display = 'none';
                 isSuperCarActive = false;
 
-                pikachu.src = `${__ASSETS_URL__}projects/pikaride/img/pikachu-supersaiyan-no-run.gif`;
+                pikachu.src = pikaSuperNoRunFile;
             } else {
                 pikachu.classList.add('car-active');
                 superCar.style.display = 'block';
                 isSuperCarActive = true;
 
-                pikachu.src = `${__ASSETS_URL__}projects/pikaride/img/pikachu-supersaiyan-no-run.gif`;
+                pikachu.src = pikaSuperNoRunFile;
             }
         } else {
             if (isSuperCarActive === true) {
@@ -973,13 +994,13 @@ function getSuperCar() {
                 superCar.style.display = 'none';
                 isSuperCarActive = false;
 
-                pikachu.src = `${__ASSETS_URL__}projects/pikaride/img/pikachu-run-static-2.png`;
+                pikachu.src = pikaRunStaticFile;
             } else {
                 pikachu.classList.add('car-active');
                 superCar.style.display = 'block';
                 isSuperCarActive = true;
 
-                pikachu.src = `${__ASSETS_URL__}projects/pikaride/img/pikachu-run-static-2.png`;
+                pikachu.src = pikaRunStaticFile;
             }
         }
     }
@@ -993,7 +1014,7 @@ function pikaAttack() {
     if (finalBossSelected === 2 || finalBossSelected === 3) {
         let pikachuRight = parseInt(window.getComputedStyle(pikachuContainer).getPropertyValue('right'));
 
-        lightBall.src = `${__ASSETS_URL__}projects/pikaride/img/lighting-ball-rotating.gif`;
+        lightBall.src = lightBallRotatingFile;
         lightBall.classList.add('pika-attack');
         lightBall.style.animationDuration = (pikachuRight / 350) + 's';
     }
