@@ -195,7 +195,6 @@ let ctx;
 let analayzer;
 
 backMusic.addEventListener('play', function() {
-
     if (!ctx) {
         ctx = new AudioContext();
         const audioSource = ctx.createMediaElementSource(backMusic);

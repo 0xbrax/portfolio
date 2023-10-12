@@ -207,7 +207,6 @@
             video.setAttribute('playsinline', '');
             video.setAttribute('webkit-playsinline', '');
             video.autoplay = true;
-            video.muted = true;
             video.loop = true;
             video.playbackRate = 1;
             video.volume = 0;
@@ -966,6 +965,7 @@
             };
 
             const doEnter = () => {
+                document.title = "0xbrax | Home";
                 isEnterClicked.value = true;
                 video.play();
 
@@ -974,6 +974,16 @@
                 }
 
                 audioArray.forEach((el) => {
+                    if (!audioObject[`${el}Context`]) {
+                        audioObject[`${el}Context`] = new AudioContext();
+                        const source = audioObject[`${el}Context`].createMediaElementSource(audioObject[el]);
+                        audioObject[`${el}Gain`] = audioObject[`${el}Context`].createGain();
+                        source.connect(audioObject[`${el}Gain`]);
+                        audioObject[`${el}Gain`].connect(audioObject[`${el}Context`].destination);
+
+                        audioObject[`${el}Gain`].gain.value = parseInt(audioObject[`${el}Level`]) / 100;
+                    }
+
                     audioObject[el].play();
                 });
             };
@@ -1032,21 +1042,19 @@
             };
 
             // INIT
-            document.title = "0xbrax | Home";
+            document.title = "0xbrax";
             animate();
 
             audioArray.forEach((el, i) => {
                 watch(
                     () => audioObject[`${el}Level`],
                     (val) => {
-                        audioObject[el].volume = parseInt(val) / 100;
+                        audioObject[`${el}Gain`].gain.value = parseInt(val) / 100;
+
                         settingsStore.updateAudioLevel(el, val);
                         if (audioObject.inputRef[i])
                             initRangeInput(audioObject.inputRef[i], val);
                     },
-                    {
-                        immediate: true,
-                    }
                 );
             });
 
