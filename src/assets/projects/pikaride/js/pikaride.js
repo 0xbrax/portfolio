@@ -1,7 +1,7 @@
 import router from '@/router.js';
 import { isDeviceMobile } from "@/assets/js/utils.js";
 
-import backMusicFile from '@/assets/projects/pikaride/audio/Josh Mease - 4 on the Floor 8bit.wav';
+import backMusicFile from '@/assets/projects/pikaride/audio/Josh_Mease-4_on_the_Floor_8bit.mp3';
 import jumpSoundFile from '@/assets/projects/pikaride/audio/arcade-8bit-jump-sfx.mp3';
 import killSoundFile from '@/assets/projects/pikaride/audio/mixkit-retro-game-over-1947-edit.mp3';
 import bonusSoundFile from '@/assets/projects/pikaride/audio/mixkit-fairy-arcade-sparkle-866-edit.mp3';
@@ -10,25 +10,29 @@ import carStopFile from '@/assets/projects/pikaride/audio/car-horn-sfx.mp3';
 import superSaiyanSoundFile from '@/assets/projects/pikaride/audio/pikachu-remix-supersaiyan-sfx.mp3';
 import pikachuSoundFile from '@/assets/projects/pikaride/audio/pikachu-pika-sfx.mp3';
 
-import monsterFlyingFile from '@/assets/projects/pikaride/img/blue-monster-flying.gif';
-import lightBallPulseFile from '@/assets/projects/pikaride/img/lighting-ball-pulse.gif';
-import cityBack02File from '@/assets/projects/pikaride/img/2D-city-back_2x_02-edit.png';
-import finalBossIdleFlapingFile from '@/assets/projects/pikaride/img/phoenix-idle_flaping.gif';
-import finalBossIdleNoFlapingFile from '@/assets/projects/pikaride/img/phoenix-idle_no_flaping.gif';
-
-import finalBossDieFile from '@/assets/projects/pikaride/img/phoenix-die_1800_ms.gif';
-import cityBack04File from '@/assets/projects/pikaride/img/2D-city-back_2x_04-edit.png';
-import finalBossRiseFile from '@/assets/projects/pikaride/img/phoenix-rise_1620_ms.gif';
-import cityBack03File from '@/assets/projects/pikaride/img/2D-city-back_2x_03-edit.png';
-import monsterFlyingSnappingFile from '@/assets/projects/pikaride/img/blue-monster-flying-snapping.gif';
 import cityBack01File from '@/assets/projects/pikaride/img/2D-city-back_2x_01-edit.png';
+import cityBack02File from '@/assets/projects/pikaride/img/2D-city-back_2x_02-edit.png';
+import cityBack03File from '@/assets/projects/pikaride/img/2D-city-back_2x_03-edit.png';
+import cityBack04File from '@/assets/projects/pikaride/img/2D-city-back_2x_04-edit.png';
 
+import pikaRunFile from '@/assets/projects/pikaride/img/pikachu-run-new.gif';
 import pikaSuperNoRunFile from '@/assets/projects/pikaride/img/pikachu-supersaiyan-no-run.gif';
 import pikaSuperRunFile from '@/assets/projects/pikaride/img/pikachu-supersaiyan-run-new.gif';
 import pikaRunStaticFile from '@/assets/projects/pikaride/img/pikachu-run-static-2.png';
-import pikaRunFile from '@/assets/projects/pikaride/img/pikachu-run-new.gif';
 import pikaRunStaticEditFile from '@/assets/projects/pikaride/img/pikachu-run-static-3.png';
+
+import monsterFlyingFile from '@/assets/projects/pikaride/img/blue-monster-flying.gif';
+import monsterFlyingSnappingFile from '@/assets/projects/pikaride/img/blue-monster-flying-snapping.gif';
+
+import finalBossIdleFlapingFile from '@/assets/projects/pikaride/img/phoenix-idle_flaping.gif';
+import finalBossIdleNoFlapingFile from '@/assets/projects/pikaride/img/phoenix-idle_no_flaping.gif';
+import finalBossRiseFile from '@/assets/projects/pikaride/img/phoenix-rise_1620_ms.gif';
+import finalBossDieFile from '@/assets/projects/pikaride/img/phoenix-die_1800_ms.gif';
+
+import lightBallPulseFile from '@/assets/projects/pikaride/img/lighting-ball-pulse.gif';
 import lightBallRotatingFile from '@/assets/projects/pikaride/img/lighting-ball-rotating.gif';
+
+
 
 // MODULE START
 export const pikarideModule = () => {
