@@ -8,7 +8,8 @@
     import { ref, onMounted } from 'vue';
     import Phaser from 'phaser';
 
-    import SlotBodyImage from '@/assets/projects/slotmachine/image/main/reel.png'
+    import SlotBodyImage from '@/assets/projects/slotmachine/image/main/reel.png';
+    import TestImage from '@/assets/projects/slotmachine/image/test/spritesheet.png';
 
     export default {
         name: 'SlotMachine',
@@ -23,10 +24,13 @@
                     constructor() {
                         super("GameScene");
                         this.image;
+                        this.test;
+                        this.testInitialY;
                     }
 
                     preload() {
                         this.image = this.load.image("slotBody", SlotBodyImage);
+                        this.test = this.load.image('test', TestImage);
                     }
 
                     create() {
@@ -37,10 +41,36 @@
                         this.image.displayHeight = this.image.displayWidth * ratio;
 
                         this.image.setPosition((canvasRef.value.offsetWidth / 2) - (this.image.displayWidth / 2), (canvasRef.value.offsetHeight / 2) - (this.image.displayHeight / 2));
+
+
+
+
+                        const mask = this.add.graphics();
+                        mask.fillStyle(0xff0000, 1);
+                        mask.fillRect(393, 127, 138, 437);
+
+                        const imageX = 393 + (138 / 2);
+                        const imageY = 0; //127 + (437 / 2);
+
+                        console.log(imageY)
+
+                        this.test = this.add.image(imageX, imageY, 'test');
+                        this.test.setMask(mask.createGeometryMask());
+
+                        this.testInitialY = this.test.y;
                     }
 
                     update() {
-                        //
+                        this.test.setY(this.test.y += 1);
+
+                        if (this.test.y >= canvasRef.value.offsetHeight) {
+                            this.test.y = this.testInitialY;
+                        }
+
+
+                        if (this.test.y > this.test.displayHeight - 127) {
+                            //console.log('REPEAT') // OK
+                        }
                     }
                 }
 
