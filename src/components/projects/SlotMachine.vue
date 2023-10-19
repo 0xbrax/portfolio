@@ -1,6 +1,7 @@
 <template>
     <div id="slot-machine">
         <canvas ref="canvasRef"></canvas>
+        <i id="play-btn" class="fas fa-play" @click="spin()"></i>
     </div>
 </template>
 
@@ -8,6 +9,7 @@
     import { ref, onMounted } from "vue";
     import Phaser from "phaser";
     import { gsap } from "gsap";
+    import { getRandomNumber } from "@/assets/js/utils.js"
 
     import SlotBodyImage from "@/assets/projects/slotmachine/image/main/reel.png";
     import TestImage from "@/assets/projects/slotmachine/image/test/spritesheet.png";
@@ -33,10 +35,12 @@
             };
             const CONTAINER_RECT = {
                 width: ITEM_RECT.width,
-                height: ITEM_RECT.height * 7,
+                height: ITEM_RECT.height * 3,
                 top: 127,
-                bottom: 127 + ITEM_RECT.height * 7,
+                bottom: 127 + (ITEM_RECT.height * 3),
             };
+
+            let reel1Animation;
 
             function verticalLoop(items, config) {
                 console.log(items)
@@ -79,16 +83,13 @@
                         return result;
                     },
                     pixelsPerSecond = (config.speed || 1) * 100,
-                    snap =
-                        config.snap === false
-                            ? (v) => v
-                            : gsap.utils.snap(config.snap || 1), // some browsers shift by a pixel to accommodate flex layouts, so for example if width is 20% the first element's width might be 242px, and the next 243px, alternating back and forth. So we snap to 5 percentage points to make things look more natural
+                    //snap = gsap.utils.snap(config.snap || 1), // some browsers shift by a pixel to accommodate flex layouts, so for example if width is 20% the first element's width might be 242px, and the next 243px, alternating back and forth. So we snap to 5 percentage points to make things look more natural
                     timeOffset = 0,
                     container = CONTAINER_RECT,
-                    totalHeight = container.height,
+                    totalHeight = ITEM_RECT.height * 7,
                     populateHeights = () => {
                         items.forEach((el, i) => {
-                            heights[i] = el.height;
+                            heights[i] = el.displayHeight;
                         });
                     },
                     timeWrap,
@@ -128,88 +129,60 @@
                     populateTimeline = () => {
                         let i, item, curY, distanceToStart, distanceToLoop;
                         tl.clear();
+
                         for (i = 0; i < length; i++) {
-
-                            console.log('QUI', [...items])
-
                             item = items[i];
                             curY = item.y;
-                            distanceToStart =
-                                item.y + curY - startY;
-                            distanceToLoop =
-                                distanceToStart +
-                                heights[i];
-
+                            distanceToStart = curY - startY;
+                            distanceToLoop = distanceToStart + heights[i];
 
                             console.log(distanceToStart, distanceToLoop)
 
-                            console.log('SNAP 2', snap(
-                                            ((curY -
-                                                distanceToLoop +
-                                                totalHeight) /
-                                                heights[i]) *
-                                                100
-                                        ))
+                            console.log('LOG', curY - distanceToLoop, curY - distanceToLoop + totalHeight)
 
-                            console.log('SNAP 1', snap(
-                                        ((curY - distanceToLoop) / heights[i]) *
-                                            100
-                                    ))
-
-                            
                             tl.to(
                                 item,
                                 {
-                                    y: snap(
-                                        ((curY - distanceToLoop) / heights[i]) *
-                                            100
-                                    ),
-                                    duration: distanceToLoop / pixelsPerSecond,
+                                    y: curY - distanceToLoop,
+                                    duration: distanceToLoop // / pixelsPerSecond,
                                 },
                                 0
                             )
                                 .fromTo(
                                     item,
                                     {
-                                        y: snap(
-                                            ((curY -
-                                                distanceToLoop +
-                                                totalHeight) /
-                                                heights[i]) *
-                                                100
-                                        ),
+                                        y: curY - distanceToLoop + totalHeight
                                     },
                                     {
-                                        y: item.y,
-                                        duration:
-                                            (curY -
-                                                distanceToLoop +
-                                                totalHeight -
-                                                curY) /
-                                            pixelsPerSecond,
+                                        y: curY,
+                                        duration: (/*curY*/ - distanceToLoop + totalHeight /*- curY*/), // / pixelsPerSecond,
                                         immediateRender: false,
                                     },
-                                    distanceToLoop / pixelsPerSecond
+                                    distanceToLoop // / pixelsPerSecond
                                 )
                                 .add(
                                     "label" + i,
-                                    distanceToStart / pixelsPerSecond
+                                    distanceToStart
                                 );
-                            times[i] = distanceToStart / pixelsPerSecond;
-
-                            console.log('LOG', item)
+                                timeWrap = gsap.utils.wrap(0, tl.duration());
+                            times[i] = timeWrap(
+                                    tl.labels["label" + i] +
+                                        (tl.duration() * heights[i]) /
+                                            2 /
+                                            totalHeight -
+                                        timeOffset
+                                );
                         }
-                        timeWrap = gsap.utils.wrap(0, tl.duration());
-                    },
-                    proxy;
+                        
+                    };
                 //gsap.set(items, { y: 0 });
                 populateHeights();
                 populateTimeline();
                 populateOffsets();
                 function toIndex(index, vars) {
                     vars = clone(vars);
-                    Math.abs(index - curIndex) > length / 2 &&
-                        (index += index > curIndex ? -length : length); // always go in the shortest direction
+                    /*Math.abs(index - curIndex) > length / 2 &&
+                        (index += index > curIndex ? -length : length);*/ // always go in the shortest direction
                     let newIndex = gsap.utils.wrap(0, length, index),
                         time = times[newIndex];
                     if (time > tl.time() !== index > curIndex) {
@@ -225,7 +198,7 @@
                     }
                     curIndex = newIndex;
                     vars.overwrite = true;
-                    gsap.killTweensOf(proxy);
+                    //gsap.killTweensOf();
                     return tl.tweenTo(time, vars);
                 }
                 tl.elements = items;
@@ -247,16 +220,32 @@
                 tl.closestIndex(true);
                 onChange && onChange(items[curIndex], curIndex);
 
+                console.log('LOG', tl)
+
                 return tl;
             }
 
 
 
-            const spin = (wheel) => {
+            const spin = () => {
                 // pick a random index from the Array of elements in this wheel
-                let randomIndex = gsap.utils.random(0, wheel.elements.length, 1);
+                const REEL_LENGTH = 7;
+                let randomIndex = getRandomNumber(0, 6);
                 // now animate to that index, adding an extra 2 full revolutions. 
-                wheel.toIndex(randomIndex, {duration: 3, revolutions: 2, ease: "power2.inOut"});
+
+                console.log('RANDOM', randomIndex, `image: ${randomIndex + 1}`)
+
+                /*import TestImage1 from "@/assets/projects/slotmachine/image/test/apple.png";
+                import TestImage2 from "@/assets/projects/slotmachine/image/test/arbuz.png";
+                import TestImage3 from "@/assets/projects/slotmachine/image/test/cherry.png";
+                import TestImage4 from "@/assets/projects/slotmachine/image/test/cocktail.png";
+                import TestImage5 from "@/assets/projects/slotmachine/image/test/lemon.png";
+                import TestImage6 from "@/assets/projects/slotmachine/image/test/nut.png";
+                import TestImage7 from "@/assets/projects/slotmachine/image/test/straw.png";*/
+
+
+
+                reel1Animation.toIndex(randomIndex, {duration: 6, revolutions: 2, ease: "power2.inOut"});
             }
 
 
@@ -338,15 +327,11 @@
                         console.log(reel1)
 
 
-                        const reel1Animation = verticalLoop(reel1, {
+                        reel1Animation = verticalLoop(reel1, {
                             repeat: -1,
                             paused: true,
                             center: true,
                         });
-
-                        setTimeout(() => {
-                            spin(reel1Animation)
-                        }, 1000);
                     }
 
                     update() {
@@ -388,6 +373,7 @@
 
             return {
                 canvasRef,
+                spin
             };
         },
     };
@@ -407,5 +393,18 @@
     canvas {
         width: 100%;
         height: 100%;
+    }
+    #play-btn {
+        position: absolute;
+        bottom: 50px;
+        left: 50px;
+        height: 50px;
+        aspect-ratio: 1 / 1;
+        font-size: 25px;
+        background-color: rgba(255, 255, 255, 0.5);
+        border-radius: 50%;
+        cursor: pointer;
+        text-align: center;
+        line-height: 50px;
     }
 </style>
