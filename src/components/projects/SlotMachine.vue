@@ -31,8 +31,14 @@
             const canvasRef = ref(null);
             const REEL_LENGTH = 7;
 
-            const IMG_GAP_X = 3;
-            const IMG_GAP_Y = 2;
+            const REEL_1_MAP = [1, 2, 3, 4, 5, 6, 7];
+            const REEL_2_MAP = [4, 6, 1, 3, 5, 7, 2];
+            const REEL_3_MAP = [1, 2, 7, 6, 3, 5, 4];
+            const REEL_4_MAP = [2, 4, 6, 1, 3, 5, 7];
+            const REEL_5_MAP = [6, 3, 2, 7, 5, 1, 4];
+
+            const IMG_GAP_X = 2;
+            const IMG_GAP_Y = 1;
 
             let reel1Animation;
             let reel2Animation;
@@ -42,7 +48,7 @@
 
 
 
-            const verticalLoop = (items, config) => {
+            const verticalLoop = (items, image, config) => {
                 items = gsap.utils.toArray(items);
                 config = config || {};
                 let onChange = config.onChange,
@@ -64,7 +70,7 @@
                             tl.totalTime(tl.rawTime() + tl.duration() * 100),
                     }),
                     length = items.length,
-                    startY = items[2].y,
+                    startY = items[REEL_LENGTH - 1].y + items[0].displayHeight,
                     times = [],
                     heights = [],
                     curIndex = 0,
@@ -82,7 +88,7 @@
                         width: items[0].displayWidth,
                         height: items[0].displayHeight * 3,
                     },
-                    totalHeight = startY = items[0].displayHeight * REEL_LENGTH,
+                    totalHeight = items[0].displayHeight * REEL_LENGTH,
                     populateHeights = () => {
                         items.forEach((el, i) => {
                             heights[i] = el.displayHeight;
@@ -128,7 +134,7 @@
                         for (i = 0; i < length; i++) {
                             item = items[i];
                             curY = item.y;
-                            distanceToStart = startY - curY - items[0].displayHeight - IMG_GAP_Y; // - container.height;
+                            distanceToStart = startY - curY - (items[0].displayHeight * 2);
                             distanceToLoop = distanceToStart + heights[i];
                             tl.to(
                                 item,
@@ -170,7 +176,7 @@
                 populateOffsets();
                 function toIndex(index, vars) {
                     vars = clone(vars);
-                    index -= 2; // startY gap
+                    index -= 2; // gap
                     let newIndex = gsap.utils.wrap(0, length, index),
                         time = times[newIndex];
                     if (time > tl.time() !== index > curIndex) {
@@ -212,9 +218,13 @@
 
 
             const spin = () => {
-                const randomIndex = getRandomNumber(0, REEL_LENGTH - 1);
+                const randomIndex1 = getRandomNumber(0, REEL_LENGTH - 1);
+                const randomIndex2 = getRandomNumber(0, REEL_LENGTH - 1);
+                const randomIndex3 = getRandomNumber(0, REEL_LENGTH - 1);
+                const randomIndex4 = getRandomNumber(0, REEL_LENGTH - 1);
+                const randomIndex5 = getRandomNumber(0, REEL_LENGTH - 1);
 
-                console.log('RANDOM', randomIndex, `image: ${randomIndex + 1}`)
+                console.log('RANDOM 1', randomIndex1, `REEL 1 image: ${randomIndex1 + 1}`)
                 /*import TestImage1 from "@/assets/projects/slotmachine/image/test/apple.png";
                 import TestImage2 from "@/assets/projects/slotmachine/image/test/arbuz.png";
                 import TestImage3 from "@/assets/projects/slotmachine/image/test/cherry.png";
@@ -223,11 +233,11 @@
                 import TestImage6 from "@/assets/projects/slotmachine/image/test/nut.png";
                 import TestImage7 from "@/assets/projects/slotmachine/image/test/straw.png";*/
 
-                reel1Animation.toIndex(randomIndex, { duration: 5.10, revolutions: 20, ease: "power2.inOut" });
-                reel2Animation.toIndex(randomIndex, { duration: 5.25, revolutions: 20, ease: "power2.inOut" });
-                reel3Animation.toIndex(randomIndex, { duration: 5.42, revolutions: 20, ease: "power2.inOut" });
-                reel4Animation.toIndex(randomIndex, { duration: 5.63, revolutions: 20, ease: "power2.inOut" });
-                reel5Animation.toIndex(randomIndex, { duration: 5.91, revolutions: 20, ease: "power2.inOut" });
+                reel1Animation.toIndex(randomIndex1, { duration: 5.10, revolutions: 20, ease: "power2.inOut" });
+                reel2Animation.toIndex(randomIndex2, { duration: 5.25, revolutions: 20, ease: "power2.inOut" });
+                reel3Animation.toIndex(randomIndex3, { duration: 5.42, revolutions: 20, ease: "power2.inOut" });
+                reel4Animation.toIndex(randomIndex4, { duration: 5.63, revolutions: 20, ease: "power2.inOut" });
+                reel5Animation.toIndex(randomIndex5, { duration: 5.91, revolutions: 20, ease: "power2.inOut" });
             }
 
 
@@ -280,23 +290,25 @@
                                 this.image.displayHeight / 2
                         );
 
-
-                        const generateReel = (xPosition, xGap, yPosition) => {
+                        const generateReel = (reelMap, xGap) => {
+                            const IMG_DIMENSION = 340;
                             const reel = [];
                             const mask = this.add.graphics();
+
                             //mask.fillStyle(0xff0000, 1); // DEBUG
-                            mask.fillRect(0, 0, 326 * this.image.scaleX, 1017 * this.image.scaleY);
-                            mask.setPosition(xPosition + xGap, yPosition + 52);
+
+                            mask.fillRect(0, 0, 322 * this.image.scaleX, 1017 * this.image.scaleY);
+                            mask.setPosition(this.image.x + (xGap * this.image.scaleX), this.image.y + (98 * this.image.scaleY));
 
                             for (let i = 0; i < 7; i++) {
                                 const img = this.add.image(
-                                    mask.x + 180 / 2 - IMG_GAP_X,
-                                    mask.y + 180 * i + 180 / 2 - IMG_GAP_Y,
-                                    `test${i + 1}`
-                                );
+                                    mask.x - IMG_GAP_X,
+                                    mask.y + (IMG_DIMENSION * this.image.scaleY * i) - IMG_GAP_Y,
+                                    `test${reelMap[i]}`
+                                ).setOrigin(0, 0);
 
-                                img.displayWidth = 180;
-                                img.displayHeight = 180;
+                                img.displayWidth = IMG_DIMENSION * this.image.scaleX;
+                                img.displayHeight = IMG_DIMENSION * this.image.scaleY;
                                 img.setMask(
                                     mask.createGeometryMask()
                                 );
@@ -304,23 +316,23 @@
                                 reel.push(img);
                             }
 
-                            return verticalLoop(reel, {
+                            return verticalLoop(reel, this.image, {
                                 repeat: -1,
                                 paused: true,
                                 center: true,
                             });
                         }
 
-                        reel1Animation = generateReel(this.image.x, 17, this.image.y);
-                        reel2Animation = generateReel(this.image.x, 199, this.image.y);
-                        reel3Animation = generateReel(this.image.x, 381, this.image.y);
-                        reel4Animation = generateReel(this.image.x, 564, this.image.y);
-                        reel5Animation = generateReel(this.image.x, 747, this.image.y);
+                        reel1Animation = generateReel(REEL_1_MAP, 34);
+                        reel2Animation = generateReel(REEL_2_MAP, 376);
+                        reel3Animation = generateReel(REEL_3_MAP, 718);
+                        reel4Animation = generateReel(REEL_4_MAP, 1060);
+                        reel5Animation = generateReel(REEL_5_MAP, 1402);
                     }
 
-                    update() {
-                        //
-                    }
+                    /*update() {
+                        
+                    }*/
                 }
 
                 const config = {
@@ -345,8 +357,7 @@
 
                 const game = new Phaser.Game(config);
 
-                // posso gestire piu scene, schermata loader switch scena, start
-
+                // gestire piu scene, schermata loader switch scena, start ?
                 console.log(game);
             });
 
