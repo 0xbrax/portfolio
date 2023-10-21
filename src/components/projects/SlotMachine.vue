@@ -43,13 +43,8 @@
             let reel1Animation;
 
             function verticalLoop(items, config) {
-                console.log(items)
-
                 items = gsap.utils.toArray(items);
                 config = config || {};
-
-
-
                 let onChange = config.onChange,
                     lastIndex = 0,
                     tl = gsap.timeline({
@@ -69,7 +64,7 @@
                             tl.totalTime(tl.rawTime() + tl.duration() * 100),
                     }),
                     length = items.length,
-                    startY = items[0].y,
+                    startY = items[2].y,
                     times = [],
                     heights = [],
                     curIndex = 0,
@@ -82,8 +77,6 @@
                         }
                         return result;
                     },
-                    pixelsPerSecond = (config.speed || 1) * 100,
-                    //snap = gsap.utils.snap(config.snap || 1), // some browsers shift by a pixel to accommodate flex layouts, so for example if width is 20% the first element's width might be 242px, and the next 243px, alternating back and forth. So we snap to 5 percentage points to make things look more natural
                     timeOffset = 0,
                     container = CONTAINER_RECT,
                     totalHeight = ITEM_RECT.height * 7,
@@ -129,42 +122,36 @@
                     populateTimeline = () => {
                         let i, item, curY, distanceToStart, distanceToLoop;
                         tl.clear();
-
                         for (i = 0; i < length; i++) {
                             item = items[i];
                             curY = item.y;
-                            distanceToStart = curY - startY;
+                            distanceToStart = startY - curY + container.height;
                             distanceToLoop = distanceToStart + heights[i];
-
-                            console.log(distanceToStart, distanceToLoop)
-
-                            console.log('LOG', curY - distanceToLoop, curY - distanceToLoop + totalHeight)
-
                             tl.to(
                                 item,
                                 {
-                                    y: curY - distanceToLoop,
-                                    duration: distanceToLoop // / pixelsPerSecond,
+                                    y: curY + distanceToLoop,
+                                    duration: distanceToLoop
                                 },
                                 0
                             )
-                                .fromTo(
-                                    item,
-                                    {
-                                        y: curY - distanceToLoop + totalHeight
-                                    },
-                                    {
-                                        y: curY,
-                                        duration: (/*curY*/ - distanceToLoop + totalHeight /*- curY*/), // / pixelsPerSecond,
-                                        immediateRender: false,
-                                    },
-                                    distanceToLoop // / pixelsPerSecond
-                                )
-                                .add(
-                                    "label" + i,
-                                    distanceToStart
-                                );
-                                timeWrap = gsap.utils.wrap(0, tl.duration());
+                            .fromTo(
+                                item,
+                                {
+                                    y: curY + distanceToLoop - totalHeight
+                                },
+                                {
+                                    y: curY,
+                                    duration: totalHeight - distanceToLoop,
+                                    immediateRender: false,
+                                },
+                                distanceToLoop
+                            )
+                            .add(
+                                "label" + i,
+                                distanceToStart
+                            );
+                            timeWrap = gsap.utils.wrap(0, tl.duration());
                             times[i] = timeWrap(
                                     tl.labels["label" + i] +
                                         (tl.duration() * heights[i]) /
@@ -175,18 +162,15 @@
                         }
                         
                     };
-                //gsap.set(items, { y: 0 });
                 populateHeights();
                 populateTimeline();
                 populateOffsets();
                 function toIndex(index, vars) {
                     vars = clone(vars);
-                    /*Math.abs(index - curIndex) > length / 2 &&
-                        (index += index > curIndex ? -length : length);*/ // always go in the shortest direction
+                    index -= 2; // startY gap
                     let newIndex = gsap.utils.wrap(0, length, index),
                         time = times[newIndex];
                     if (time > tl.time() !== index > curIndex) {
-                        // if we're wrapping the timeline's playhead, make the proper adjustments
                         time += tl.duration() * (index > curIndex ? 1 : -1);
                     }
                     if (vars.revolutions) {
@@ -198,7 +182,6 @@
                     }
                     curIndex = newIndex;
                     vars.overwrite = true;
-                    //gsap.killTweensOf();
                     return tl.tweenTo(time, vars);
                 }
                 tl.elements = items;
@@ -220,21 +203,16 @@
                 tl.closestIndex(true);
                 onChange && onChange(items[curIndex], curIndex);
 
-                console.log('LOG', tl)
-
                 return tl;
             }
 
 
 
             const spin = () => {
-                // pick a random index from the Array of elements in this wheel
                 const REEL_LENGTH = 7;
-                let randomIndex = getRandomNumber(0, 6);
-                // now animate to that index, adding an extra 2 full revolutions. 
+                const randomIndex = getRandomNumber(0, 6);
 
                 console.log('RANDOM', randomIndex, `image: ${randomIndex + 1}`)
-
                 /*import TestImage1 from "@/assets/projects/slotmachine/image/test/apple.png";
                 import TestImage2 from "@/assets/projects/slotmachine/image/test/arbuz.png";
                 import TestImage3 from "@/assets/projects/slotmachine/image/test/cherry.png";
@@ -243,9 +221,7 @@
                 import TestImage6 from "@/assets/projects/slotmachine/image/test/nut.png";
                 import TestImage7 from "@/assets/projects/slotmachine/image/test/straw.png";*/
 
-
-
-                reel1Animation.toIndex(randomIndex, {duration: 6, revolutions: 2, ease: "power2.inOut"});
+                reel1Animation.toIndex(randomIndex, {duration: 5, revolutions: 20, ease: "power2.inOut"});
             }
 
 
