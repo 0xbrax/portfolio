@@ -11,6 +11,9 @@
     import { gsap } from "gsap";
     import { getRandomNumber } from "@/assets/js/utils.js"
 
+    // apple, arbuz (watermelon), cherry, cocktail, gapefruit, lemon, nut (coconut), pear, pineaple (PP!)
+    // check x straw + wild in psd
+    // bonus fruit cockatis new background + fx
     import SlotBodyImage from "@/assets/projects/slotmachine/image/main/reel.png";
     import TestImage from "@/assets/projects/slotmachine/image/test/spritesheet.png";
     import TestImage1 from "@/assets/projects/slotmachine/image/test/apple.png";
@@ -26,23 +29,20 @@
 
         setup() {
             const canvasRef = ref(null);
+            const REEL_LENGTH = 7;
 
-            const ITEM_RECT = {
-                width: 138,
-                height: 138,
-                top: 127,
-                bottom: 127 + 138,
-            };
-            const CONTAINER_RECT = {
-                width: ITEM_RECT.width,
-                height: ITEM_RECT.height * 3,
-                top: 127,
-                bottom: 127 + (ITEM_RECT.height * 3),
-            };
+            const IMG_GAP_X = 3;
+            const IMG_GAP_Y = 2;
 
             let reel1Animation;
+            let reel2Animation;
+            let reel3Animation;
+            let reel4Animation;
+            let reel5Animation;
 
-            function verticalLoop(items, config) {
+
+
+            const verticalLoop = (items, config) => {
                 items = gsap.utils.toArray(items);
                 config = config || {};
                 let onChange = config.onChange,
@@ -78,8 +78,11 @@
                         return result;
                     },
                     timeOffset = 0,
-                    container = CONTAINER_RECT,
-                    totalHeight = ITEM_RECT.height * 7,
+                    container = {
+                        width: items[0].displayWidth,
+                        height: items[0].displayHeight * 3,
+                    },
+                    totalHeight = startY = items[0].displayHeight * REEL_LENGTH,
                     populateHeights = () => {
                         items.forEach((el, i) => {
                             heights[i] = el.displayHeight;
@@ -125,7 +128,7 @@
                         for (i = 0; i < length; i++) {
                             item = items[i];
                             curY = item.y;
-                            distanceToStart = startY - curY + container.height;
+                            distanceToStart = startY - curY - items[0].displayHeight - IMG_GAP_Y; // - container.height;
                             distanceToLoop = distanceToStart + heights[i];
                             tl.to(
                                 item,
@@ -209,8 +212,7 @@
 
 
             const spin = () => {
-                const REEL_LENGTH = 7;
-                const randomIndex = getRandomNumber(0, 6);
+                const randomIndex = getRandomNumber(0, REEL_LENGTH - 1);
 
                 console.log('RANDOM', randomIndex, `image: ${randomIndex + 1}`)
                 /*import TestImage1 from "@/assets/projects/slotmachine/image/test/apple.png";
@@ -221,9 +223,12 @@
                 import TestImage6 from "@/assets/projects/slotmachine/image/test/nut.png";
                 import TestImage7 from "@/assets/projects/slotmachine/image/test/straw.png";*/
 
-                reel1Animation.toIndex(randomIndex, {duration: 5, revolutions: 20, ease: "power2.inOut"});
+                reel1Animation.toIndex(randomIndex, { duration: 5.10, revolutions: 20, ease: "power2.inOut" });
+                reel2Animation.toIndex(randomIndex, { duration: 5.25, revolutions: 20, ease: "power2.inOut" });
+                reel3Animation.toIndex(randomIndex, { duration: 5.42, revolutions: 20, ease: "power2.inOut" });
+                reel4Animation.toIndex(randomIndex, { duration: 5.63, revolutions: 20, ease: "power2.inOut" });
+                reel5Animation.toIndex(randomIndex, { duration: 5.91, revolutions: 20, ease: "power2.inOut" });
             }
-
 
 
 
@@ -241,10 +246,7 @@
                         this.test4;
                         this.test5;
                         this.test6;
-                        this.tedt7;
-
-                        this.totalReelHeight = 138 * 7;
-                        this.animation = {};
+                        this.test7;
                     }
 
                     preload() {
@@ -278,45 +280,46 @@
                                 this.image.displayHeight / 2
                         );
 
-                        const mask = this.add.graphics();
-                        mask.fillStyle(0xff0000, 1);
-                        mask.fillRect(393, 127, 138, 437);
 
-                        const reel1 = [];
+                        const generateReel = (xPosition, xGap, yPosition) => {
+                            const reel = [];
+                            const mask = this.add.graphics();
+                            //mask.fillStyle(0xff0000, 1); // DEBUG
+                            mask.fillRect(0, 0, 326 * this.image.scaleX, 1017 * this.image.scaleY);
+                            mask.setPosition(xPosition + xGap, yPosition + 52);
 
-                        for (let i = 0; i < 7; i++) {
-                            this[`test${i + 1}`] = this.add.image(
-                                393 + 138 / 2,
-                                127 + 138 * i + 138 / 2,
-                                `test${i + 1}`
-                            );
+                            for (let i = 0; i < 7; i++) {
+                                const img = this.add.image(
+                                    mask.x + 180 / 2 - IMG_GAP_X,
+                                    mask.y + 180 * i + 180 / 2 - IMG_GAP_Y,
+                                    `test${i + 1}`
+                                );
 
-                            this[`test${i + 1}`].displayWidth = 138;
-                            this[`test${i + 1}`].displayHeight = 138;
-                            this[`test${i + 1}`].setMask(
-                                mask.createGeometryMask()
-                            );
+                                img.displayWidth = 180;
+                                img.displayHeight = 180;
+                                img.setMask(
+                                    mask.createGeometryMask()
+                                );
 
-                            reel1.push(this[`test${i + 1}`]);
+                                reel.push(img);
+                            }
+
+                            return verticalLoop(reel, {
+                                repeat: -1,
+                                paused: true,
+                                center: true,
+                            });
                         }
 
-                        console.log(reel1)
-
-
-                        reel1Animation = verticalLoop(reel1, {
-                            repeat: -1,
-                            paused: true,
-                            center: true,
-                        });
+                        reel1Animation = generateReel(this.image.x, 17, this.image.y);
+                        reel2Animation = generateReel(this.image.x, 199, this.image.y);
+                        reel3Animation = generateReel(this.image.x, 381, this.image.y);
+                        reel4Animation = generateReel(this.image.x, 564, this.image.y);
+                        reel5Animation = generateReel(this.image.x, 747, this.image.y);
                     }
 
                     update() {
-                        /*for (let i = 0; i < 7; i++) {
-                            //this[`test${i + 1}`].setY(this[`test${i + 1}`].y += 0.5);
-                            if (this[`test${i + 1}`].y > this.totalReelHeight + (138 / 2)) {
-                                this[`test${i + 1}`].setY((127 + (138 / 2)) - 138);
-                            }
-                        }*/
+                        //
                     }
                 }
 
