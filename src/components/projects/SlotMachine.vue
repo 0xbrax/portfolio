@@ -24,6 +24,9 @@
     import TestImage6 from "@/assets/projects/slotmachine/image/test/nut.png";
     import TestImage7 from "@/assets/projects/slotmachine/image/test/straw.png";
 
+    import AppleSpritePng from "@/assets/projects/slotmachine/image/sprite/apple_spritesheet.png";
+    import AppleSpriteJson from "@/assets/projects/slotmachine/image/sprite/apple_spritesheet.json";
+
     export default {
         name: "SlotMachine",
 
@@ -32,6 +35,7 @@
             // ReturnToPlayer
 
             const canvasRef = ref(null);
+            const ANIMATION_FPS = 24;
             const REEL_LENGTH = 7;
 
             const REEL_1_MAP = [1, 2, 3, 4, 5, 6, 7];
@@ -336,22 +340,38 @@
                         this.test5;
                         this.test6;
                         this.test7;
+
+                        this.appleSheet;
                     }
 
                     preload() {
-                        this.image = this.load.image("slotBody", SlotBodyImage);
-                        this.test = this.load.image("test", TestImage);
+                        this.load.image("slotBody", SlotBodyImage);
+                        this.load.image("test", TestImage);
 
-                        this.test1 = this.load.image("test1", TestImage1);
-                        this.test2 = this.load.image("test2", TestImage2);
-                        this.test3 = this.load.image("test3", TestImage3);
-                        this.test4 = this.load.image("test4", TestImage4);
-                        this.test5 = this.load.image("test5", TestImage5);
-                        this.test6 = this.load.image("test6", TestImage6);
-                        this.tedt7 = this.load.image("test7", TestImage7);
+                        this.load.image("test1", TestImage1);
+                        this.load.image("test2", TestImage2);
+                        this.load.image("test3", TestImage3);
+                        this.load.image("test4", TestImage4);
+                        this.load.image("test5", TestImage5);
+                        this.load.image("test6", TestImage6);
+                        this.load.image("test7", TestImage7);
+
+                        this.load.atlas('apple_sprite', AppleSpritePng, AppleSpriteJson);
                     }
 
                     create() {
+                        this.anims.create({
+                            key: 'apple_animation',
+                            frames: this.anims.generateFrameNames('apple_sprite', { start: 1, end: 30, zeroPad: 2, prefix: 'apple-animation_', suffix: '.png' }), // Specifica i frame da utilizzare
+                            frameRate: ANIMATION_FPS,
+                            repeat: -1
+                        });
+
+                        //this.appleSheet = this.add.sprite(400, 300, 'apple_sprite', 'apple-animation_01.png');
+                        //this.appleSheet.play('apple_animation');
+
+
+
                         this.image = this.add
                             .image(0, 0, "slotBody")
                             .setOrigin(0, 0);
@@ -379,6 +399,8 @@
                             mask.fillRect(0, 0, 322 * this.image.scaleX, 1017 * this.image.scaleY);
                             mask.setPosition(this.image.x + (xGap * this.image.scaleX), this.image.y + (98 * this.image.scaleY));
 
+                            
+
                             for (let i = 0; i < 7; i++) {
                                 const img = this.add.image(
                                     mask.x - IMG_GAP_X,
@@ -394,6 +416,10 @@
 
                                 reel.push(img);
                             }
+
+                            this.appleSheet = this.add.sprite(mask.x - (82 * this.image.scaleX), mask.y - (82 * this.image.scaleY), 'apple_sprite', 'apple-animation_01.png').setOrigin(0, 0);
+                            this.appleSheet.setScale(0.98 * this.image.scaleX, 0.98 * this.image.scaleY);
+                            this.appleSheet.setMask(mask.createGeometryMask());
 
                             return verticalLoop(reel, this.image, {
                                 repeat: -1,

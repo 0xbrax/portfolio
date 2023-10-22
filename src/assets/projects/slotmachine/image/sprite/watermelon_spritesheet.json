@@ -1,0 +1,615 @@
+{
+	"frames": {
+		"watermelon-animation_01.png": {
+			"frame": {
+				"x": 0,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"sourceSize": {
+				"w": 476,
+				"h": 474
+			}
+		},
+		"watermelon-animation_02.png": {
+			"frame": {
+				"x": 476,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"sourceSize": {
+				"w": 476,
+				"h": 474
+			}
+		},
+		"watermelon-animation_03.png": {
+			"frame": {
+				"x": 952,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"sourceSize": {
+				"w": 476,
+				"h": 474
+			}
+		},
+		"watermelon-animation_04.png": {
+			"frame": {
+				"x": 1428,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"sourceSize": {
+				"w": 476,
+				"h": 474
+			}
+		},
+		"watermelon-animation_05.png": {
+			"frame": {
+				"x": 1904,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"sourceSize": {
+				"w": 476,
+				"h": 474
+			}
+		},
+		"watermelon-animation_06.png": {
+			"frame": {
+				"x": 2380,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"sourceSize": {
+				"w": 476,
+				"h": 474
+			}
+		},
+		"watermelon-animation_07.png": {
+			"frame": {
+				"x": 2856,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"sourceSize": {
+				"w": 476,
+				"h": 474
+			}
+		},
+		"watermelon-animation_08.png": {
+			"frame": {
+				"x": 3332,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"sourceSize": {
+				"w": 476,
+				"h": 474
+			}
+		},
+		"watermelon-animation_09.png": {
+			"frame": {
+				"x": 3808,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"sourceSize": {
+				"w": 476,
+				"h": 474
+			}
+		},
+		"watermelon-animation_10.png": {
+			"frame": {
+				"x": 4284,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"sourceSize": {
+				"w": 476,
+				"h": 474
+			}
+		},
+		"watermelon-animation_11.png": {
+			"frame": {
+				"x": 4760,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"sourceSize": {
+				"w": 476,
+				"h": 474
+			}
+		},
+		"watermelon-animation_12.png": {
+			"frame": {
+				"x": 5236,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"sourceSize": {
+				"w": 476,
+				"h": 474
+			}
+		},
+		"watermelon-animation_13.png": {
+			"frame": {
+				"x": 5712,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"sourceSize": {
+				"w": 476,
+				"h": 474
+			}
+		},
+		"watermelon-animation_14.png": {
+			"frame": {
+				"x": 6188,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"sourceSize": {
+				"w": 476,
+				"h": 474
+			}
+		},
+		"watermelon-animation_15.png": {
+			"frame": {
+				"x": 6664,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"sourceSize": {
+				"w": 476,
+				"h": 474
+			}
+		},
+		"watermelon-animation_16.png": {
+			"frame": {
+				"x": 7140,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"sourceSize": {
+				"w": 476,
+				"h": 474
+			}
+		},
+		"watermelon-animation_17.png": {
+			"frame": {
+				"x": 7616,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"sourceSize": {
+				"w": 476,
+				"h": 474
+			}
+		},
+		"watermelon-animation_18.png": {
+			"frame": {
+				"x": 8092,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"sourceSize": {
+				"w": 476,
+				"h": 474
+			}
+		},
+		"watermelon-animation_19.png": {
+			"frame": {
+				"x": 8568,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"sourceSize": {
+				"w": 476,
+				"h": 474
+			}
+		},
+		"watermelon-animation_20.png": {
+			"frame": {
+				"x": 9044,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"sourceSize": {
+				"w": 476,
+				"h": 474
+			}
+		},
+		"watermelon-animation_21.png": {
+			"frame": {
+				"x": 9520,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"sourceSize": {
+				"w": 476,
+				"h": 474
+			}
+		},
+		"watermelon-animation_22.png": {
+			"frame": {
+				"x": 9996,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"sourceSize": {
+				"w": 476,
+				"h": 474
+			}
+		},
+		"watermelon-animation_23.png": {
+			"frame": {
+				"x": 10472,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"sourceSize": {
+				"w": 476,
+				"h": 474
+			}
+		},
+		"watermelon-animation_24.png": {
+			"frame": {
+				"x": 10948,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"sourceSize": {
+				"w": 476,
+				"h": 474
+			}
+		},
+		"watermelon-animation_25.png": {
+			"frame": {
+				"x": 11424,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"sourceSize": {
+				"w": 476,
+				"h": 474
+			}
+		},
+		"watermelon-animation_26.png": {
+			"frame": {
+				"x": 11900,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"sourceSize": {
+				"w": 476,
+				"h": 474
+			}
+		},
+		"watermelon-animation_27.png": {
+			"frame": {
+				"x": 12376,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"sourceSize": {
+				"w": 476,
+				"h": 474
+			}
+		},
+		"watermelon-animation_28.png": {
+			"frame": {
+				"x": 12852,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"sourceSize": {
+				"w": 476,
+				"h": 474
+			}
+		},
+		"watermelon-animation_29.png": {
+			"frame": {
+				"x": 13328,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"sourceSize": {
+				"w": 476,
+				"h": 474
+			}
+		},
+		"watermelon-animation_30.png": {
+			"frame": {
+				"x": 13804,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 476,
+				"h": 474
+			},
+			"sourceSize": {
+				"w": 476,
+				"h": 474
+			}
+		}
+	},
+	"meta": {
+		"app": "http://www.codeandweb.com/texturepacker",
+		"version": "1.0",
+		"image": "spritesheet.png",
+		"format": "RGBA8888",
+		"size": {
+			"w": 14280,
+			"h": 474
+		},
+		"scale": "1"
+	}
+}
