@@ -28,6 +28,9 @@
         name: "SlotMachine",
 
         setup() {
+            // RandomNumberGenerator
+            // ReturnToPlayer
+
             const canvasRef = ref(null);
             const REEL_LENGTH = 7;
 
@@ -218,26 +221,102 @@
 
 
             const spin = () => {
-                const randomIndex1 = getRandomNumber(0, REEL_LENGTH - 1);
-                const randomIndex2 = getRandomNumber(0, REEL_LENGTH - 1);
-                const randomIndex3 = getRandomNumber(0, REEL_LENGTH - 1);
-                const randomIndex4 = getRandomNumber(0, REEL_LENGTH - 1);
-                const randomIndex5 = getRandomNumber(0, REEL_LENGTH - 1);
+                const conditions = [
+                    {
+                        mode: 'lose'
+                    },
+                    {
+                        mode: 'fake-win'
+                    },
+                    {
+                        mode: 'win'
+                    },
+                    {
+                        mode: 'mega-win'
+                    }
+                ];
 
-                console.log('RANDOM 1', randomIndex1, `REEL 1 image: ${randomIndex1 + 1}`)
-                /*import TestImage1 from "@/assets/projects/slotmachine/image/test/apple.png";
+                //const randomCondition = conditions[getRandomNumber(0, conditions.length - 1)];
+                const selectedCondition = conditions[3];
+                const indexReels = {
+                    indexReel1: null,
+                    indexReel2: null,
+                    indexReel3: null,
+                    indexReel4: null,
+                    indexReel5: null
+                }
+
+                switch (selectedCondition.mode) {
+                    case 'lose':
+                        break
+                    case 'fake-win':
+                        break
+                    case 'win':
+                        break
+                    case 'mega-win':
+                        const reelRows = [
+                            {
+                                row1: {
+                                    reel1: 3,
+                                    reel2: 0,
+                                    reel3: 6,
+                                    reel4: 1,
+                                    reel5: 6
+                                }
+                            },
+                            {
+                                row2: {
+                                    reel1: 2,
+                                    reel2: 6,
+                                    reel3: 5,
+                                    reel4: 0,
+                                    reel5: 5
+                                }
+                            },
+                            {
+                                row3: {
+                                    reel1: 1,
+                                    reel2: 5,
+                                    reel3: 4,
+                                    reel4: 6,
+                                    reel5: 4
+                                }
+                            }
+                        ];
+                        const randomRow = getRandomNumber(0, reelRows.length - 1);
+                        const selectedRow = reelRows[randomRow];
+
+                        for (let i = 1; i < REEL_LENGTH; i++) {
+                            indexReels[`indexReel${i}`] = selectedRow[`row${randomRow + 1}`][`reel${i}`];
+                        }
+                }
+
+                /*
+                import TestImage1 from "@/assets/projects/slotmachine/image/test/apple.png";
                 import TestImage2 from "@/assets/projects/slotmachine/image/test/arbuz.png";
                 import TestImage3 from "@/assets/projects/slotmachine/image/test/cherry.png";
                 import TestImage4 from "@/assets/projects/slotmachine/image/test/cocktail.png";
                 import TestImage5 from "@/assets/projects/slotmachine/image/test/lemon.png";
                 import TestImage6 from "@/assets/projects/slotmachine/image/test/nut.png";
                 import TestImage7 from "@/assets/projects/slotmachine/image/test/straw.png";*/
+                /*
+                const REEL_1_MAP = [1, 2, 3, 4, 5, 6, 7];
+                const REEL_2_MAP = [4, 6, 1, 3, 5, 7, 2];
+                const REEL_3_MAP = [1, 2, 7, 6, 3, 5, 4];
+                const REEL_4_MAP = [2, 4, 6, 1, 3, 5, 7];
+                const REEL_5_MAP = [6, 3, 2, 7, 5, 1, 4];*/
 
-                reel1Animation.toIndex(randomIndex1, { duration: 5.10, revolutions: 20, ease: "power2.inOut" });
-                reel2Animation.toIndex(randomIndex2, { duration: 5.25, revolutions: 20, ease: "power2.inOut" });
-                reel3Animation.toIndex(randomIndex3, { duration: 5.42, revolutions: 20, ease: "power2.inOut" });
-                reel4Animation.toIndex(randomIndex4, { duration: 5.63, revolutions: 20, ease: "power2.inOut" });
-                reel5Animation.toIndex(randomIndex5, { duration: 5.91, revolutions: 20, ease: "power2.inOut" });
+
+                //const randomIndex1 = getRandomNumber(0, REEL_LENGTH - 1);
+                //console.log('RANDOM 1', randomIndex1, `REEL 1 image: ${randomIndex1 + 1}`)
+
+
+
+                reel1Animation.toIndex(indexReels.indexReel1, { duration: 5.10, revolutions: 20, ease: "power2.inOut" });
+                reel2Animation.toIndex(indexReels.indexReel2, { duration: 5.25, revolutions: 20, ease: "power2.inOut" });
+                reel3Animation.toIndex(indexReels.indexReel3, { duration: 5.42, revolutions: 20, ease: "power2.inOut" });
+                reel4Animation.toIndex(indexReels.indexReel4, { duration: 5.63, revolutions: 20, ease: "power2.inOut" });
+                reel5Animation.toIndex(indexReels.indexReel5, { duration: 5.91, revolutions: 20, ease: "power2.inOut" });
             }
 
 
