@@ -26,6 +26,15 @@
 
     import AppleSpritePng from "@/assets/projects/slotmachine/image/sprite/apple_spritesheet.png";
     import AppleSpriteJson from "@/assets/projects/slotmachine/image/sprite/apple_spritesheet.json";
+    import CoconutSpritePng from "@/assets/projects/slotmachine/image/sprite/coconut_spritesheet.png";
+    import CoconutSpriteJson from "@/assets/projects/slotmachine/image/sprite/coconut_spritesheet.json";
+    import FruitcocktailSpritePng from "@/assets/projects/slotmachine/image/sprite/fruitcocktail_spritesheet.png";
+    import FruitcocktailSpriteJson from "@/assets/projects/slotmachine/image/sprite/fruitcocktail_spritesheet.json";
+    import GrapefruitSpritePng from "@/assets/projects/slotmachine/image/sprite/grapefruit_spritesheet.png";
+    import GrapefruitSpriteJson from "@/assets/projects/slotmachine/image/sprite/grapefruit_spritesheet.json";
+
+    import LemonSpritePng from "@/assets/projects/slotmachine/image/sprite/lemon_spritesheet.png";
+    import LemonSpriteJson from "@/assets/projects/slotmachine/image/sprite/lemon_spritesheet.json";
 
     export default {
         name: "SlotMachine",
@@ -342,6 +351,9 @@
                         this.test7;
 
                         this.appleSheet;
+                        this.coconutSheet;
+                        this.fruitcocktailSheet;
+                        this.grapefruitSheet;
                     }
 
                     preload() {
@@ -357,6 +369,11 @@
                         this.load.image("test7", TestImage7);
 
                         this.load.atlas('apple_sprite', AppleSpritePng, AppleSpriteJson);
+                        //this.load.atlas('coconut_sprite', CoconutSpritePng, CoconutSpriteJson);
+                        //this.load.atlas('fruitcocktail_sprite', FruitcocktailSpritePng, FruitcocktailSpriteJson);
+                        //this.load.atlas('grapefruit_sprite', GrapefruitSpritePng, GrapefruitSpriteJson);
+
+                        //this.load.atlas('lemon_sprite', LemonSpritePng, LemonSpriteJson);
                     }
 
                     create() {
@@ -366,9 +383,7 @@
                             frameRate: ANIMATION_FPS,
                             repeat: -1
                         });
-
                         //this.appleSheet = this.add.sprite(400, 300, 'apple_sprite', 'apple-animation_01.png');
-                        //this.appleSheet.play('apple_animation');
 
 
 
@@ -380,7 +395,7 @@
                         this.image.displayWidth =
                             (canvasRef.value.offsetWidth * 50) / 100;
                         this.image.displayHeight =
-                            this.image.displayWidth * ratio;
+                            this.image.displayWidth * ratio * 0.955;
 
                         this.image.setPosition(
                             canvasRef.value.offsetWidth / 2 -
@@ -394,22 +409,20 @@
                             const reel = [];
                             const mask = this.add.graphics();
 
-                            //mask.fillStyle(0xff0000, 1); // DEBUG
+                            mask.fillStyle(0xff0000, 1); // DEBUG
 
-                            mask.fillRect(0, 0, 322 * this.image.scaleX, 1017 * this.image.scaleY);
-                            mask.setPosition(this.image.x + (xGap * this.image.scaleX), this.image.y + (98 * this.image.scaleY));
-
-                            
+                            mask.fillRect(0, 0, 322 * this.image.scaleX, 322 * 3 * this.image.scaleX);
+                            mask.setPosition(this.image.x + (xGap * this.image.scaleX), this.image.y + (96 * this.image.scaleX));
 
                             for (let i = 0; i < 7; i++) {
                                 const img = this.add.image(
                                     mask.x - IMG_GAP_X,
-                                    mask.y + (IMG_DIMENSION * this.image.scaleY * i) - IMG_GAP_Y,
+                                    mask.y + (IMG_DIMENSION * this.image.scaleX * i) - IMG_GAP_Y,
                                     `test${reelMap[i]}`
                                 ).setOrigin(0, 0);
 
                                 img.displayWidth = IMG_DIMENSION * this.image.scaleX;
-                                img.displayHeight = IMG_DIMENSION * this.image.scaleY;
+                                img.displayHeight = IMG_DIMENSION * this.image.scaleX;
                                 img.setMask(
                                     mask.createGeometryMask()
                                 );
@@ -417,9 +430,46 @@
                                 reel.push(img);
                             }
 
-                            this.appleSheet = this.add.sprite(mask.x - (82 * this.image.scaleX), mask.y - (82 * this.image.scaleY), 'apple_sprite', 'apple-animation_01.png').setOrigin(0, 0);
-                            this.appleSheet.setScale(0.98 * this.image.scaleX, 0.98 * this.image.scaleY);
+
+
+                            //let iter = 1;
+
+                            this.appleSheet = this.add.sprite(mask.x - (82 * this.image.scaleX), 0, 'apple_sprite', 'apple-animation_01.png').setOrigin(0, 0);
+                            this.appleSheet.setScale(0.98 * this.image.scaleX, 0.98 * this.image.scaleX);
+                            this.appleSheet.y = mask.y + (322 * this.image.scaleX * 0) - (86 * this.image.scaleX);
                             this.appleSheet.setMask(mask.createGeometryMask());
+                            this.appleSheet.play('apple_animation');
+
+                            /*this.coconutSheet = this.add.sprite(mask.x - (88 * this.image.scaleX), 0, 'coconut_sprite', 'coconut-animation_30.png').setOrigin(0, 0);
+                            this.coconutSheet.setScale(0.98 * this.image.scaleX, 0.98 * this.image.scaleX);
+                            this.coconutSheet.y = mask.y + (322 * this.image.scaleX * 1) - (88 * this.image.scaleX);
+                            this.coconutSheet.setMask(mask.createGeometryMask());
+
+                            this.fruitcocktailSheet = this.add.sprite(mask.x - (72 * this.image.scaleX), 0, 'fruitcocktail_sprite', 'fruitcocktail-animation_01.png').setOrigin(0, 0);
+                            this.fruitcocktailSheet.setScale(0.98 * this.image.scaleX, 0.98 * this.image.scaleX);
+                            this.fruitcocktailSheet.y = mask.y + (322 * this.image.scaleX * 2) - (74 * this.image.scaleX);
+                            //this.fruitcocktailSheet.setMask(mask.createGeometryMask());
+
+                            this.fruitcocktailSheet = this.add.sprite(mask.x - (72 * this.image.scaleX), 0, 'fruitcocktail_sprite', 'fruitcocktail-animation_01.png').setOrigin(0, 0);
+                            this.fruitcocktailSheet.setScale(0.98 * this.image.scaleX, 0.98 * this.image.scaleX);
+                            this.fruitcocktailSheet.y = mask.y + (322 * this.image.scaleX * 3) - (74 * this.image.scaleX);
+                            //this.fruitcocktailSheet.setMask(mask.createGeometryMask());
+                            this.fruitcocktailSheet = this.add.sprite(mask.x - (72 * this.image.scaleX), 0, 'fruitcocktail_sprite', 'fruitcocktail-animation_01.png').setOrigin(0, 0);
+                            this.fruitcocktailSheet.setScale(0.98 * this.image.scaleX, 0.98 * this.image.scaleX);
+                            this.fruitcocktailSheet.y = mask.y + (322 * this.image.scaleX * 4) - (74 * this.image.scaleX);
+                            //this.fruitcocktailSheet.setMask(mask.createGeometryMask());*/
+
+
+                            
+                            /*this.grapefruitSheet = this.add.sprite(mask.x - (62 * this.image.scaleX), 0, 'grapefruit_sprite', 'grapefruit-animation_01.png').setOrigin(0, 0);
+                            this.grapefruitSheet.setScale(0.98 * this.image.scaleX, 0.98 * this.image.scaleX);
+                            this.grapefruitSheet.y = mask.y + (322 * this.image.scaleX * 3) + (yGap * this.image.scaleX * 2) - (42 * this.image.scaleX);
+                            //this.grapefruitSheet.setMask(mask.createGeometryMask());*/
+
+
+
+
+
 
                             return verticalLoop(reel, this.image, {
                                 repeat: -1,
@@ -429,10 +479,10 @@
                         }
 
                         reel1Animation = generateReel(REEL_1_MAP, 34);
-                        reel2Animation = generateReel(REEL_2_MAP, 376);
-                        reel3Animation = generateReel(REEL_3_MAP, 718);
-                        reel4Animation = generateReel(REEL_4_MAP, 1060);
-                        reel5Animation = generateReel(REEL_5_MAP, 1402);
+                        //reel2Animation = generateReel(REEL_2_MAP, 376);
+                        //reel3Animation = generateReel(REEL_3_MAP, 718);
+                        //reel4Animation = generateReel(REEL_4_MAP, 1060);
+                        //reel5Animation = generateReel(REEL_5_MAP, 1402);
                     }
 
                     /*update() {
@@ -449,13 +499,6 @@
                     scale: {
                         mode: Phaser.Scale.FIT,
                         autoCenter: Phaser.Scale.CENTER_BOTH,
-                    },
-                    physics: {
-                        default: "arcade",
-                        arcade: {
-                            gravity: { y: 50 },
-                            debug: true,
-                        },
                     },
                     scene: [GameScene],
                 };
