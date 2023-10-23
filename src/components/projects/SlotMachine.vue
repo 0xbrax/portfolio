@@ -32,9 +32,14 @@
     import FruitcocktailSpriteJson from "@/assets/projects/slotmachine/image/sprite/fruitcocktail_spritesheet.json";
     import GrapefruitSpritePng from "@/assets/projects/slotmachine/image/sprite/grapefruit_spritesheet.png";
     import GrapefruitSpriteJson from "@/assets/projects/slotmachine/image/sprite/grapefruit_spritesheet.json";
-
     import LemonSpritePng from "@/assets/projects/slotmachine/image/sprite/lemon_spritesheet.png";
     import LemonSpriteJson from "@/assets/projects/slotmachine/image/sprite/lemon_spritesheet.json";
+    import PearSpritePng from "@/assets/projects/slotmachine/image/sprite/pear_spritesheet.png";
+    import PearSpriteJson from "@/assets/projects/slotmachine/image/sprite/pear_spritesheet.json";
+    import SplashSpritePng from "@/assets/projects/slotmachine/image/sprite/splash_spritesheet.png";
+    import SplashSpriteJson from "@/assets/projects/slotmachine/image/sprite/splash_spritesheet.json";
+    import WatermelonSpritePng from "@/assets/projects/slotmachine/image/sprite/watermelon_spritesheet.png";
+    import WatermelonSpriteJson from "@/assets/projects/slotmachine/image/sprite/watermelon_spritesheet.json";
 
     export default {
         name: "SlotMachine",
@@ -354,6 +359,10 @@
                         this.coconutSheet;
                         this.fruitcocktailSheet;
                         this.grapefruitSheet;
+                        this.lemonSheet;
+                        this.pearSheet;
+                        this.splashSheet;
+                        this.watermelonSheet;
                     }
 
                     preload() {
@@ -369,11 +378,13 @@
                         this.load.image("test7", TestImage7);
 
                         this.load.atlas('apple_sprite', AppleSpritePng, AppleSpriteJson);
-                        //this.load.atlas('coconut_sprite', CoconutSpritePng, CoconutSpriteJson);
-                        //this.load.atlas('fruitcocktail_sprite', FruitcocktailSpritePng, FruitcocktailSpriteJson);
-                        //this.load.atlas('grapefruit_sprite', GrapefruitSpritePng, GrapefruitSpriteJson);
-
-                        //this.load.atlas('lemon_sprite', LemonSpritePng, LemonSpriteJson);
+                        this.load.atlas('coconut_sprite', CoconutSpritePng, CoconutSpriteJson);
+                        this.load.atlas('fruitcocktail_sprite', FruitcocktailSpritePng, FruitcocktailSpriteJson);
+                        this.load.atlas('grapefruit_sprite', GrapefruitSpritePng, GrapefruitSpriteJson);
+                        this.load.atlas('lemon_sprite', LemonSpritePng, LemonSpriteJson);
+                        this.load.atlas('pear_sprite', PearSpritePng, PearSpriteJson);
+                        this.load.atlas('splash_sprite', SplashSpritePng, SplashSpriteJson);
+                        this.load.atlas('watermelon_sprite', WatermelonSpritePng, WatermelonSpriteJson);
                     }
 
                     create() {
@@ -432,18 +443,18 @@
 
 
 
-                            //let iter = 1;
+                            //let iter = 1; // reel order 0 to 7 (8)
 
                             this.appleSheet = this.add.sprite(mask.x - (82 * this.image.scaleX), 0, 'apple_sprite', 'apple-animation_01.png').setOrigin(0, 0);
                             this.appleSheet.setScale(0.98 * this.image.scaleX, 0.98 * this.image.scaleX);
                             this.appleSheet.y = mask.y + (322 * this.image.scaleX * 0) - (86 * this.image.scaleX);
                             this.appleSheet.setMask(mask.createGeometryMask());
-                            this.appleSheet.play('apple_animation');
+                            //this.appleSheet.play('apple_animation');
 
-                            /*this.coconutSheet = this.add.sprite(mask.x - (88 * this.image.scaleX), 0, 'coconut_sprite', 'coconut-animation_30.png').setOrigin(0, 0);
-                            this.coconutSheet.setScale(0.98 * this.image.scaleX, 0.98 * this.image.scaleX);
-                            this.coconutSheet.y = mask.y + (322 * this.image.scaleX * 1) - (88 * this.image.scaleX);
-                            this.coconutSheet.setMask(mask.createGeometryMask());
+                            this.coconutSheet = this.add.sprite(mask.x - (86 * this.image.scaleX), 0, 'coconut_sprite', 'coconut-animation_30.png').setOrigin(0, 0);
+                            this.coconutSheet.setScale(0.96 * this.image.scaleX, 0.96 * this.image.scaleX);
+                            this.coconutSheet.y = mask.y + (322 * this.image.scaleX * 1) - (76 * this.image.scaleX);
+                            //this.coconutSheet.setMask(mask.createGeometryMask());
 
                             this.fruitcocktailSheet = this.add.sprite(mask.x - (72 * this.image.scaleX), 0, 'fruitcocktail_sprite', 'fruitcocktail-animation_01.png').setOrigin(0, 0);
                             this.fruitcocktailSheet.setScale(0.98 * this.image.scaleX, 0.98 * this.image.scaleX);
@@ -454,18 +465,31 @@
                             this.fruitcocktailSheet.setScale(0.98 * this.image.scaleX, 0.98 * this.image.scaleX);
                             this.fruitcocktailSheet.y = mask.y + (322 * this.image.scaleX * 3) - (74 * this.image.scaleX);
                             //this.fruitcocktailSheet.setMask(mask.createGeometryMask());
-                            this.fruitcocktailSheet = this.add.sprite(mask.x - (72 * this.image.scaleX), 0, 'fruitcocktail_sprite', 'fruitcocktail-animation_01.png').setOrigin(0, 0);
-                            this.fruitcocktailSheet.setScale(0.98 * this.image.scaleX, 0.98 * this.image.scaleX);
-                            this.fruitcocktailSheet.y = mask.y + (322 * this.image.scaleX * 4) - (74 * this.image.scaleX);
-                            //this.fruitcocktailSheet.setMask(mask.createGeometryMask());*/
 
-
-                            
-                            /*this.grapefruitSheet = this.add.sprite(mask.x - (62 * this.image.scaleX), 0, 'grapefruit_sprite', 'grapefruit-animation_01.png').setOrigin(0, 0);
+                            this.grapefruitSheet = this.add.sprite(mask.x - (68 * this.image.scaleX), 0, 'grapefruit_sprite', 'grapefruit-animation_01.png').setOrigin(0, 0);
                             this.grapefruitSheet.setScale(0.98 * this.image.scaleX, 0.98 * this.image.scaleX);
-                            this.grapefruitSheet.y = mask.y + (322 * this.image.scaleX * 3) + (yGap * this.image.scaleX * 2) - (42 * this.image.scaleX);
-                            //this.grapefruitSheet.setMask(mask.createGeometryMask());*/
+                            this.grapefruitSheet.y = mask.y + (322 * this.image.scaleX * 2) - (64 * this.image.scaleX);
+                            //this.grapefruitSheet.setMask(mask.createGeometryMask());
 
+                            this.lemonSheet = this.add.sprite(mask.x - (70 * this.image.scaleX), 0, 'lemon_sprite', 'lemon-animation_01.png').setOrigin(0, 0);
+                            this.lemonSheet.setScale(0.98 * this.image.scaleX, 0.98 * this.image.scaleX);
+                            this.lemonSheet.y = mask.y + (322 * this.image.scaleX * 0) - (74 * this.image.scaleX);
+                            //this.lemonSheet.setMask(mask.createGeometryMask());
+
+                            this.pearSheet = this.add.sprite(mask.x - (80 * this.image.scaleX), 0, 'pear_sprite', 'pear-animation_30.png').setOrigin(0, 0);
+                            this.pearSheet.setScale(1.02 * this.image.scaleX, 1.02 * this.image.scaleX);
+                            this.pearSheet.y = mask.y + (322 * this.image.scaleX * 0) - (76 * this.image.scaleX);
+                            //this.pearSheet.setMask(mask.createGeometryMask());
+
+                            this.splashSheet = this.add.sprite(mask.x - (124 * this.image.scaleX), 0, 'splash_sprite', 'splash-animation_01.png').setOrigin(0, 0);
+                            this.splashSheet.setScale(1 * this.image.scaleX, 1 * this.image.scaleX);
+                            this.splashSheet.y = mask.y + (322 * this.image.scaleX * 2) - (118 * this.image.scaleX);
+                            //this.splashSheet.setMask(mask.createGeometryMask());
+
+                            this.watermelonSheet = this.add.sprite(mask.x - (72 * this.image.scaleX), 0, 'watermelon_sprite', 'watermelon-animation_01.png').setOrigin(0, 0);
+                            this.watermelonSheet.setScale(0.98 * this.image.scaleX, 0.98 * this.image.scaleX);
+                            this.watermelonSheet.y = mask.y + (322 * this.image.scaleX * 0) - (72 * this.image.scaleX);
+                            //this.watermelonSheet.setMask(mask.createGeometryMask());
 
 
 
@@ -479,10 +503,10 @@
                         }
 
                         reel1Animation = generateReel(REEL_1_MAP, 34);
-                        //reel2Animation = generateReel(REEL_2_MAP, 376);
-                        //reel3Animation = generateReel(REEL_3_MAP, 718);
-                        //reel4Animation = generateReel(REEL_4_MAP, 1060);
-                        //reel5Animation = generateReel(REEL_5_MAP, 1402);
+                        reel2Animation = generateReel(REEL_2_MAP, 376);
+                        reel3Animation = generateReel(REEL_3_MAP, 718);
+                        reel4Animation = generateReel(REEL_4_MAP, 1060);
+                        reel5Animation = generateReel(REEL_5_MAP, 1402);
                     }
 
                     /*update() {
