@@ -50,16 +50,17 @@
 
             const canvasRef = ref(null);
             const ANIMATION_FPS = 24;
-            const REEL_LENGTH = 7;
+            const REEL_LENGTH = 8;
+            const SYMBOL_X_REEL = 3;
 
-            const REEL_1_MAP = [1, 2, 3, 4, 5, 6, 7];
-            const REEL_2_MAP = [4, 6, 1, 3, 5, 7, 2];
-            const REEL_3_MAP = [1, 2, 7, 6, 3, 5, 4];
-            const REEL_4_MAP = [2, 4, 6, 1, 3, 5, 7];
-            const REEL_5_MAP = [6, 3, 2, 7, 5, 1, 4];
+            const REEL_1_MAP = ['apple', 'coconut', 'fruitcocktail', 'grapefruit', 'lemon', 'pear', 'splash', 'watermelon'];//[1, 2, 3, 4, 5, 6, 7];
+            const REEL_2_MAP = ['pear', 'splash', 'watermelon', 'apple', 'coconut', 'fruitcocktail', 'grapefruit', 'lemon'];//[4, 6, 1, 3, 5, 7, 2];
+            const REEL_3_MAP = ['fruitcocktail', 'grapefruit', 'splash', 'watermelon', 'lemon', 'apple', 'coconut', 'pear'];//[1, 2, 7, 6, 3, 5, 4];
+            const REEL_4_MAP = ['apple', 'pear', 'splash', 'fruitcocktail', 'grapefruit', 'lemon', 'coconut', 'watermelon'];//[2, 4, 6, 1, 3, 5, 7];
+            const REEL_5_MAP = ['grapefruit', 'coconut', 'lemon', 'apple', 'watermelon', 'pear', 'splash', 'fruitcocktail'];//[6, 3, 2, 7, 5, 1, 4];
 
-            const IMG_GAP_X = 2;
-            const IMG_GAP_Y = 1;
+            //const IMG_GAP_X = 2;
+            //const IMG_GAP_Y = 1;
 
             let reel1Animation;
             let reel2Animation;
@@ -69,7 +70,7 @@
 
 
 
-            const verticalLoop = (items, image, config) => {
+            const verticalLoop = (items, reelContainer, elementsHeightWrap, config) => {
                 items = gsap.utils.toArray(items);
                 config = config || {};
                 let onChange = config.onChange,
@@ -91,7 +92,7 @@
                             tl.totalTime(tl.rawTime() + tl.duration() * 100),
                     }),
                     length = items.length,
-                    startY = items[REEL_LENGTH - 1].y + items[0].displayHeight,
+                    startY = items[REEL_LENGTH - 1].y + (items[0].displayHeight - elementsHeightWrap[0]),
                     times = [],
                     heights = [],
                     curIndex = 0,
@@ -105,14 +106,13 @@
                         return result;
                     },
                     timeOffset = 0,
-                    container = {
-                        width: items[0].displayWidth,
-                        height: items[0].displayHeight * 3,
-                    },
-                    totalHeight = items[0].displayHeight * REEL_LENGTH,
+                    container = reelContainer,
+                    totalHeight = 0,
                     populateHeights = () => {
+                        //const lastGap = elementsHeightWrap[REEL_LENGTH - 1];
                         items.forEach((el, i) => {
-                            heights[i] = el.displayHeight;
+                            heights[i] = el.displayHeight - elementsHeightWrap[i];
+                            totalHeight += heights[i];
                         });
                     },
                     timeWrap,
@@ -150,12 +150,12 @@
                         return index;
                     },
                     populateTimeline = () => {
-                        let i, item, curY, distanceToStart, distanceToLoop;
+                        let i, item, curY, distanceToStart, distanceToLoop, heightFix;
                         tl.clear();
                         for (i = 0; i < length; i++) {
                             item = items[i];
                             curY = item.y;
-                            distanceToStart = startY - curY - (items[0].displayHeight * 2);
+                            distanceToStart = startY - curY - (heights[i] * 2); // heights[0]
                             distanceToLoop = distanceToStart + heights[i];
                             tl.to(
                                 item,
@@ -197,7 +197,7 @@
                 populateOffsets();
                 function toIndex(index, vars) {
                     vars = clone(vars);
-                    index -= 2; // gap
+                    index -= 2; // start gap
                     let newIndex = gsap.utils.wrap(0, length, index),
                         time = times[newIndex];
                     if (time > tl.time() !== index > curIndex) {
@@ -330,11 +330,11 @@
 
 
 
-                reel1Animation.toIndex(indexReels.indexReel1, { duration: 5.10, revolutions: 20, ease: "power2.inOut" });
-                reel2Animation.toIndex(indexReels.indexReel2, { duration: 5.25, revolutions: 20, ease: "power2.inOut" });
-                reel3Animation.toIndex(indexReels.indexReel3, { duration: 5.42, revolutions: 20, ease: "power2.inOut" });
-                reel4Animation.toIndex(indexReels.indexReel4, { duration: 5.63, revolutions: 20, ease: "power2.inOut" });
-                reel5Animation.toIndex(indexReels.indexReel5, { duration: 5.91, revolutions: 20, ease: "power2.inOut" });
+                reel1Animation.toIndex(0, { duration: 5.10, revolutions: 2, ease: "power2.inOut" });
+                reel2Animation.toIndex(1, { duration: 5.25, revolutions: 2, ease: "power2.inOut" });
+                reel3Animation.toIndex(2, { duration: 5.42, revolutions: 2, ease: "power2.inOut" });
+                reel4Animation.toIndex(3, { duration: 5.63, revolutions: 2, ease: "power2.inOut" });
+                reel5Animation.toIndex(4, { duration: 5.91, revolutions: 2, ease: "power2.inOut" });
             }
 
 
@@ -417,15 +417,21 @@
 
                         const generateReel = (reelMap, xGap) => {
                             const IMG_DIMENSION = 340;
+
+
                             const reel = [];
+                            const maskDimension = {
+                                width: 322 * this.image.scaleX,
+                                height: 322 * this.image.scaleX * SYMBOL_X_REEL
+                            }
                             const mask = this.add.graphics();
 
                             mask.fillStyle(0xff0000, 1); // DEBUG
 
-                            mask.fillRect(0, 0, 322 * this.image.scaleX, 322 * 3 * this.image.scaleX);
+                            mask.fillRect(0, 0, maskDimension.width, maskDimension.height);
                             mask.setPosition(this.image.x + (xGap * this.image.scaleX), this.image.y + (96 * this.image.scaleX));
 
-                            for (let i = 0; i < 7; i++) {
+                            /*for (let i = 0; i < 7; i++) {
                                 const img = this.add.image(
                                     mask.x - IMG_GAP_X,
                                     mask.y + (IMG_DIMENSION * this.image.scaleX * i) - IMG_GAP_Y,
@@ -439,63 +445,87 @@
                                 );
 
                                 reel.push(img);
-                            }
+                            }*/
 
 
 
                             //let iter = 1; // reel order 0 to 7 (8)
 
-                            this.appleSheet = this.add.sprite(mask.x - (82 * this.image.scaleX), 0, 'apple_sprite', 'apple-animation_01.png').setOrigin(0, 0);
+                            /*this.appleSheet = this.add.sprite(mask.x - (82 * this.image.scaleX), 0, 'apple_sprite', 'apple-animation_01.png').setOrigin(0, 0);
                             this.appleSheet.setScale(0.98 * this.image.scaleX, 0.98 * this.image.scaleX);
-                            this.appleSheet.y = mask.y + (322 * this.image.scaleX * 0) - (86 * this.image.scaleX);
+                            this.appleSheet.y = mask.y + (maskDimension.width * 0) - (86 * this.image.scaleX);
                             this.appleSheet.setMask(mask.createGeometryMask());
+
                             //this.appleSheet.play('apple_animation');
 
                             this.coconutSheet = this.add.sprite(mask.x - (86 * this.image.scaleX), 0, 'coconut_sprite', 'coconut-animation_30.png').setOrigin(0, 0);
                             this.coconutSheet.setScale(0.96 * this.image.scaleX, 0.96 * this.image.scaleX);
-                            this.coconutSheet.y = mask.y + (322 * this.image.scaleX * 1) - (76 * this.image.scaleX);
-                            //this.coconutSheet.setMask(mask.createGeometryMask());
+                            this.coconutSheet.y = mask.y + (maskDimension.width * 1) - (76 * this.image.scaleX);
+                            this.coconutSheet.setMask(mask.createGeometryMask());
 
                             this.fruitcocktailSheet = this.add.sprite(mask.x - (72 * this.image.scaleX), 0, 'fruitcocktail_sprite', 'fruitcocktail-animation_01.png').setOrigin(0, 0);
                             this.fruitcocktailSheet.setScale(0.98 * this.image.scaleX, 0.98 * this.image.scaleX);
-                            this.fruitcocktailSheet.y = mask.y + (322 * this.image.scaleX * 2) - (74 * this.image.scaleX);
-                            //this.fruitcocktailSheet.setMask(mask.createGeometryMask());
-
-                            this.fruitcocktailSheet = this.add.sprite(mask.x - (72 * this.image.scaleX), 0, 'fruitcocktail_sprite', 'fruitcocktail-animation_01.png').setOrigin(0, 0);
-                            this.fruitcocktailSheet.setScale(0.98 * this.image.scaleX, 0.98 * this.image.scaleX);
-                            this.fruitcocktailSheet.y = mask.y + (322 * this.image.scaleX * 3) - (74 * this.image.scaleX);
-                            //this.fruitcocktailSheet.setMask(mask.createGeometryMask());
+                            this.fruitcocktailSheet.y = mask.y + (maskDimension.width * 2) - (74 * this.image.scaleX);
+                            this.fruitcocktailSheet.setMask(mask.createGeometryMask());
 
                             this.grapefruitSheet = this.add.sprite(mask.x - (68 * this.image.scaleX), 0, 'grapefruit_sprite', 'grapefruit-animation_01.png').setOrigin(0, 0);
                             this.grapefruitSheet.setScale(0.98 * this.image.scaleX, 0.98 * this.image.scaleX);
-                            this.grapefruitSheet.y = mask.y + (322 * this.image.scaleX * 2) - (64 * this.image.scaleX);
-                            //this.grapefruitSheet.setMask(mask.createGeometryMask());
+                            this.grapefruitSheet.y = mask.y + (maskDimension.width * 3) - (64 * this.image.scaleX);
+                            this.grapefruitSheet.setMask(mask.createGeometryMask());
 
                             this.lemonSheet = this.add.sprite(mask.x - (70 * this.image.scaleX), 0, 'lemon_sprite', 'lemon-animation_01.png').setOrigin(0, 0);
                             this.lemonSheet.setScale(0.98 * this.image.scaleX, 0.98 * this.image.scaleX);
-                            this.lemonSheet.y = mask.y + (322 * this.image.scaleX * 0) - (74 * this.image.scaleX);
-                            //this.lemonSheet.setMask(mask.createGeometryMask());
+                            this.lemonSheet.y = mask.y + (maskDimension.width * 4) - (74 * this.image.scaleX);
+                            this.lemonSheet.setMask(mask.createGeometryMask());
 
                             this.pearSheet = this.add.sprite(mask.x - (80 * this.image.scaleX), 0, 'pear_sprite', 'pear-animation_30.png').setOrigin(0, 0);
                             this.pearSheet.setScale(1.02 * this.image.scaleX, 1.02 * this.image.scaleX);
-                            this.pearSheet.y = mask.y + (322 * this.image.scaleX * 0) - (76 * this.image.scaleX);
-                            //this.pearSheet.setMask(mask.createGeometryMask());
+                            this.pearSheet.y = mask.y + (maskDimension.width * 5) - (76 * this.image.scaleX);
+                            this.pearSheet.setMask(mask.createGeometryMask());
 
                             this.splashSheet = this.add.sprite(mask.x - (124 * this.image.scaleX), 0, 'splash_sprite', 'splash-animation_01.png').setOrigin(0, 0);
                             this.splashSheet.setScale(1 * this.image.scaleX, 1 * this.image.scaleX);
-                            this.splashSheet.y = mask.y + (322 * this.image.scaleX * 2) - (118 * this.image.scaleX);
-                            //this.splashSheet.setMask(mask.createGeometryMask());
+                            this.splashSheet.y = mask.y + (maskDimension.width * 6) - (118 * this.image.scaleX);
+                            this.splashSheet.setMask(mask.createGeometryMask());
 
                             this.watermelonSheet = this.add.sprite(mask.x - (72 * this.image.scaleX), 0, 'watermelon_sprite', 'watermelon-animation_01.png').setOrigin(0, 0);
                             this.watermelonSheet.setScale(0.98 * this.image.scaleX, 0.98 * this.image.scaleX);
-                            this.watermelonSheet.y = mask.y + (322 * this.image.scaleX * 0) - (72 * this.image.scaleX);
-                            //this.watermelonSheet.setMask(mask.createGeometryMask());
+                            this.watermelonSheet.y = mask.y + (maskDimension.width * 7) - (72 * this.image.scaleX);
+                            this.watermelonSheet.setMask(mask.createGeometryMask());*/
 
+                            const elementsHeightWrap = [];
+                            reelMap.forEach((el, i) => {
+                                this[`${el}Sheet`] = this.add.sprite(mask.x - (72 * this.image.scaleX), 0, `${el}_sprite`, `${el}-animation_30.png`).setOrigin(0, 0);
+                                this[`${el}Sheet`].setScale(1 * this.image.scaleX, 1 * this.image.scaleX);
+                                this[`${el}Sheet`].y = mask.y + (maskDimension.width * i) - (72 * this.image.scaleX);
+                                this[`${el}Sheet`].setMask(mask.createGeometryMask());
 
+                                reel.push(this[`${el}Sheet`]);
+                                elementsHeightWrap.push((72 * this.image.scaleX) * 2);
+                            });
 
+                            //reel.push(this.appleSheet, this.coconutSheet, this.fruitcocktailSheet, this.grapefruitSheet, this.lemonSheet, this.pearSheet, this.splashSheet, this.watermelonSheet);
 
+                            /*const elementsHeightWrap = [
+                                // apple
+                                ((86 * this.image.scaleX)) * 2,
+                                // coconut
+                                ((76 * this.image.scaleX)) * 2,
+                                // fruitcocktail
+                                ((74 * this.image.scaleX)) * 2,
+                                // grapefruit
+                                ((64 * this.image.scaleX)) * 2,
+                                // lemon
+                                ((74 * this.image.scaleX)) * 2,
+                                // pear
+                                ((76 * this.image.scaleX)) * 2,
+                                // splash
+                                ((118 * this.image.scaleX)) * 2,
+                                // watermelon
+                                ((72 * this.image.scaleX)) * 2
+                            ]*/
 
-                            return verticalLoop(reel, this.image, {
+                            return verticalLoop(reel, maskDimension, elementsHeightWrap, {
                                 repeat: -1,
                                 paused: true,
                                 center: true,
