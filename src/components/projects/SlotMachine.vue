@@ -11,21 +11,13 @@
     import { gsap } from "gsap";
     import { getRandomNumber } from "@/assets/js/utils.js"
 
-    // apple, arbuz (watermelon), cherry, cocktail, gapefruit, lemon, nut (coconut), pear, pineaple (PP!)
-    // check x straw + wild in psd
-    // bonus fruit cockatis new background + fx
     import SlotBodyImage from "@/assets/projects/slotmachine/image/main/reel.png";
     import TestImage from "@/assets/projects/slotmachine/image/test/spritesheet.png";
-    import TestImage1 from "@/assets/projects/slotmachine/image/test/apple.png";
-    import TestImage2 from "@/assets/projects/slotmachine/image/test/arbuz.png";
-    import TestImage3 from "@/assets/projects/slotmachine/image/test/cherry.png";
-    import TestImage4 from "@/assets/projects/slotmachine/image/test/cocktail.png";
-    import TestImage5 from "@/assets/projects/slotmachine/image/test/lemon.png";
-    import TestImage6 from "@/assets/projects/slotmachine/image/test/nut.png";
-    import TestImage7 from "@/assets/projects/slotmachine/image/test/straw.png";
 
     import AppleSpritePng from "@/assets/projects/slotmachine/image/sprite/apple_spritesheet.png";
     import AppleSpriteJson from "@/assets/projects/slotmachine/image/sprite/apple_spritesheet.json";
+    import CherrySpritePng from "@/assets/projects/slotmachine/image/sprite/cherry_spritesheet.png";
+    import CherrySpriteJson from "@/assets/projects/slotmachine/image/sprite/cherry_spritesheet.json";
     import CoconutSpritePng from "@/assets/projects/slotmachine/image/sprite/coconut_spritesheet.png";
     import CoconutSpriteJson from "@/assets/projects/slotmachine/image/sprite/coconut_spritesheet.json";
     import FruitcocktailSpritePng from "@/assets/projects/slotmachine/image/sprite/fruitcocktail_spritesheet.png";
@@ -34,8 +26,6 @@
     import GrapefruitSpriteJson from "@/assets/projects/slotmachine/image/sprite/grapefruit_spritesheet.json";
     import LemonSpritePng from "@/assets/projects/slotmachine/image/sprite/lemon_spritesheet.png";
     import LemonSpriteJson from "@/assets/projects/slotmachine/image/sprite/lemon_spritesheet.json";
-    import PearSpritePng from "@/assets/projects/slotmachine/image/sprite/pear_spritesheet.png";
-    import PearSpriteJson from "@/assets/projects/slotmachine/image/sprite/pear_spritesheet.json";
     import SplashSpritePng from "@/assets/projects/slotmachine/image/sprite/splash_spritesheet.png";
     import SplashSpriteJson from "@/assets/projects/slotmachine/image/sprite/splash_spritesheet.json";
     import WatermelonSpritePng from "@/assets/projects/slotmachine/image/sprite/watermelon_spritesheet.png";
@@ -53,15 +43,11 @@
             const REEL_LENGTH = 8;
             const SYMBOL_X_REEL = 3;
 
-            //const REEL_1_MAP = ['watermelon','watermelon','watermelon','watermelon','watermelon','watermelon','watermelon','watermelon'];
-            const REEL_1_MAP = ['apple', 'coconut', 'fruitcocktail', 'grapefruit', 'lemon', 'pear', 'splash', 'watermelon'];//[1, 2, 3, 4, 5, 6, 7];
-            const REEL_2_MAP = ['pear', 'splash', 'watermelon', 'apple', 'coconut', 'fruitcocktail', 'grapefruit', 'lemon'];//[4, 6, 1, 3, 5, 7, 2];
-            const REEL_3_MAP = ['fruitcocktail', 'grapefruit', 'splash', 'watermelon', 'lemon', 'apple', 'coconut', 'pear'];//[1, 2, 7, 6, 3, 5, 4];
-            const REEL_4_MAP = ['apple', 'pear', 'splash', 'fruitcocktail', 'grapefruit', 'lemon', 'coconut', 'watermelon'];//[2, 4, 6, 1, 3, 5, 7];
-            const REEL_5_MAP = ['grapefruit', 'coconut', 'lemon', 'apple', 'watermelon', 'pear', 'splash', 'fruitcocktail'];//[6, 3, 2, 7, 5, 1, 4];
-
-            //const IMG_GAP_X = 2;
-            //const IMG_GAP_Y = 1;
+            const REEL_1_MAP = ['apple', 'coconut', 'fruitcocktail', 'grapefruit', 'lemon', 'cherry', 'splash', 'watermelon'];
+            const REEL_2_MAP = ['cherry', 'splash', 'watermelon', 'apple', 'coconut', 'fruitcocktail', 'grapefruit', 'lemon'];
+            const REEL_3_MAP = ['fruitcocktail', 'grapefruit', 'splash', 'watermelon', 'lemon', 'apple', 'coconut', 'cherry'];
+            const REEL_4_MAP = ['apple', 'cherry', 'splash', 'fruitcocktail', 'grapefruit', 'lemon', 'coconut', 'watermelon'];
+            const REEL_5_MAP = ['grapefruit', 'coconut', 'lemon', 'apple', 'watermelon', 'cherry', 'splash', 'fruitcocktail'];
 
             let reel1Animation;
             let reel2Animation;
@@ -155,8 +141,8 @@
                         for (i = 0; i < length; i++) {
                             item = items[i];
                             curY = item.y;
-                            distanceToStart = startY - curY; //- heights[i];
-                            distanceToLoop = distanceToStart; //+ heights[i];
+                            distanceToStart = startY - curY;
+                            distanceToLoop = distanceToStart;
                             tl.to(
                                 item,
                                 {
@@ -309,32 +295,16 @@
                         }
                 }
 
-                /*
-                import TestImage1 from "@/assets/projects/slotmachine/image/test/apple.png";
-                import TestImage2 from "@/assets/projects/slotmachine/image/test/arbuz.png";
-                import TestImage3 from "@/assets/projects/slotmachine/image/test/cherry.png";
-                import TestImage4 from "@/assets/projects/slotmachine/image/test/cocktail.png";
-                import TestImage5 from "@/assets/projects/slotmachine/image/test/lemon.png";
-                import TestImage6 from "@/assets/projects/slotmachine/image/test/nut.png";
-                import TestImage7 from "@/assets/projects/slotmachine/image/test/straw.png";*/
-                /*
-                const REEL_1_MAP = [1, 2, 3, 4, 5, 6, 7];
-                const REEL_2_MAP = [4, 6, 1, 3, 5, 7, 2];
-                const REEL_3_MAP = [1, 2, 7, 6, 3, 5, 4];
-                const REEL_4_MAP = [2, 4, 6, 1, 3, 5, 7];
-                const REEL_5_MAP = [6, 3, 2, 7, 5, 1, 4];*/
-
-
                 //const randomIndex1 = getRandomNumber(0, REEL_LENGTH - 1);
                 //console.log('RANDOM 1', randomIndex1, `REEL 1 image: ${randomIndex1 + 1}`)
 
 
 
-                reel1Animation.toIndex(4, { duration: 5.10, revolutions: 2, ease: "power2.inOut" });
-                reel2Animation.toIndex(5, { duration: 5.25, revolutions: 2, ease: "power2.inOut" });
-                reel3Animation.toIndex(6, { duration: 5.42, revolutions: 2, ease: "power2.inOut" });
-                reel4Animation.toIndex(7, { duration: 5.63, revolutions: 2, ease: "power2.inOut" });
-                reel5Animation.toIndex(4, { duration: 5.91, revolutions: 2, ease: "power2.inOut" });
+                reel1Animation.toIndex(0, { duration: 5.10, revolutions: 2, ease: "power2.inOut" });
+                reel2Animation.toIndex(1, { duration: 5.25, revolutions: 2, ease: "power2.inOut" });
+                reel3Animation.toIndex(2, { duration: 5.42, revolutions: 2, ease: "power2.inOut" });
+                reel4Animation.toIndex(3, { duration: 5.63, revolutions: 2, ease: "power2.inOut" });
+                reel5Animation.toIndex(4, { duration: 5.91, revolutions: 2, ease: "power2.inOut", onComplete: () => console.log('Complete, CHECK animation') });
             }
 
 
@@ -347,20 +317,12 @@
                         this.image;
                         this.test;
 
-                        this.test1;
-                        this.test2;
-                        this.test3;
-                        this.test4;
-                        this.test5;
-                        this.test6;
-                        this.test7;
-
                         this.appleSheet;
+                        this.cherrySheet;
                         this.coconutSheet;
                         this.fruitcocktailSheet;
                         this.grapefruitSheet;
                         this.lemonSheet;
-                        this.pearSheet;
                         this.splashSheet;
                         this.watermelonSheet;
                     }
@@ -369,35 +331,17 @@
                         this.load.image("slotBody", SlotBodyImage);
                         this.load.image("test", TestImage);
 
-                        this.load.image("test1", TestImage1);
-                        this.load.image("test2", TestImage2);
-                        this.load.image("test3", TestImage3);
-                        this.load.image("test4", TestImage4);
-                        this.load.image("test5", TestImage5);
-                        this.load.image("test6", TestImage6);
-                        this.load.image("test7", TestImage7);
-
                         this.load.atlas('apple_sprite', AppleSpritePng, AppleSpriteJson);
+                        this.load.atlas('cherry_sprite', CherrySpritePng, CherrySpriteJson);
                         this.load.atlas('coconut_sprite', CoconutSpritePng, CoconutSpriteJson);
                         this.load.atlas('fruitcocktail_sprite', FruitcocktailSpritePng, FruitcocktailSpriteJson);
                         this.load.atlas('grapefruit_sprite', GrapefruitSpritePng, GrapefruitSpriteJson);
                         this.load.atlas('lemon_sprite', LemonSpritePng, LemonSpriteJson);
-                        this.load.atlas('pear_sprite', PearSpritePng, PearSpriteJson);
                         this.load.atlas('splash_sprite', SplashSpritePng, SplashSpriteJson);
                         this.load.atlas('watermelon_sprite', WatermelonSpritePng, WatermelonSpriteJson);
                     }
 
                     create() {
-                        this.anims.create({
-                            key: 'apple_animation',
-                            frames: this.anims.generateFrameNames('apple_sprite', { start: 1, end: 30, zeroPad: 2, prefix: 'apple-animation_', suffix: '.png' }), // Specifica i frame da utilizzare
-                            frameRate: ANIMATION_FPS,
-                            repeat: -1
-                        });
-                        //this.appleSheet = this.add.sprite(400, 300, 'apple_sprite', 'apple-animation_01.png');
-
-
-
                         this.image = this.add
                             .image(0, 0, "slotBody")
                             .setOrigin(0, 0);
@@ -417,112 +361,38 @@
 
                         const generateReel = (reelMap, xGap) => {
                             const reel = [];
+                            const elementsHeightWrap = [];
                             const maskDimension = {
                                 width: 322 * this.image.scaleX,
                                 height: 322 * this.image.scaleX * SYMBOL_X_REEL
                             }
                             const mask = this.add.graphics();
 
-                            mask.fillStyle(0xff0000, 1); // DEBUG
+                            //mask.fillStyle(0xff0000, 1); // DEBUG
 
                             mask.fillRect(0, 0, maskDimension.width, maskDimension.height);
                             mask.setPosition(this.image.x + (xGap * this.image.scaleX), this.image.y + (96 * this.image.scaleX));
 
-                            // const IMG_DIMENSION = 340;
-                            /*for (let i = 0; i < 7; i++) {
-                                const img = this.add.image(
-                                    mask.x - IMG_GAP_X,
-                                    mask.y + (IMG_DIMENSION * this.image.scaleX * i) - IMG_GAP_Y,
-                                    `test${reelMap[i]}`
-                                ).setOrigin(0, 0);
+                            for (let i = 0; i < reelMap.length; i++) {
+                                this[`${reelMap[i]}Sheet`] = this.add.sprite(mask.x - (72 * this.image.scaleX), 0, `${reelMap[i]}_sprite`, `${reelMap[i]}-animation_30.png`).setOrigin(0, 0);
+                                this[`${reelMap[i]}Sheet`].setScale(1 * this.image.scaleX, 1 * this.image.scaleX);
+                                this[`${reelMap[i]}Sheet`].y = mask.y + (maskDimension.width * i) - (90 * this.image.scaleX);
+                                this[`${reelMap[i]}Sheet`].setMask(mask.createGeometryMask());
 
-                                img.displayWidth = IMG_DIMENSION * this.image.scaleX;
-                                img.displayHeight = IMG_DIMENSION * this.image.scaleX;
-                                img.setMask(
-                                    mask.createGeometryMask()
-                                );
+                                this.anims.create({
+                                    key: `${reelMap[i]}_animation`,
+                                    frames: this.anims.generateFrameNames(`${reelMap[i]}_sprite`, { start: 1, end: 30, zeroPad: 2, prefix: `${reelMap[i]}-animation_`, suffix: '.png' }),
+                                    frameRate: ANIMATION_FPS,
+                                    repeat: -1
+                                });
 
-                                reel.push(img);
-                            }*/
+                                this[`${reelMap[i]}Sheet`].anims.play(`${reelMap[i]}_animation`);
+                                // this[`${el}Sheet`].anims.stop();
+                                // this[`${el}Sheet`].anims.seek(0);
 
-                            const elementsHeightWrap = [];
-
-                            this.fruitcocktailSheet = this.add.sprite(mask.x - (72 * this.image.scaleX), 0, 'fruitcocktail_sprite', 'fruitcocktail-animation_01.png').setOrigin(0, 0);
-                            this.fruitcocktailSheet.setScale(0.98 * this.image.scaleX, 0.98 * this.image.scaleX);
-                            this.fruitcocktailSheet.y = mask.y + (maskDimension.width * reelMap.indexOf('fruitcocktail')) - (74 * this.image.scaleX);
-                            this.fruitcocktailSheet.setMask(mask.createGeometryMask());
-                            reel[reelMap.indexOf('fruitcocktail')] = this.fruitcocktailSheet;
-                            elementsHeightWrap[reelMap.indexOf('fruitcocktail')] = this.fruitcocktailSheet.displayHeight - maskDimension.width;
-
-                            this.watermelonSheet = this.add.sprite(mask.x - (72 * this.image.scaleX), 0, 'watermelon_sprite', 'watermelon-animation_01.png').setOrigin(0, 0);
-                            this.watermelonSheet.setScale(0.98 * this.image.scaleX, 0.98 * this.image.scaleX);
-                            this.watermelonSheet.y = mask.y + (maskDimension.width * reelMap.indexOf('watermelon')) - (72 * this.image.scaleX);
-                            this.watermelonSheet.setMask(mask.createGeometryMask());
-                            reel[reelMap.indexOf('watermelon')] = this.watermelonSheet;
-                            elementsHeightWrap[reelMap.indexOf('watermelon')] = this.watermelonSheet.displayHeight - maskDimension.width;
-
-                            this.appleSheet = this.add.sprite(mask.x - (82 * this.image.scaleX), 0, 'apple_sprite', 'apple-animation_01.png').setOrigin(0, 0);
-                            this.appleSheet.setScale(0.98 * this.image.scaleX, 0.98 * this.image.scaleX);
-                            this.appleSheet.y = mask.y + (maskDimension.width * reelMap.indexOf('apple')) - (86 * this.image.scaleX);
-                            this.appleSheet.setMask(mask.createGeometryMask());
-                            reel[reelMap.indexOf('apple')] = this.appleSheet;
-                            elementsHeightWrap[reelMap.indexOf('apple')] = this.appleSheet.displayHeight - maskDimension.width;
-
-                            // TODO object esterno per trigger animazione if win
-                            this.appleSheet.play('apple_animation');
-
-                            this.lemonSheet = this.add.sprite(mask.x - (70 * this.image.scaleX), 0, 'lemon_sprite', 'lemon-animation_01.png').setOrigin(0, 0);
-                            this.lemonSheet.setScale(0.98 * this.image.scaleX, 0.98 * this.image.scaleX);
-                            this.lemonSheet.y = mask.y + (maskDimension.width * reelMap.indexOf('lemon')) - (74 * this.image.scaleX);
-                            this.lemonSheet.setMask(mask.createGeometryMask());
-                            reel[reelMap.indexOf('lemon')] = this.lemonSheet;
-                            elementsHeightWrap[reelMap.indexOf('lemon')] = this.lemonSheet.displayHeight - maskDimension.width;
-
-                            // Special FX render order
-
-                            this.grapefruitSheet = this.add.sprite(mask.x - (68 * this.image.scaleX), 0, 'grapefruit_sprite', 'grapefruit-animation_01.png').setOrigin(0, 0);
-                            this.grapefruitSheet.setScale(0.98 * this.image.scaleX, 0.98 * this.image.scaleX);
-                            this.grapefruitSheet.y = mask.y + (maskDimension.width * reelMap.indexOf('grapefruit')) - (64 * this.image.scaleX);
-                            this.grapefruitSheet.setMask(mask.createGeometryMask());
-                            reel[reelMap.indexOf('grapefruit')] = this.grapefruitSheet;
-                            elementsHeightWrap[reelMap.indexOf('grapefruit')] = this.grapefruitSheet.displayHeight - maskDimension.width;
-
-                            this.pearSheet = this.add.sprite(mask.x - (80 * this.image.scaleX), 0, 'pear_sprite', 'pear-animation_30.png').setOrigin(0, 0);
-                            this.pearSheet.setScale(1.02 * this.image.scaleX, 1.02 * this.image.scaleX);
-                            this.pearSheet.y = mask.y + (maskDimension.width * reelMap.indexOf('pear')) - (82 * this.image.scaleX);
-                            this.pearSheet.setMask(mask.createGeometryMask());
-                            reel[reelMap.indexOf('pear')] = this.pearSheet;
-                            elementsHeightWrap[reelMap.indexOf('pear')] = this.pearSheet.displayHeight - maskDimension.width;
-
-                            this.coconutSheet = this.add.sprite(mask.x - (86 * this.image.scaleX), 0, 'coconut_sprite', 'coconut-animation_30.png').setOrigin(0, 0);
-                            this.coconutSheet.setScale(0.96 * this.image.scaleX, 0.96 * this.image.scaleX);
-                            this.coconutSheet.y = mask.y + (maskDimension.width * reelMap.indexOf('coconut')) - (76 * this.image.scaleX);
-                            this.coconutSheet.setMask(mask.createGeometryMask());
-                            reel[reelMap.indexOf('coconut')] = this.coconutSheet;
-                            elementsHeightWrap[reelMap.indexOf('coconut')] = this.coconutSheet.displayHeight - maskDimension.width;
-
-                            this.splashSheet = this.add.sprite(mask.x - (124 * this.image.scaleX), 0, 'splash_sprite', 'splash-animation_01.png').setOrigin(0, 0);
-                            this.splashSheet.setScale(1 * this.image.scaleX, 1 * this.image.scaleX);
-                            this.splashSheet.y = mask.y + (maskDimension.width * reelMap.indexOf('splash')) - (124 * this.image.scaleX);
-                            this.splashSheet.setMask(mask.createGeometryMask());
-                            reel[reelMap.indexOf('splash')] = this.splashSheet;
-                            elementsHeightWrap[reelMap.indexOf('splash')] = this.splashSheet.displayHeight - maskDimension.width;
-
-                            /* TODO same size x sheets
-                            const elementsHeightWrap = [];
-                            reelMap.forEach((el, i) => {
-                                this[`${el}Sheet`] = this.add.sprite(mask.x - (71 * this.image.scaleX), 0, `${el}_sprite`, `${el}-animation_30.png`).setOrigin(0, 0);
-                                this[`${el}Sheet`].setScale(0.98 * this.image.scaleX, 0.98 * this.image.scaleX);
-                                this[`${el}Sheet`].y = mask.y + (maskDimension.width * i) - (73 * this.image.scaleX);
-                                this[`${el}Sheet`].setMask(mask.createGeometryMask());
-
-                                reel.push(this[`${el}Sheet`]);
-                                elementsHeightWrap.push((71.2 * this.image.scaleX) * 2); // TODO
-                            });*/
-
-                            //const lastElementFix = -6;
-                            //elementsHeightWrap[REEL_LENGTH - 1] += (lastElementFix * this.image.scaleX * 2);
-
+                                reel.push(this[`${reelMap[i]}Sheet`]);
+                                elementsHeightWrap.push((72.4 * this.image.scaleX) * 2);
+                            }
 
                             return verticalLoop(reel, maskDimension, elementsHeightWrap, {
                                 repeat: -1,
@@ -558,7 +428,7 @@
 
                 const game = new Phaser.Game(config);
 
-                // gestire piu scene, schermata loader switch scena, start ?
+                // multi scene handler ?
                 console.log(game);
             });
 
