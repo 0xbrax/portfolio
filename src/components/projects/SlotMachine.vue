@@ -452,21 +452,21 @@
                             this.fruitcocktailSheet.y = mask.y + (maskDimension.width * reelMap.indexOf('fruitcocktail')) - (74 * this.image.scaleX);
                             this.fruitcocktailSheet.setMask(mask.createGeometryMask());
                             reel[reelMap.indexOf('fruitcocktail')] = this.fruitcocktailSheet;
-                            elementsHeightWrap[reelMap.indexOf('fruitcocktail')] = ((74 * this.image.scaleX)) * 2;
+                            elementsHeightWrap[reelMap.indexOf('fruitcocktail')] = this.fruitcocktailSheet.displayHeight - maskDimension.width;
 
                             this.watermelonSheet = this.add.sprite(mask.x - (72 * this.image.scaleX), 0, 'watermelon_sprite', 'watermelon-animation_01.png').setOrigin(0, 0);
                             this.watermelonSheet.setScale(0.98 * this.image.scaleX, 0.98 * this.image.scaleX);
                             this.watermelonSheet.y = mask.y + (maskDimension.width * reelMap.indexOf('watermelon')) - (72 * this.image.scaleX);
                             this.watermelonSheet.setMask(mask.createGeometryMask());
                             reel[reelMap.indexOf('watermelon')] = this.watermelonSheet;
-                            elementsHeightWrap[reelMap.indexOf('watermelon')] = (72 * this.image.scaleX) * 2;
+                            elementsHeightWrap[reelMap.indexOf('watermelon')] = this.watermelonSheet.displayHeight - maskDimension.width;
 
                             this.appleSheet = this.add.sprite(mask.x - (82 * this.image.scaleX), 0, 'apple_sprite', 'apple-animation_01.png').setOrigin(0, 0);
                             this.appleSheet.setScale(0.98 * this.image.scaleX, 0.98 * this.image.scaleX);
                             this.appleSheet.y = mask.y + (maskDimension.width * reelMap.indexOf('apple')) - (86 * this.image.scaleX);
                             this.appleSheet.setMask(mask.createGeometryMask());
                             reel[reelMap.indexOf('apple')] = this.appleSheet;
-                            elementsHeightWrap[reelMap.indexOf('apple')] = ((86 * this.image.scaleX)) * 2;
+                            elementsHeightWrap[reelMap.indexOf('apple')] = this.appleSheet.displayHeight - maskDimension.width;
 
                             // TODO object esterno per trigger animazione if win
                             this.appleSheet.play('apple_animation');
@@ -476,7 +476,7 @@
                             this.lemonSheet.y = mask.y + (maskDimension.width * reelMap.indexOf('lemon')) - (74 * this.image.scaleX);
                             this.lemonSheet.setMask(mask.createGeometryMask());
                             reel[reelMap.indexOf('lemon')] = this.lemonSheet;
-                            elementsHeightWrap[reelMap.indexOf('lemon')] = ((74 * this.image.scaleX)) * 2;
+                            elementsHeightWrap[reelMap.indexOf('lemon')] = this.lemonSheet.displayHeight - maskDimension.width;
 
                             // Special FX render order
 
@@ -485,28 +485,28 @@
                             this.grapefruitSheet.y = mask.y + (maskDimension.width * reelMap.indexOf('grapefruit')) - (64 * this.image.scaleX);
                             this.grapefruitSheet.setMask(mask.createGeometryMask());
                             reel[reelMap.indexOf('grapefruit')] = this.grapefruitSheet;
-                            elementsHeightWrap[reelMap.indexOf('grapefruit')] = ((64 * this.image.scaleX)) * 2;
+                            elementsHeightWrap[reelMap.indexOf('grapefruit')] = this.grapefruitSheet.displayHeight - maskDimension.width;
 
                             this.pearSheet = this.add.sprite(mask.x - (80 * this.image.scaleX), 0, 'pear_sprite', 'pear-animation_30.png').setOrigin(0, 0);
                             this.pearSheet.setScale(1.02 * this.image.scaleX, 1.02 * this.image.scaleX);
                             this.pearSheet.y = mask.y + (maskDimension.width * reelMap.indexOf('pear')) - (82 * this.image.scaleX);
                             this.pearSheet.setMask(mask.createGeometryMask());
                             reel[reelMap.indexOf('pear')] = this.pearSheet;
-                            elementsHeightWrap[reelMap.indexOf('pear')] = ((82 * this.image.scaleX)) * 2;
+                            elementsHeightWrap[reelMap.indexOf('pear')] = this.pearSheet.displayHeight - maskDimension.width;
 
                             this.coconutSheet = this.add.sprite(mask.x - (86 * this.image.scaleX), 0, 'coconut_sprite', 'coconut-animation_30.png').setOrigin(0, 0);
                             this.coconutSheet.setScale(0.96 * this.image.scaleX, 0.96 * this.image.scaleX);
                             this.coconutSheet.y = mask.y + (maskDimension.width * reelMap.indexOf('coconut')) - (76 * this.image.scaleX);
                             this.coconutSheet.setMask(mask.createGeometryMask());
                             reel[reelMap.indexOf('coconut')] = this.coconutSheet;
-                            elementsHeightWrap[reelMap.indexOf('coconut')] = ((76 * this.image.scaleX)) * 2;
+                            elementsHeightWrap[reelMap.indexOf('coconut')] = this.coconutSheet.displayHeight - maskDimension.width;
 
                             this.splashSheet = this.add.sprite(mask.x - (124 * this.image.scaleX), 0, 'splash_sprite', 'splash-animation_01.png').setOrigin(0, 0);
                             this.splashSheet.setScale(1 * this.image.scaleX, 1 * this.image.scaleX);
                             this.splashSheet.y = mask.y + (maskDimension.width * reelMap.indexOf('splash')) - (124 * this.image.scaleX);
                             this.splashSheet.setMask(mask.createGeometryMask());
                             reel[reelMap.indexOf('splash')] = this.splashSheet;
-                            elementsHeightWrap[reelMap.indexOf('splash')] = ((124 * this.image.scaleX)) * 2;
+                            elementsHeightWrap[reelMap.indexOf('splash')] = this.splashSheet.displayHeight - maskDimension.width;
 
                             /* TODO same size x sheets
                             const elementsHeightWrap = [];
@@ -517,11 +517,11 @@
                                 this[`${el}Sheet`].setMask(mask.createGeometryMask());
 
                                 reel.push(this[`${el}Sheet`]);
-                                elementsHeightWrap.push((71.2 * this.image.scaleX) * 2);
+                                elementsHeightWrap.push((71.2 * this.image.scaleX) * 2); // TODO
                             });*/
 
-                            const lastElementFix = -6;
-                            elementsHeightWrap[REEL_LENGTH - 1] += (lastElementFix * this.image.scaleX * 2);
+                            //const lastElementFix = -6;
+                            //elementsHeightWrap[REEL_LENGTH - 1] += (lastElementFix * this.image.scaleX * 2);
 
 
                             return verticalLoop(reel, maskDimension, elementsHeightWrap, {
