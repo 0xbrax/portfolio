@@ -13,6 +13,11 @@
 
     import SlotBodyImage from "@/assets/projects/slotmachine/image/main/reel.png";
 
+    import CharacterMainPng from "@/assets/projects/slotmachine/image/sprite/character-main_spritesheet.png";
+    import CharacterMainJson from "@/assets/projects/slotmachine/image/sprite/character-main_spritesheet.json";
+    import CharacterDrinkPng from "@/assets/projects/slotmachine/image/sprite/character-drink_spritesheet.png";
+    import CharacterDrinkJson from "@/assets/projects/slotmachine/image/sprite/character-drink_spritesheet.json";
+
     import AppleSpritePng from "@/assets/projects/slotmachine/image/sprite/apple_spritesheet.png";
     import AppleSpriteJson from "@/assets/projects/slotmachine/image/sprite/apple_spritesheet.json";
     import CherrySpritePng from "@/assets/projects/slotmachine/image/sprite/cherry_spritesheet.png";
@@ -315,11 +320,11 @@
                 reels[`reel${5}`][`${'coconut'}Sheet`].anims.stop();
                 reels[`reel${5}`][`${'coconut'}Sheet`].setFrame(`${'coconut'}-animation_30.png`);
 
-                reel1Animation.toIndex(0, { duration: 5.10, revolutions: 2, ease: "power2.inOut" });
-                reel2Animation.toIndex(1, { duration: 5.25, revolutions: 2, ease: "power2.inOut" });
-                reel3Animation.toIndex(2, { duration: 5.42, revolutions: 2, ease: "power2.inOut" });
-                reel4Animation.toIndex(3, { duration: 5.63, revolutions: 2, ease: "power2.inOut" });
-                reel5Animation.toIndex(1, { duration: 5.91, revolutions: 2, ease: "power2.inOut", onComplete: () => animateOnComplete() });
+                reel1Animation.toIndex(0, { duration: 5.10, revolutions: 20, ease: "power2.inOut" });
+                reel2Animation.toIndex(1, { duration: 5.25, revolutions: 20, ease: "power2.inOut" });
+                reel3Animation.toIndex(2, { duration: 5.42, revolutions: 20, ease: "power2.inOut" });
+                reel4Animation.toIndex(3, { duration: 5.63, revolutions: 20, ease: "power2.inOut" });
+                reel5Animation.toIndex(1, { duration: 5.91, revolutions: 20, ease: "power2.inOut", onComplete: () => animateOnComplete() });
             }
 
 
@@ -330,10 +335,16 @@
                         super({ key: 'gameScene' });
 
                         this.slotBody;
+
+                        this.characterMain;
+                        this.characterDrink;
                     }
 
                     preload() {
                         this.load.image('slot_body', SlotBodyImage);
+
+                        this.load.atlas('character-main_sprite', CharacterMainPng, CharacterMainJson);
+                        this.load.atlas('character-drink_sprite', CharacterDrinkPng, CharacterDrinkJson);
 
                         this.load.atlas('apple_sprite', AppleSpritePng, AppleSpriteJson);
                         this.load.atlas('cherry_sprite', CherrySpritePng, CherrySpriteJson);
@@ -362,6 +373,46 @@
                             canvasRef.value.offsetHeight / 2 -
                                 this.slotBody.displayHeight / 2
                         );
+
+                        this.characterDrink = this.add.sprite(0, 0, 'character-main_sprite', 'character-main-animation_01.png').setOrigin(0, 0);
+                        this.characterDrink.visible = false;
+                        this.characterDrink.setScale(1.25 * this.slotBody.scaleX, 1.25 * this.slotBody.scaleX);
+                        this.characterDrink.setPosition(canvasRef.value.offsetWidth - this.characterDrink.displayWidth - (40 * this.slotBody.scaleX), canvasRef.value.offsetHeight - this.characterDrink.displayHeight - (105 * this.slotBody.scaleX));
+                        this.anims.create({
+                            key: 'character-drink_animation',
+                            frames: this.anims.generateFrameNames('character-drink_sprite', { start: 1, end: 40, zeroPad: 2, prefix: 'character-drink-animation_', suffix: '.png' }),
+                            frameRate: ANIMATION_FPS,
+                            repeat: -1
+                        });
+
+                        this.characterMain = this.add.sprite(0, 0, 'character-main_sprite', 'character-main-animation_01.png').setOrigin(0, 0);
+                        this.characterMain.setScale(1.25 * this.slotBody.scaleX, 1.25 * this.slotBody.scaleX);
+                        this.characterMain.setPosition(canvasRef.value.offsetWidth - this.characterMain.displayWidth - (75 * this.slotBody.scaleX), canvasRef.value.offsetHeight - this.characterMain.displayHeight - (45 * this.slotBody.scaleX));
+                        this.anims.create({
+                            key: 'character-main_animation',
+                            frames: this.anims.generateFrameNames('character-main_sprite', { start: 1, end: 80, zeroPad: 2, prefix: 'character-main-animation_', suffix: '.png' }),
+                            frameRate: ANIMATION_FPS,
+                            repeat: -1
+                        });
+                        this.characterMain.anims.play('character-main_animation');
+
+                        this.characterMain.setInteractive();
+                        this.characterMain.on('pointerdown', () => {
+                            this.characterMain.visible = false;
+                            this.characterMain.anims.pause();
+                            this.characterDrink.visible = true;
+                            this.characterDrink.anims.play('character-drink_animation');
+                        });
+                        this.characterDrink.setInteractive();
+                        this.characterDrink.on('pointerdown', () => {
+                            this.characterDrink.visible = false;
+                            this.characterDrink.anims.pause();
+                            this.characterMain.visible = true;
+                            this.characterMain.anims.play('character-main_animation');
+                        });
+
+
+
 
                         const generateReel = (id, reelMap, xGap) => {
                             const reel = [];
