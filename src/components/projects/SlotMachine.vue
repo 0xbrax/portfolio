@@ -12,6 +12,8 @@
     import { getRandomNumber } from "@/assets/js/utils.js"
 
     import SlotBodyImage from "@/assets/projects/slotmachine/image/main/reel.png";
+    import SlotCanopyImage from "@/assets/projects/slotmachine/image/main/canopy.png";
+    import SlotLogoImage from "@/assets/projects/slotmachine/image/main/logo.png";
 
     import CharacterMainPng from "@/assets/projects/slotmachine/image/sprite/character-main_spritesheet.png";
     import CharacterMainJson from "@/assets/projects/slotmachine/image/sprite/character-main_spritesheet.json";
@@ -335,6 +337,8 @@
                         super({ key: 'gameScene' });
 
                         this.slotBody;
+                        this.slotCanopy;
+                        this.slotLogo;
 
                         this.characterMain;
                         this.characterDrink;
@@ -342,6 +346,8 @@
 
                     preload() {
                         this.load.image('slot_body', SlotBodyImage);
+                        this.load.image('slot_canopy', SlotCanopyImage);
+                        this.load.image('slot_logo', SlotLogoImage);
 
                         this.load.atlas('character-main_sprite', CharacterMainPng, CharacterMainJson);
                         this.load.atlas('character-drink_sprite', CharacterDrinkPng, CharacterDrinkJson);
@@ -357,9 +363,7 @@
                     }
 
                     create() {
-                        this.slotBody = this.add
-                            .image(0, 0, 'slot_body')
-                            .setOrigin(0, 0);
+                        this.slotBody = this.add.image(0, 0, 'slot_body').setOrigin(0, 0);
 
                         const ratio = this.slotBody.height / this.slotBody.width;
                         this.slotBody.displayWidth =
@@ -413,7 +417,6 @@
 
 
 
-
                         const generateReel = (id, reelMap, xGap) => {
                             const reel = [];
                             const elementsHeightWrap = [];
@@ -429,9 +432,9 @@
                             mask.setPosition(this.slotBody.x + (xGap * this.slotBody.scaleX), this.slotBody.y + (96 * this.slotBody.scaleX));
 
                             for (let i = 0; i < reelMap.length; i++) {
-                                reels[`reel${id}`][`${reelMap[i]}Sheet`] = this.add.sprite(mask.x - (72 * this.slotBody.scaleX), 0, `${reelMap[i]}_sprite`, `${reelMap[i]}-animation_30.png`).setOrigin(0, 0);
-                                reels[`reel${id}`][`${reelMap[i]}Sheet`].setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
-                                reels[`reel${id}`][`${reelMap[i]}Sheet`].y = mask.y + (maskDimension.width * i) - (90 * this.slotBody.scaleX);
+                                reels[`reel${id}`][`${reelMap[i]}Sheet`] = this.add.sprite(mask.x - (67 * this.slotBody.scaleX), 0, `${reelMap[i]}_sprite`, `${reelMap[i]}-animation_30.png`).setOrigin(0, 0);
+                                reels[`reel${id}`][`${reelMap[i]}Sheet`].setScale(0.98 * this.slotBody.scaleX, 0.98 * this.slotBody.scaleX);
+                                reels[`reel${id}`][`${reelMap[i]}Sheet`].y = mask.y + (maskDimension.width * i) - (87 * this.slotBody.scaleX);
                                 reels[`reel${id}`][`${reelMap[i]}Sheet`].setMask(mask.createGeometryMask());
 
                                 this.anims.create({
@@ -442,7 +445,7 @@
                                 });
 
                                 reel.push(reels[`reel${id}`][`${reelMap[i]}Sheet`]);
-                                elementsHeightWrap.push((72.4 * this.slotBody.scaleX) * 2);
+                                elementsHeightWrap.push((67.9 * this.slotBody.scaleX) * 2);
                             }
 
                             return verticalLoop(reel, maskDimension, elementsHeightWrap, {
@@ -457,6 +460,11 @@
                         reel3Animation = generateReel(3, REEL_3_MAP, 718);
                         reel4Animation = generateReel(4, REEL_4_MAP, 1060);
                         reel5Animation = generateReel(5, REEL_5_MAP, 1402);
+
+                        this.slotCanopy = this.add.image(this.slotBody.x + this.slotBody.displayWidth / 2, this.slotBody.y - (140 * this.slotBody.scaleX), 'slot_canopy').setOrigin(0.5, 0);
+                        this.slotCanopy.setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
+                        this.slotLogo = this.add.image(this.slotBody.x + this.slotBody.displayWidth / 2, this.slotBody.y - (190 * this.slotBody.scaleX), 'slot_logo').setOrigin(0.5, 0);
+                        this.slotLogo.setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
                     }
 
                     /*update() {
@@ -479,8 +487,6 @@
                 const game = new Phaser.Game(config);
                 game.scene.add('gameScene', GameScene);
                 game.scene.start('gameScene');
-
-                console.log(game);
             });
 
             return {
