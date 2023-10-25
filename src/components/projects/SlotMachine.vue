@@ -12,7 +12,6 @@
     import { getRandomNumber } from "@/assets/js/utils.js"
 
     import SlotBodyImage from "@/assets/projects/slotmachine/image/main/reel.png";
-    import TestImage from "@/assets/projects/slotmachine/image/test/spritesheet.png";
 
     import AppleSpritePng from "@/assets/projects/slotmachine/image/sprite/apple_spritesheet.png";
     import AppleSpriteJson from "@/assets/projects/slotmachine/image/sprite/apple_spritesheet.json";
@@ -48,6 +47,14 @@
             const REEL_3_MAP = ['fruitcocktail', 'grapefruit', 'splash', 'watermelon', 'lemon', 'apple', 'coconut', 'cherry'];
             const REEL_4_MAP = ['apple', 'cherry', 'splash', 'fruitcocktail', 'grapefruit', 'lemon', 'coconut', 'watermelon'];
             const REEL_5_MAP = ['grapefruit', 'coconut', 'lemon', 'apple', 'watermelon', 'cherry', 'splash', 'fruitcocktail'];
+
+            const reels = {
+                reel1: {},
+                reel2: {},
+                reel3: {},
+                reel4: {},
+                reel5: {}
+            }
 
             let reel1Animation;
             let reel2Animation;
@@ -183,7 +190,7 @@
                 populateOffsets();
                 function toIndex(index, vars) {
                     vars = clone(vars);
-                    index -= 2; // start gap
+                    index -= 2; // end gap => show selected index on middle row
                     let newIndex = gsap.utils.wrap(0, length, index),
                         time = times[newIndex];
                     if (time > tl.time() !== index > curIndex) {
@@ -222,7 +229,10 @@
                 return tl;
             }
 
-
+            const animateOnComplete = () => {
+                reels[`reel${1}`][`${'apple'}Sheet`].anims.play(`reel${1}-${'apple'}_animation`);
+                reels[`reel${5}`][`${'coconut'}Sheet`].anims.play(`reel${5}-${'coconut'}_animation`);
+            }
 
             const spin = () => {
                 const conditions = [
@@ -299,12 +309,17 @@
                 //console.log('RANDOM 1', randomIndex1, `REEL 1 image: ${randomIndex1 + 1}`)
 
 
+                reels[`reel${1}`][`${'apple'}Sheet`].anims.stop();
+                reels[`reel${1}`][`${'apple'}Sheet`].setFrame(`${'apple'}-animation_30.png`);
+
+                reels[`reel${5}`][`${'coconut'}Sheet`].anims.stop();
+                reels[`reel${5}`][`${'coconut'}Sheet`].setFrame(`${'coconut'}-animation_30.png`);
 
                 reel1Animation.toIndex(0, { duration: 5.10, revolutions: 2, ease: "power2.inOut" });
                 reel2Animation.toIndex(1, { duration: 5.25, revolutions: 2, ease: "power2.inOut" });
                 reel3Animation.toIndex(2, { duration: 5.42, revolutions: 2, ease: "power2.inOut" });
                 reel4Animation.toIndex(3, { duration: 5.63, revolutions: 2, ease: "power2.inOut" });
-                reel5Animation.toIndex(4, { duration: 5.91, revolutions: 2, ease: "power2.inOut", onComplete: () => console.log('Complete, CHECK animation') });
+                reel5Animation.toIndex(1, { duration: 5.91, revolutions: 2, ease: "power2.inOut", onComplete: () => animateOnComplete() });
             }
 
 
@@ -312,24 +327,13 @@
             onMounted(() => {
                 class GameScene extends Phaser.Scene {
                     constructor() {
-                        super({ key: "gameScene" });
+                        super({ key: 'gameScene' });
 
-                        this.image;
-                        this.test;
-
-                        this.appleSheet;
-                        this.cherrySheet;
-                        this.coconutSheet;
-                        this.fruitcocktailSheet;
-                        this.grapefruitSheet;
-                        this.lemonSheet;
-                        this.splashSheet;
-                        this.watermelonSheet;
+                        this.slotBody;
                     }
 
                     preload() {
-                        this.load.image("slotBody", SlotBodyImage);
-                        this.load.image("test", TestImage);
+                        this.load.image('slot_body', SlotBodyImage);
 
                         this.load.atlas('apple_sprite', AppleSpritePng, AppleSpriteJson);
                         this.load.atlas('cherry_sprite', CherrySpritePng, CherrySpriteJson);
@@ -342,56 +346,52 @@
                     }
 
                     create() {
-                        this.image = this.add
-                            .image(0, 0, "slotBody")
+                        this.slotBody = this.add
+                            .image(0, 0, 'slot_body')
                             .setOrigin(0, 0);
 
-                        const ratio = this.image.height / this.image.width;
-                        this.image.displayWidth =
+                        const ratio = this.slotBody.height / this.slotBody.width;
+                        this.slotBody.displayWidth =
                             (canvasRef.value.offsetWidth * 50) / 100;
-                        this.image.displayHeight =
-                            this.image.displayWidth * ratio * 0.955;
+                        this.slotBody.displayHeight =
+                            this.slotBody.displayWidth * ratio * 0.955;
 
-                        this.image.setPosition(
+                        this.slotBody.setPosition(
                             canvasRef.value.offsetWidth / 2 -
-                                this.image.displayWidth / 2,
+                                this.slotBody.displayWidth / 2,
                             canvasRef.value.offsetHeight / 2 -
-                                this.image.displayHeight / 2
+                                this.slotBody.displayHeight / 2
                         );
 
-                        const generateReel = (reelMap, xGap) => {
+                        const generateReel = (id, reelMap, xGap) => {
                             const reel = [];
                             const elementsHeightWrap = [];
                             const maskDimension = {
-                                width: 322 * this.image.scaleX,
-                                height: 322 * this.image.scaleX * SYMBOL_X_REEL
+                                width: 322 * this.slotBody.scaleX,
+                                height: 322 * this.slotBody.scaleX * SYMBOL_X_REEL
                             }
                             const mask = this.add.graphics();
 
                             //mask.fillStyle(0xff0000, 1); // DEBUG
 
                             mask.fillRect(0, 0, maskDimension.width, maskDimension.height);
-                            mask.setPosition(this.image.x + (xGap * this.image.scaleX), this.image.y + (96 * this.image.scaleX));
+                            mask.setPosition(this.slotBody.x + (xGap * this.slotBody.scaleX), this.slotBody.y + (96 * this.slotBody.scaleX));
 
                             for (let i = 0; i < reelMap.length; i++) {
-                                this[`${reelMap[i]}Sheet`] = this.add.sprite(mask.x - (72 * this.image.scaleX), 0, `${reelMap[i]}_sprite`, `${reelMap[i]}-animation_30.png`).setOrigin(0, 0);
-                                this[`${reelMap[i]}Sheet`].setScale(1 * this.image.scaleX, 1 * this.image.scaleX);
-                                this[`${reelMap[i]}Sheet`].y = mask.y + (maskDimension.width * i) - (90 * this.image.scaleX);
-                                this[`${reelMap[i]}Sheet`].setMask(mask.createGeometryMask());
+                                reels[`reel${id}`][`${reelMap[i]}Sheet`] = this.add.sprite(mask.x - (72 * this.slotBody.scaleX), 0, `${reelMap[i]}_sprite`, `${reelMap[i]}-animation_30.png`).setOrigin(0, 0);
+                                reels[`reel${id}`][`${reelMap[i]}Sheet`].setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
+                                reels[`reel${id}`][`${reelMap[i]}Sheet`].y = mask.y + (maskDimension.width * i) - (90 * this.slotBody.scaleX);
+                                reels[`reel${id}`][`${reelMap[i]}Sheet`].setMask(mask.createGeometryMask());
 
                                 this.anims.create({
-                                    key: `${reelMap[i]}_animation`,
+                                    key: `reel${id}-${reelMap[i]}_animation`,
                                     frames: this.anims.generateFrameNames(`${reelMap[i]}_sprite`, { start: 1, end: 30, zeroPad: 2, prefix: `${reelMap[i]}-animation_`, suffix: '.png' }),
                                     frameRate: ANIMATION_FPS,
                                     repeat: -1
                                 });
 
-                                this[`${reelMap[i]}Sheet`].anims.play(`${reelMap[i]}_animation`);
-                                // this[`${el}Sheet`].anims.stop();
-                                // this[`${el}Sheet`].anims.seek(0);
-
-                                reel.push(this[`${reelMap[i]}Sheet`]);
-                                elementsHeightWrap.push((72.4 * this.image.scaleX) * 2);
+                                reel.push(reels[`reel${id}`][`${reelMap[i]}Sheet`]);
+                                elementsHeightWrap.push((72.4 * this.slotBody.scaleX) * 2);
                             }
 
                             return verticalLoop(reel, maskDimension, elementsHeightWrap, {
@@ -401,11 +401,11 @@
                             });
                         }
 
-                        reel1Animation = generateReel(REEL_1_MAP, 34);
-                        reel2Animation = generateReel(REEL_2_MAP, 376);
-                        reel3Animation = generateReel(REEL_3_MAP, 718);
-                        reel4Animation = generateReel(REEL_4_MAP, 1060);
-                        reel5Animation = generateReel(REEL_5_MAP, 1402);
+                        reel1Animation = generateReel(1, REEL_1_MAP, 34);
+                        reel2Animation = generateReel(2, REEL_2_MAP, 376);
+                        reel3Animation = generateReel(3, REEL_3_MAP, 718);
+                        reel4Animation = generateReel(4, REEL_4_MAP, 1060);
+                        reel5Animation = generateReel(5, REEL_5_MAP, 1402);
                     }
 
                     /*update() {
@@ -423,12 +423,12 @@
                         mode: Phaser.Scale.FIT,
                         autoCenter: Phaser.Scale.CENTER_BOTH,
                     },
-                    scene: [GameScene],
                 };
 
                 const game = new Phaser.Game(config);
+                game.scene.add('gameScene', GameScene);
+                game.scene.start('gameScene');
 
-                // multi scene handler ?
                 console.log(game);
             });
 
