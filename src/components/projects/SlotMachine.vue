@@ -46,6 +46,7 @@
 
             const canvasRef = ref(null);
             const ANIMATION_FPS = 24;
+            const REEL_X_SLOT = 5;
             const REEL_LENGTH = 8;
             const SYMBOL_X_REEL = 3;
 
@@ -238,27 +239,12 @@
 
             const animateOnComplete = () => {
                 reels[`reel${1}`][`${'apple'}Sheet`].anims.play(`reel${1}-${'apple'}_animation`);
+                reels[`reel${2}`][`${'splash'}Sheet`].anims.play(`reel${1}-${'splash'}_animation`);
+                reels[`reel${3}`][`${'fruitcocktail'}Sheet`].anims.play(`reel${3}-${'fruitcocktail'}_animation`);
                 reels[`reel${5}`][`${'coconut'}Sheet`].anims.play(`reel${5}-${'coconut'}_animation`);
             }
 
             const spin = () => {
-                const conditions = [
-                    {
-                        mode: 'lose'
-                    },
-                    {
-                        mode: 'fake-win'
-                    },
-                    {
-                        mode: 'win'
-                    },
-                    {
-                        mode: 'mega-win'
-                    }
-                ];
-
-                //const randomCondition = conditions[getRandomNumber(0, conditions.length - 1)];
-                const selectedCondition = conditions[3];
                 const indexReels = {
                     indexReel1: null,
                     indexReel2: null,
@@ -266,65 +252,51 @@
                     indexReel4: null,
                     indexReel5: null
                 }
+                const conditions = [
+                    { mode: 'lose' },
+                    { mode: 'fake-win' },
+                    { mode: 'win' },
+                    { mode: 'mega-win' }
+                ];
+
+                //const randomCondition = conditions[getRandomNumber(0, conditionsPerRTP.length - 1)];
+                const selectedCondition = conditions[2];
+                // random row ?
 
                 switch (selectedCondition.mode) {
                     case 'lose':
+                        // NO PYA TABLE
                         break
                     case 'fake-win':
+                        // NO PAY TABLE
                         break
                     case 'win':
+                        // PAY TABLE
+
+
+
                         break
                     case 'mega-win':
-                        const reelRows = [
-                            {
-                                row1: {
-                                    reel1: 3,
-                                    reel2: 0,
-                                    reel3: 6,
-                                    reel4: 1,
-                                    reel5: 6
-                                }
-                            },
-                            {
-                                row2: {
-                                    reel1: 2,
-                                    reel2: 6,
-                                    reel3: 5,
-                                    reel4: 0,
-                                    reel5: 5
-                                }
-                            },
-                            {
-                                row3: {
-                                    reel1: 1,
-                                    reel2: 5,
-                                    reel3: 4,
-                                    reel4: 6,
-                                    reel5: 4
-                                }
-                            }
-                        ];
-                        const randomRow = getRandomNumber(0, reelRows.length - 1);
-                        const selectedRow = reelRows[randomRow];
-
-                        for (let i = 1; i < REEL_LENGTH; i++) {
-                            indexReels[`indexReel${i}`] = selectedRow[`row${randomRow + 1}`][`reel${i}`];
-                        }
+                        // PAY TABLE with fruitcocktail
                 }
 
-                //const randomIndex1 = getRandomNumber(0, REEL_LENGTH - 1);
-                //console.log('RANDOM 1', randomIndex1, `REEL 1 image: ${randomIndex1 + 1}`)
 
 
                 reels[`reel${1}`][`${'apple'}Sheet`].anims.stop();
                 reels[`reel${1}`][`${'apple'}Sheet`].setFrame(`${'apple'}-animation_30.png`);
+
+                reels[`reel${2}`][`${'splash'}Sheet`].anims.stop();
+                reels[`reel${2}`][`${'splash'}Sheet`].setFrame(`${'splash'}-animation_30.png`);
+
+                reels[`reel${3}`][`${'fruitcocktail'}Sheet`].anims.stop();
+                reels[`reel${3}`][`${'fruitcocktail'}Sheet`].setFrame(`${'fruitcocktail'}-animation_30.png`);
 
                 reels[`reel${5}`][`${'coconut'}Sheet`].anims.stop();
                 reels[`reel${5}`][`${'coconut'}Sheet`].setFrame(`${'coconut'}-animation_30.png`);
 
                 reel1Animation.toIndex(0, { duration: 5.10, revolutions: 20, ease: "power2.inOut" });
                 reel2Animation.toIndex(1, { duration: 5.25, revolutions: 20, ease: "power2.inOut" });
-                reel3Animation.toIndex(2, { duration: 5.42, revolutions: 20, ease: "power2.inOut" });
+                reel3Animation.toIndex(0, { duration: 5.42, revolutions: 20, ease: "power2.inOut" });
                 reel4Animation.toIndex(3, { duration: 5.63, revolutions: 20, ease: "power2.inOut" });
                 reel5Animation.toIndex(1, { duration: 5.91, revolutions: 20, ease: "power2.inOut", onComplete: () => animateOnComplete() });
             }
@@ -426,7 +398,7 @@
                             }
                             const mask = this.add.graphics();
 
-                            //mask.fillStyle(0xff0000, 1); // DEBUG
+                            //mask.fillStyle(0xff0000, 1); // DEBUG TOOL
 
                             mask.fillRect(0, 0, maskDimension.width, maskDimension.height);
                             mask.setPosition(this.slotBody.x + (xGap * this.slotBody.scaleX), this.slotBody.y + (96 * this.slotBody.scaleX));
@@ -447,6 +419,10 @@
                                 reel.push(reels[`reel${id}`][`${reelMap[i]}Sheet`]);
                                 elementsHeightWrap.push((67.9 * this.slotBody.scaleX) * 2);
                             }
+
+                            // resize after sheet creation to render animation out of the reel
+                            mask.scaleX = 1.5;
+                            mask.x -= 75 * this.slotBody.scaleX;
 
                             return verticalLoop(reel, maskDimension, elementsHeightWrap, {
                                 repeat: -1,
