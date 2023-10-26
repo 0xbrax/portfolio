@@ -1,7 +1,7 @@
 <template>
     <div id="slot-machine">
         <canvas ref="canvasRef"></canvas>
-        <i id="play-btn" class="fas fa-play" @click="spin()"></i>
+        <i id="play-btn" :class="['fas fa-play', { 'disabled': isGamePlaying }]" @click="!isGamePlaying ? spin() : undefined"></i>
     </div>
 </template>
 
@@ -51,15 +51,15 @@
             const SYMBOL_X_REEL = 3;
 
             const SYMBOLS = ['apple', 'cherry', 'coconut', 'grapefruit', 'lemon', 'watermelon'];
-            const JOLLY = 'splash';
+            //const JOLLY = 'splash';
             const MEGA_WIN = 'fruitcocktail';
-            let randomWinSymbol;
+            let randomWinSymbol = null;
 
-            const REEL_1_MAP = ['apple', 'coconut', 'fruitcocktail', 'grapefruit', 'lemon', 'cherry', 'splash', 'watermelon'];
-            const REEL_2_MAP = ['cherry', 'splash', 'watermelon', 'apple', 'coconut', 'fruitcocktail', 'grapefruit', 'lemon'];
-            const REEL_3_MAP = ['fruitcocktail', 'grapefruit', 'splash', 'watermelon', 'lemon', 'apple', 'coconut', 'cherry'];
-            const REEL_4_MAP = ['apple', 'cherry', 'splash', 'fruitcocktail', 'grapefruit', 'lemon', 'coconut', 'watermelon'];
-            const REEL_5_MAP = ['grapefruit', 'coconut', 'lemon', 'apple', 'watermelon', 'cherry', 'splash', 'fruitcocktail'];
+            const REEL_1_MAP = ['lemon', 'coconut', 'watermelon', 'cherry', 'fruitcocktail', 'grapefruit', 'apple', 'splash'];
+            const REEL_2_MAP = ['apple', 'cherry', 'coconut', 'fruitcocktail', 'grapefruit', 'lemon', 'splash', 'watermelon'];
+            const REEL_3_MAP = ['fruitcocktail', 'grapefruit', 'cherry', 'coconut', 'watermelon', 'splash', 'apple', 'lemon'];
+            const REEL_4_MAP = ['watermelon', 'splash', 'lemon', 'grapefruit', 'fruitcocktail', 'coconut', 'cherry', 'apple'];
+            const REEL_5_MAP = ['splash', 'apple', 'grapefruit', 'fruitcocktail', 'cherry', 'watermelon', 'coconut', 'lemon'];
 
             const reels = {
                 reel1: {},
@@ -74,6 +74,8 @@
             let reel3Animation;
             let reel4Animation;
             let reel5Animation;
+
+            const isGamePlaying = ref(false);
 
 
 
@@ -243,6 +245,8 @@
             }
 
             const animateOnComplete = () => {
+                isGamePlaying.value = false;
+
                 if (!randomWinSymbol) return;
 
                 for (let i = 1; i <= REEL_X_SLOT; i++) {
@@ -251,11 +255,14 @@
             }
 
             const spin = () => {
+                isGamePlaying.value = true;
+
                 if (randomWinSymbol) {
                     for (let i = 1; i <= REEL_X_SLOT; i++) {
                         reels[`reel${i}`][`${randomWinSymbol}Sheet`].anims.stop();
                         reels[`reel${i}`][`${randomWinSymbol}Sheet`].setFrame(`${randomWinSymbol}-animation_30.png`);
                     }
+                    randomWinSymbol = null;
                 }
 
                 let indexReels = {
@@ -265,12 +272,8 @@
                     indexReel4: null,
                     indexReel5: null
                 }
-                const conditions = [
-                    { mode: 'lose' },
-                    { mode: 'fake-win' },
-                    { mode: 'win' },
-                    { mode: 'mega-win' }
-                ];
+                let conditions = ['lose',/* 'fake-win',*/ 'win', 'mega-win'];
+                // conditions multiplier
 
                 const getRandomWinMap = ({ indexReel1, indexReel2, indexReel3, indexReel4, indexReel5 }) => {
                     // PAY TABLE => Index reel is always in the middle row before win map
@@ -344,18 +347,31 @@
                     return maps[random];
                 }
 
-                const selectedCondition = conditions[getRandomNumber(2, conditions.length - 1)];
+                const selectedCondition = conditions[getRandomNumber(0, conditions.length - 1)];
 
-                switch (selectedCondition.mode) {
+                switch (selectedCondition) {
                     case 'lose':
-                        // NO PYA TABLE
-                        break
-                    case 'fake-win':
-                        // NO PAY TABLE
+                        const randomNumber1 = getRandomNumber(0, SYMBOLS.length - 1);
+                        let randomNumber2 = getRandomNumber(0, SYMBOLS.length - 1);
+                        while (REEL_1_MAP[randomNumber1] === REEL_2_MAP[randomNumber2]) {
+                            randomNumber2 = getRandomNumber(0, SYMBOLS.length - 1);
+                        }
+                        const randomNumber3 = getRandomNumber(0, SYMBOLS.length - 1);
+                        let randomNumber4 = getRandomNumber(0, SYMBOLS.length - 1);
+                        while (REEL_3_MAP[randomNumber3] === REEL_4_MAP[randomNumber4]) {
+                            randomNumber4 = getRandomNumber(0, SYMBOLS.length - 1);
+                        }
+                        const randomNumber5 = getRandomNumber(0, SYMBOLS.length - 1);
+
+                        indexReels.indexReel1 = randomNumber1;
+                        indexReels.indexReel2 = randomNumber2;
+                        indexReels.indexReel3 = randomNumber3;
+                        indexReels.indexReel4 = randomNumber4;
+                        indexReels.indexReel5 = randomNumber5;
                         break
                     case 'win':
                     case 'mega-win':
-                        randomWinSymbol = selectedCondition.mode === 'win' ? SYMBOLS[getRandomNumber(0, SYMBOLS.length - 1)] : MEGA_WIN;
+                        randomWinSymbol = selectedCondition === 'win' ? SYMBOLS[getRandomNumber(0, SYMBOLS.length - 1)] : MEGA_WIN;
 
                         indexReels.indexReel1 = REEL_1_MAP.indexOf(randomWinSymbol);
                         indexReels.indexReel2 = REEL_2_MAP.indexOf(randomWinSymbol);
@@ -366,11 +382,17 @@
                         indexReels = Object.assign(getRandomWinMap(indexReels));
                 }
 
-                reel1Animation.toIndex(indexReels.indexReel1, { duration: 5.10, revolutions: 20, ease: "power2.inOut" });
-                reel2Animation.toIndex(indexReels.indexReel2, { duration: 5.25, revolutions: 20, ease: "power2.inOut" });
-                reel3Animation.toIndex(indexReels.indexReel3, { duration: 5.42, revolutions: 20, ease: "power2.inOut" });
-                reel4Animation.toIndex(indexReels.indexReel4, { duration: 5.63, revolutions: 20, ease: "power2.inOut" });
-                reel5Animation.toIndex(indexReels.indexReel5, { duration: 5.91, revolutions: 20, ease: "power2.inOut", onComplete: () => animateOnComplete() });
+                const animRevolutions = 20; // Increase this value for faster animations
+                const animDuration = 5;
+                let newAnimDuration = getRandomNumber(40, 60);
+                newAnimDuration = newAnimDuration / 10;
+                const newAnimRevolutions = Math.floor((animRevolutions / animDuration) * newAnimDuration);
+
+                reel1Animation.toIndex(indexReels.indexReel1, { duration: parseFloat((newAnimDuration + 0.10).toFixed(1)), revolutions: newAnimRevolutions, ease: "power2.inOut" });
+                reel2Animation.toIndex(indexReels.indexReel2, { duration: parseFloat((newAnimDuration + 0.25).toFixed(1)), revolutions: newAnimRevolutions, ease: "power2.inOut" });
+                reel3Animation.toIndex(indexReels.indexReel3, { duration: parseFloat((newAnimDuration + 0.42).toFixed(1)), revolutions: newAnimRevolutions, ease: "power2.inOut" });
+                reel4Animation.toIndex(indexReels.indexReel4, { duration: parseFloat((newAnimDuration + 0.63).toFixed(1)), revolutions: newAnimRevolutions, ease: "power2.inOut" });
+                reel5Animation.toIndex(indexReels.indexReel5, { duration: parseFloat((newAnimDuration + 0.91).toFixed(1)), revolutions: newAnimRevolutions, ease: "power2.inOut", onComplete: () => animateOnComplete() });
             }
 
 
@@ -539,6 +561,7 @@
 
             return {
                 canvasRef,
+                isGamePlaying,
                 spin
             };
         },
@@ -572,5 +595,9 @@
         cursor: pointer;
         text-align: center;
         line-height: 50px;
+    }
+    #play-btn.disabled {
+        opacity: 0.8;
+        cursor: auto;
     }
 </style>
