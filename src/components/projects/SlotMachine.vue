@@ -50,6 +50,11 @@
             const REEL_LENGTH = 8;
             const SYMBOL_X_REEL = 3;
 
+            const SYMBOLS = ['apple', 'cherry', 'coconut', 'grapefruit', 'lemon', 'watermelon'];
+            const JOLLY = 'splash';
+            const MEGA_WIN = 'fruitcocktail';
+            let randomWinSymbol;
+
             const REEL_1_MAP = ['apple', 'coconut', 'fruitcocktail', 'grapefruit', 'lemon', 'cherry', 'splash', 'watermelon'];
             const REEL_2_MAP = ['cherry', 'splash', 'watermelon', 'apple', 'coconut', 'fruitcocktail', 'grapefruit', 'lemon'];
             const REEL_3_MAP = ['fruitcocktail', 'grapefruit', 'splash', 'watermelon', 'lemon', 'apple', 'coconut', 'cherry'];
@@ -238,14 +243,22 @@
             }
 
             const animateOnComplete = () => {
-                reels[`reel${1}`][`${'apple'}Sheet`].anims.play(`reel${1}-${'apple'}_animation`);
-                reels[`reel${2}`][`${'splash'}Sheet`].anims.play(`reel${1}-${'splash'}_animation`);
-                reels[`reel${3}`][`${'fruitcocktail'}Sheet`].anims.play(`reel${3}-${'fruitcocktail'}_animation`);
-                reels[`reel${5}`][`${'coconut'}Sheet`].anims.play(`reel${5}-${'coconut'}_animation`);
+                if (!randomWinSymbol) return;
+
+                for (let i = 1; i <= REEL_X_SLOT; i++) {
+                    reels[`reel${i}`][`${randomWinSymbol}Sheet`].anims.play(`reel${i}-${randomWinSymbol}_animation`);
+                }
             }
 
             const spin = () => {
-                const indexReels = {
+                if (randomWinSymbol) {
+                    for (let i = 1; i <= REEL_X_SLOT; i++) {
+                        reels[`reel${i}`][`${randomWinSymbol}Sheet`].anims.stop();
+                        reels[`reel${i}`][`${randomWinSymbol}Sheet`].setFrame(`${randomWinSymbol}-animation_30.png`);
+                    }
+                }
+
+                let indexReels = {
                     indexReel1: null,
                     indexReel2: null,
                     indexReel3: null,
@@ -259,9 +272,79 @@
                     { mode: 'mega-win' }
                 ];
 
-                //const randomCondition = conditions[getRandomNumber(0, conditionsPerRTP.length - 1)];
-                const selectedCondition = conditions[2];
-                // random row ?
+                const getRandomWinMap = ({ indexReel1, indexReel2, indexReel3, indexReel4, indexReel5 }) => {
+                    // PAY TABLE => Index reel is always in the middle row before win map
+                    const maps = [
+                        {
+                            indexReel1: indexReel1 - 1,
+                            indexReel2: indexReel2 - 1,
+                            indexReel3: indexReel3,
+                            indexReel4: indexReel4 - 1,
+                            indexReel5: indexReel5 - 1
+                        },
+                        {
+                            indexReel1: indexReel1 + 1,
+                            indexReel2: indexReel2 + 1,
+                            indexReel3: indexReel3,
+                            indexReel4: indexReel4 + 1,
+                            indexReel5: indexReel5 + 1
+                        },
+                        {
+                            indexReel1: indexReel1,
+                            indexReel2: indexReel2 - 1,
+                            indexReel3: indexReel3 - 1,
+                            indexReel4: indexReel4 - 1,
+                            indexReel5: indexReel5
+                        },
+                        {
+                            indexReel1: indexReel1,
+                            indexReel2: indexReel2 + 1,
+                            indexReel3: indexReel3 + 1,
+                            indexReel4: indexReel4 + 1,
+                            indexReel5: indexReel5
+                        },
+                        {
+                            indexReel1: indexReel1 - 1,
+                            indexReel2: indexReel2 - 1,
+                            indexReel3: indexReel3 - 1,
+                            indexReel4: indexReel4 - 1,
+                            indexReel5: indexReel5 - 1
+                        },
+                        {
+                            indexReel1: indexReel1,
+                            indexReel2: indexReel2,
+                            indexReel3: indexReel3,
+                            indexReel4: indexReel4,
+                            indexReel5: indexReel5
+                        },
+                        {
+                            indexReel1: indexReel1 + 1,
+                            indexReel2: indexReel2 + 1,
+                            indexReel3: indexReel3 + 1,
+                            indexReel4: indexReel4 + 1,
+                            indexReel5: indexReel5 + 1
+                        },
+                        {
+                            indexReel1: indexReel1 - 1,
+                            indexReel2: indexReel2,
+                            indexReel3: indexReel3 + 1,
+                            indexReel4: indexReel4,
+                            indexReel5: indexReel5 - 1
+                        },
+                        {
+                            indexReel1: indexReel1 + 1,
+                            indexReel2: indexReel2,
+                            indexReel3: indexReel3 - 1,
+                            indexReel4: indexReel4,
+                            indexReel5: indexReel5 + 1
+                        }
+                    ];
+
+                    const random = getRandomNumber(0, maps.length - 1);
+                    return maps[random];
+                }
+
+                const selectedCondition = conditions[getRandomNumber(2, conditions.length - 1)];
 
                 switch (selectedCondition.mode) {
                     case 'lose':
@@ -271,34 +354,23 @@
                         // NO PAY TABLE
                         break
                     case 'win':
-                        // PAY TABLE
-
-
-
-                        break
                     case 'mega-win':
-                        // PAY TABLE with fruitcocktail
+                        randomWinSymbol = selectedCondition.mode === 'win' ? SYMBOLS[getRandomNumber(0, SYMBOLS.length - 1)] : MEGA_WIN;
+
+                        indexReels.indexReel1 = REEL_1_MAP.indexOf(randomWinSymbol);
+                        indexReels.indexReel2 = REEL_2_MAP.indexOf(randomWinSymbol);
+                        indexReels.indexReel3 = REEL_3_MAP.indexOf(randomWinSymbol);
+                        indexReels.indexReel4 = REEL_4_MAP.indexOf(randomWinSymbol);
+                        indexReels.indexReel5 = REEL_5_MAP.indexOf(randomWinSymbol);
+
+                        indexReels = Object.assign(getRandomWinMap(indexReels));
                 }
 
-
-
-                reels[`reel${1}`][`${'apple'}Sheet`].anims.stop();
-                reels[`reel${1}`][`${'apple'}Sheet`].setFrame(`${'apple'}-animation_30.png`);
-
-                reels[`reel${2}`][`${'splash'}Sheet`].anims.stop();
-                reels[`reel${2}`][`${'splash'}Sheet`].setFrame(`${'splash'}-animation_30.png`);
-
-                reels[`reel${3}`][`${'fruitcocktail'}Sheet`].anims.stop();
-                reels[`reel${3}`][`${'fruitcocktail'}Sheet`].setFrame(`${'fruitcocktail'}-animation_30.png`);
-
-                reels[`reel${5}`][`${'coconut'}Sheet`].anims.stop();
-                reels[`reel${5}`][`${'coconut'}Sheet`].setFrame(`${'coconut'}-animation_30.png`);
-
-                reel1Animation.toIndex(0, { duration: 5.10, revolutions: 20, ease: "power2.inOut" });
-                reel2Animation.toIndex(1, { duration: 5.25, revolutions: 20, ease: "power2.inOut" });
-                reel3Animation.toIndex(0, { duration: 5.42, revolutions: 20, ease: "power2.inOut" });
-                reel4Animation.toIndex(3, { duration: 5.63, revolutions: 20, ease: "power2.inOut" });
-                reel5Animation.toIndex(1, { duration: 5.91, revolutions: 20, ease: "power2.inOut", onComplete: () => animateOnComplete() });
+                reel1Animation.toIndex(indexReels.indexReel1, { duration: 5.10, revolutions: 20, ease: "power2.inOut" });
+                reel2Animation.toIndex(indexReels.indexReel2, { duration: 5.25, revolutions: 20, ease: "power2.inOut" });
+                reel3Animation.toIndex(indexReels.indexReel3, { duration: 5.42, revolutions: 20, ease: "power2.inOut" });
+                reel4Animation.toIndex(indexReels.indexReel4, { duration: 5.63, revolutions: 20, ease: "power2.inOut" });
+                reel5Animation.toIndex(indexReels.indexReel5, { duration: 5.91, revolutions: 20, ease: "power2.inOut", onComplete: () => animateOnComplete() });
             }
 
 
