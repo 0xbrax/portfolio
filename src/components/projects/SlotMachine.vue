@@ -51,7 +51,7 @@
             const SYMBOL_X_REEL = 3;
 
             const SYMBOLS = ['apple', 'cherry', 'coconut', 'grapefruit', 'lemon', 'watermelon'];
-            //const JOLLY = 'splash';
+            const JOLLY = 'splash';
             const MEGA_WIN = 'fruitcocktail';
             let randomWinSymbol = null;
 
@@ -79,9 +79,10 @@
                 reel5Animation: null
             };
 
-            let conditions = ['lose', 'fake-win', 'win', 'mega-win'];
-            // conditions multiplier
-            //const jollyWinRatio;
+            const conditions = [...Array(20).fill('lose'), ...Array(30).fill('fake-win'), ...Array(40).fill('win'), ...Array(10).fill('mega-win')];
+
+            const jollyWinRatio = [1, ...Array(4).fill(0)];
+            let jollyRandomReel = null;
 
             const isGamePlaying = ref(false);
 
@@ -258,6 +259,10 @@
                 if (!randomWinSymbol) return;
 
                 for (let i = 1; i <= REELS_X_SLOT; i++) {
+                    if (jollyRandomReel && i === jollyRandomReel) {
+                        reels[`reel${i}`][`${JOLLY}Sheet`].anims.play(`reel${i}-${JOLLY}_animation`);
+                        continue;
+                    }
                     reels[`reel${i}`][`${randomWinSymbol}Sheet`].anims.play(`reel${i}-${randomWinSymbol}_animation`);
                 }
             }
@@ -267,6 +272,12 @@
 
                 if (randomWinSymbol) {
                     for (let i = 1; i <= REELS_X_SLOT; i++) {
+                        if (jollyRandomReel && i === jollyRandomReel) {
+                            reels[`reel${i}`][`${JOLLY}Sheet`].anims.stop();
+                            reels[`reel${i}`][`${JOLLY}Sheet`].setFrame(`${JOLLY}-animation_30.png`);
+                            jollyRandomReel = null;
+                            continue;
+                        }
                         reels[`reel${i}`][`${randomWinSymbol}Sheet`].anims.stop();
                         reels[`reel${i}`][`${randomWinSymbol}Sheet`].setFrame(`${randomWinSymbol}-animation_30.png`);
                     }
@@ -282,7 +293,7 @@
                 }
 
                 const getRandomWinMap = ({ indexReel1, indexReel2, indexReel3, indexReel4, indexReel5 }) => {
-                    // PAY TABLE => Index reel is always in the middle row before win map
+                    // PAY TABLE => index reel is always in the middle row before win map
                     const maps = [
                         {
                             indexReel1: indexReel1 - 1,
@@ -387,8 +398,7 @@
                     return obj;
                 }
 
-                //const selectedCondition = conditions[getRandomNumber(0, conditions.length - 1)];
-                const selectedCondition = 'fake-win';
+                const selectedCondition = conditions[getRandomNumber(0, conditions.length - 1)];
 
                 switch (selectedCondition) {
                     case 'lose':
@@ -410,6 +420,15 @@
                             indexReels[`indexReel${randomReel}`] = SLOT_MAP[`REEL_${randomReel}_MAP`].indexOf(loseSymbol);
 
                             randomWinSymbol = null;
+                        }
+
+                        if (selectedCondition !== 'fake-win') {
+                            const jollyCondition = jollyWinRatio[getRandomNumber(0, jollyWinRatio.length -1)];
+
+                            if (jollyCondition === 1) {
+                                jollyRandomReel = getRandomNumber(1, REELS_X_SLOT);
+                                indexReels[`indexReel${jollyRandomReel}`] = SLOT_MAP[`REEL_${jollyRandomReel}_MAP`].indexOf(JOLLY);
+                            }
                         }
 
                         indexReels = Object.assign(getRandomWinMap(indexReels));
