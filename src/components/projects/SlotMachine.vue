@@ -46,7 +46,7 @@
 
             const canvasRef = ref(null);
             const ANIMATION_FPS = 24;
-            const REEL_X_SLOT = 5;
+            const REELS_X_SLOT = 5;
             const REEL_LENGTH = 8;
             const SYMBOL_X_REEL = 3;
 
@@ -55,11 +55,13 @@
             const MEGA_WIN = 'fruitcocktail';
             let randomWinSymbol = null;
 
-            const REEL_1_MAP = ['lemon', 'coconut', 'watermelon', 'cherry', 'fruitcocktail', 'grapefruit', 'apple', 'splash'];
-            const REEL_2_MAP = ['apple', 'cherry', 'coconut', 'fruitcocktail', 'grapefruit', 'lemon', 'splash', 'watermelon'];
-            const REEL_3_MAP = ['fruitcocktail', 'grapefruit', 'cherry', 'coconut', 'watermelon', 'splash', 'apple', 'lemon'];
-            const REEL_4_MAP = ['watermelon', 'splash', 'lemon', 'grapefruit', 'fruitcocktail', 'coconut', 'cherry', 'apple'];
-            const REEL_5_MAP = ['splash', 'apple', 'grapefruit', 'fruitcocktail', 'cherry', 'watermelon', 'coconut', 'lemon'];
+            const SLOT_MAP = {
+                REEL_1_MAP: ['lemon', 'coconut', 'watermelon', 'cherry', 'fruitcocktail', 'grapefruit', 'apple', 'splash'],
+                REEL_2_MAP: ['apple', 'cherry', 'coconut', 'fruitcocktail', 'grapefruit', 'lemon', 'splash', 'watermelon'],
+                REEL_3_MAP: ['fruitcocktail', 'grapefruit', 'cherry', 'coconut', 'watermelon', 'splash', 'apple', 'lemon'],
+                REEL_4_MAP: ['watermelon', 'splash', 'lemon', 'grapefruit', 'fruitcocktail', 'coconut', 'cherry', 'apple'],
+                REEL_5_MAP: ['splash', 'apple', 'grapefruit', 'fruitcocktail', 'cherry', 'watermelon', 'coconut', 'lemon']
+            };
 
             const reels = {
                 reel1: {},
@@ -67,13 +69,15 @@
                 reel3: {},
                 reel4: {},
                 reel5: {}
-            }
+            };
 
-            let reel1Animation;
-            let reel2Animation;
-            let reel3Animation;
-            let reel4Animation;
-            let reel5Animation;
+            const slotAnimation = {
+                reel1Animation: null,
+                reel2Animation: null,
+                reel3Animation: null,
+                reel4Animation: null,
+                reel5Animation: null
+            };
 
             const isGamePlaying = ref(false);
 
@@ -205,7 +209,7 @@
                 populateOffsets();
                 function toIndex(index, vars) {
                     vars = clone(vars);
-                    index -= 2; // end gap => show selected index on middle row
+                    index -= 2; // End gap => show selected index on middle row
                     let newIndex = gsap.utils.wrap(0, length, index),
                         time = times[newIndex];
                     if (time > tl.time() !== index > curIndex) {
@@ -249,7 +253,7 @@
 
                 if (!randomWinSymbol) return;
 
-                for (let i = 1; i <= REEL_X_SLOT; i++) {
+                for (let i = 1; i <= REELS_X_SLOT; i++) {
                     reels[`reel${i}`][`${randomWinSymbol}Sheet`].anims.play(`reel${i}-${randomWinSymbol}_animation`);
                 }
             }
@@ -258,7 +262,7 @@
                 isGamePlaying.value = true;
 
                 if (randomWinSymbol) {
-                    for (let i = 1; i <= REEL_X_SLOT; i++) {
+                    for (let i = 1; i <= REELS_X_SLOT; i++) {
                         reels[`reel${i}`][`${randomWinSymbol}Sheet`].anims.stop();
                         reels[`reel${i}`][`${randomWinSymbol}Sheet`].setFrame(`${randomWinSymbol}-animation_30.png`);
                     }
@@ -347,37 +351,54 @@
                     return maps[random];
                 }
 
-                const selectedCondition = conditions[getRandomNumber(0, conditions.length - 1)];
+                const getRandomLose = (indexReels) => {
+                    const obj = Object.assign(indexReels);
+
+                    for (let i = 1; i <= REELS_X_SLOT; i++) {
+                        obj[`indexReel${i}`] = getRandomNumber(0, SYMBOLS.length - 1);
+                    }
+
+                    // Need to verify at least 2 random reels, starting from reel number 2
+                    const checkReelIndex1 = getRandomNumber(2, REELS_X_SLOT);
+                    let checkReelIndex2;
+                    do checkReelIndex2 = getRandomNumber(2, REELS_X_SLOT);
+                    while (checkReelIndex1 === checkReelIndex2);
+
+                    const getNewReelIndex = (id) => {
+                        const symbolReel1 = SLOT_MAP.REEL_1_MAP[obj.indexReel1];
+                        let randomNumber = getRandomNumber(0, SYMBOLS.length - 1);
+                        const whatSymbolIndexInReel = SLOT_MAP[`REEL_${id}_MAP`].indexOf(symbolReel1);
+                        let diffIndex = Math.abs(randomNumber - whatSymbolIndexInReel);
+
+                        // Get out of win map
+                        while (diffIndex <= 1) {
+                            randomNumber = getRandomNumber(0, SYMBOLS.length - 1);
+                            diffIndex = Math.abs(randomNumber - whatSymbolIndexInReel);
+                        }
+                    }
+
+                    obj[`indexReel${checkReelIndex1}`] = getNewReelIndex(checkReelIndex1);
+                    obj[`indexReel${checkReelIndex2}`] = getNewReelIndex(checkReelIndex2);
+
+                    return obj;
+                }
+
+                //const selectedCondition = conditions[getRandomNumber(0, conditions.length - 1)];
+                const selectedCondition = 'win';
 
                 switch (selectedCondition) {
                     case 'lose':
-                        const randomNumber1 = getRandomNumber(0, SYMBOLS.length - 1);
-                        let randomNumber2 = getRandomNumber(0, SYMBOLS.length - 1);
-                        while (REEL_1_MAP[randomNumber1] === REEL_2_MAP[randomNumber2]) {
-                            randomNumber2 = getRandomNumber(0, SYMBOLS.length - 1);
-                        }
-                        const randomNumber3 = getRandomNumber(0, SYMBOLS.length - 1);
-                        let randomNumber4 = getRandomNumber(0, SYMBOLS.length - 1);
-                        while (REEL_3_MAP[randomNumber3] === REEL_4_MAP[randomNumber4]) {
-                            randomNumber4 = getRandomNumber(0, SYMBOLS.length - 1);
-                        }
-                        const randomNumber5 = getRandomNumber(0, SYMBOLS.length - 1);
+                        indexReels = getRandomLose(indexReels);
 
-                        indexReels.indexReel1 = randomNumber1;
-                        indexReels.indexReel2 = randomNumber2;
-                        indexReels.indexReel3 = randomNumber3;
-                        indexReels.indexReel4 = randomNumber4;
-                        indexReels.indexReel5 = randomNumber5;
+                        console.log('LOG', indexReels)
                         break
                     case 'win':
                     case 'mega-win':
                         randomWinSymbol = selectedCondition === 'win' ? SYMBOLS[getRandomNumber(0, SYMBOLS.length - 1)] : MEGA_WIN;
 
-                        indexReels.indexReel1 = REEL_1_MAP.indexOf(randomWinSymbol);
-                        indexReels.indexReel2 = REEL_2_MAP.indexOf(randomWinSymbol);
-                        indexReels.indexReel3 = REEL_3_MAP.indexOf(randomWinSymbol);
-                        indexReels.indexReel4 = REEL_4_MAP.indexOf(randomWinSymbol);
-                        indexReels.indexReel5 = REEL_5_MAP.indexOf(randomWinSymbol);
+                        for (let i = 1; i <= REELS_X_SLOT; i++) {
+                            indexReels[`indexReel${i}`] = SLOT_MAP[`REEL_${i}_MAP`].indexOf(randomWinSymbol);
+                        }
 
                         indexReels = Object.assign(getRandomWinMap(indexReels));
                 }
@@ -388,11 +409,30 @@
                 newAnimDuration = newAnimDuration / 10;
                 const newAnimRevolutions = Math.floor((animRevolutions / animDuration) * newAnimDuration);
 
-                reel1Animation.toIndex(indexReels.indexReel1, { duration: parseFloat((newAnimDuration + 0.10).toFixed(1)), revolutions: newAnimRevolutions, ease: "power2.inOut" });
-                reel2Animation.toIndex(indexReels.indexReel2, { duration: parseFloat((newAnimDuration + 0.25).toFixed(1)), revolutions: newAnimRevolutions, ease: "power2.inOut" });
-                reel3Animation.toIndex(indexReels.indexReel3, { duration: parseFloat((newAnimDuration + 0.42).toFixed(1)), revolutions: newAnimRevolutions, ease: "power2.inOut" });
-                reel4Animation.toIndex(indexReels.indexReel4, { duration: parseFloat((newAnimDuration + 0.63).toFixed(1)), revolutions: newAnimRevolutions, ease: "power2.inOut" });
-                reel5Animation.toIndex(indexReels.indexReel5, { duration: parseFloat((newAnimDuration + 0.91).toFixed(1)), revolutions: newAnimRevolutions, ease: "power2.inOut", onComplete: () => animateOnComplete() });
+                for (let i = 1; i <= REELS_X_SLOT; i++) {
+                    let animDelay;
+                    switch (i) {
+                        case 1:
+                            animDelay = 0.10;
+                            break;
+                        case 2:
+                            animDelay = 0.25;
+                            break;
+                        case 3:
+                            animDelay = 0.42;
+                            break;
+                        case 4:
+                            animDelay = 0.63;
+                            break;
+                        case 5:
+                            animDelay = 0.91;
+                    }
+
+                    const animConfig = { duration: parseFloat((newAnimDuration + animDelay).toFixed(2)), revolutions: newAnimRevolutions, ease: 'power2.inOut' };
+                    if (i === 5) animConfig.onComplete = () => animateOnComplete();
+
+                    slotAnimation[`reel${i}Animation`].toIndex(indexReels[`indexReel${i}`], animConfig);
+                }
             }
 
 
@@ -525,11 +565,29 @@
                             });
                         }
 
-                        reel1Animation = generateReel(1, REEL_1_MAP, 34);
-                        reel2Animation = generateReel(2, REEL_2_MAP, 376);
-                        reel3Animation = generateReel(3, REEL_3_MAP, 718);
-                        reel4Animation = generateReel(4, REEL_4_MAP, 1060);
-                        reel5Animation = generateReel(5, REEL_5_MAP, 1402);
+                        let xGap;
+                        for (let i = 1; i <= REELS_X_SLOT; i++) {
+                            switch (i) {
+                                case 1:
+                                    xGap = 34;
+                                    break;
+                                case 2:
+                                    xGap = 376;
+                                    break;
+                                case 3:
+                                    xGap = 718;
+                                    break;
+                                case 4:
+                                    xGap = 1060;
+                                    break;
+                                case 5:
+                                    xGap = 1402;
+                            }
+
+                            slotAnimation[`reel${i}Animation`] = generateReel(i, SLOT_MAP[`REEL_${i}_MAP`], xGap);
+                        }
+
+
 
                         this.slotCanopy = this.add.image(this.slotBody.x + this.slotBody.displayWidth / 2, this.slotBody.y - (140 * this.slotBody.scaleX), 'slot_canopy').setOrigin(0.5, 0);
                         this.slotCanopy.setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
