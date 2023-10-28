@@ -79,6 +79,10 @@
                 reel5Animation: null
             };
 
+            let conditions = ['lose', 'fake-win', 'win', 'mega-win'];
+            // conditions multiplier
+            //const jollyWinRatio;
+
             const isGamePlaying = ref(false);
 
 
@@ -276,8 +280,6 @@
                     indexReel4: null,
                     indexReel5: null
                 }
-                let conditions = ['lose',/* 'fake-win',*/ 'win', 'mega-win'];
-                // conditions multiplier
 
                 const getRandomWinMap = ({ indexReel1, indexReel2, indexReel3, indexReel4, indexReel5 }) => {
                     // PAY TABLE => Index reel is always in the middle row before win map
@@ -375,6 +377,8 @@
                             randomNumber = getRandomNumber(0, SYMBOLS.length - 1);
                             diffIndex = Math.abs(randomNumber - whatSymbolIndexInReel);
                         }
+
+                        return randomNumber;
                     }
 
                     obj[`indexReel${checkReelIndex1}`] = getNewReelIndex(checkReelIndex1);
@@ -384,20 +388,28 @@
                 }
 
                 //const selectedCondition = conditions[getRandomNumber(0, conditions.length - 1)];
-                const selectedCondition = 'win';
+                const selectedCondition = 'fake-win';
 
                 switch (selectedCondition) {
                     case 'lose':
                         indexReels = getRandomLose(indexReels);
-
-                        console.log('LOG', indexReels)
                         break
+                    case 'fake-win':
                     case 'win':
                     case 'mega-win':
                         randomWinSymbol = selectedCondition === 'win' ? SYMBOLS[getRandomNumber(0, SYMBOLS.length - 1)] : MEGA_WIN;
 
                         for (let i = 1; i <= REELS_X_SLOT; i++) {
                             indexReels[`indexReel${i}`] = SLOT_MAP[`REEL_${i}_MAP`].indexOf(randomWinSymbol);
+                        }
+
+                        if (selectedCondition === 'fake-win') {
+                            const randomReel = getRandomNumber(1, REELS_X_SLOT);
+                            const filteredSymbols = [...SYMBOLS, MEGA_WIN].filter(el => el !== randomWinSymbol);
+                            const loseSymbol = filteredSymbols[getRandomNumber(0, filteredSymbols.length - 1)];
+                            indexReels[`indexReel${randomReel}`] = SLOT_MAP[`REEL_${randomReel}_MAP`].indexOf(loseSymbol);
+
+                            randomWinSymbol = null;
                         }
 
                         indexReels = Object.assign(getRandomWinMap(indexReels));
