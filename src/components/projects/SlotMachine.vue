@@ -37,6 +37,14 @@
     import WatermelonSpritePng from "@/assets/projects/slotmachine/image/sprite/watermelon_spritesheet.png";
     import WatermelonSpriteJson from "@/assets/projects/slotmachine/image/sprite/watermelon_spritesheet.json";
 
+    import BackgroundMusicTrack from "@/assets/projects/slotmachine/audio/sunny-fruit_strawberry.mp3";
+    import SlotClickSfx from "@/assets/projects/slotmachine/audio/slot_click.mp3";
+    import SlotTickSfx from "@/assets/projects/slotmachine/audio/slot_tick.mp3";
+    import SlotWinSfx from "@/assets/projects/slotmachine/audio/slot_win.mp3";
+    import SlotMegaWinSfx from "@/assets/projects/slotmachine/audio/slot_mega-win.mp3";
+    import SlotWinJollySfx from "@/assets/projects/slotmachine/audio/slot_win-jolly.mp3";
+    import SlotFreeSpinSfx from "@/assets/projects/slotmachine/audio/slot_free-spin.mp3";
+
     export default {
         name: "SlotMachine",
 
@@ -79,12 +87,21 @@
                 reel5Animation: null
             };
 
-            const conditions = [...Array(20).fill('lose'), ...Array(30).fill('fake-win'), ...Array(40).fill('win'), ...Array(10).fill('mega-win')];
+            const conditions = [...Array(10).fill('lose'), ...Array(15).fill('fake-win'), ...Array(45).fill('win'), ...Array(5).fill('mega-win')];
+            let selectedCondition = null;
 
-            const jollyWinRatio = [1, ...Array(4).fill(0)];
+            const jollyWinRatio = [1, ...Array(2).fill(0)]; // 1 => true, 0 => false
             let jollyRandomReel = null;
 
             const isGamePlaying = ref(false);
+
+            let backgroundMusic;
+            let slotClickFX;
+            let slotTickFX;
+            let slotWinFX;
+            let slotMegaWinFX;
+            let slotWinJollyFX;
+            let slotFreeSpinFX;
 
 
 
@@ -265,10 +282,15 @@
                     }
                     reels[`reel${i}`][`${randomWinSymbol}Sheet`].anims.play(`reel${i}-${randomWinSymbol}_animation`);
                 }
+
+                if (selectedCondition === 'mega-win') slotMegaWinFX.play();
+                else if (jollyRandomReel) slotWinJollyFX.play(); // Not playing with mega win
+                else if (selectedCondition === 'win') slotWinFX.play(); // Not playing with jolly
             }
 
             const spin = () => {
                 isGamePlaying.value = true;
+                slotClickFX.play();
 
                 if (randomWinSymbol) {
                     for (let i = 1; i <= REELS_X_SLOT; i++) {
@@ -398,7 +420,7 @@
                     return obj;
                 }
 
-                const selectedCondition = conditions[getRandomNumber(0, conditions.length - 1)];
+                selectedCondition = conditions[getRandomNumber(0, conditions.length - 1)];
 
                 switch (selectedCondition) {
                     case 'lose':
@@ -425,7 +447,7 @@
                         if (selectedCondition !== 'fake-win') {
                             const jollyCondition = jollyWinRatio[getRandomNumber(0, jollyWinRatio.length -1)];
 
-                            if (jollyCondition === 1) {
+                            if (jollyCondition) {
                                 jollyRandomReel = getRandomNumber(1, REELS_X_SLOT);
                                 indexReels[`indexReel${jollyRandomReel}`] = SLOT_MAP[`REEL_${jollyRandomReel}_MAP`].indexOf(JOLLY);
                             }
@@ -460,7 +482,10 @@
                     }
 
                     const animConfig = { duration: parseFloat((newAnimDuration + animDelay).toFixed(2)), revolutions: newAnimRevolutions, ease: 'power2.inOut' };
-                    if (i === 5) animConfig.onComplete = () => animateOnComplete();
+                    animConfig.onComplete = () => {
+                        slotTickFX.play();
+                        if (i === 5) animateOnComplete();
+                    }
 
                     slotAnimation[`reel${i}Animation`].toIndex(indexReels[`indexReel${i}`], animConfig);
                 }
@@ -497,6 +522,14 @@
                         this.load.atlas('lemon_sprite', LemonSpritePng, LemonSpriteJson);
                         this.load.atlas('splash_sprite', SplashSpritePng, SplashSpriteJson);
                         this.load.atlas('watermelon_sprite', WatermelonSpritePng, WatermelonSpriteJson);
+
+                        this.load.audio('background_music', BackgroundMusicTrack);
+                        this.load.audio('slot-click_sfx', SlotClickSfx);
+                        this.load.audio('slot-tick_sfx', SlotTickSfx);
+                        this.load.audio('slot-win_sfx', SlotWinSfx);
+                        this.load.audio('slot-mega-win_sfx', SlotMegaWinSfx);
+                        this.load.audio('slot-win-jolly_sfx', SlotWinJollySfx);
+                        this.load.audio('slot-free-spin_sfx', SlotFreeSpinSfx);
                     }
 
                     create() {
@@ -543,6 +576,8 @@
                             this.characterMain.anims.pause();
                             this.characterDrink.visible = true;
                             this.characterDrink.anims.play('character-drink_animation');
+
+                            backgroundMusic.play();
                         });
                         this.characterDrink.setInteractive();
                         this.characterDrink.on('pointerdown', () => {
@@ -624,6 +659,17 @@
                         this.slotCanopy.setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
                         this.slotLogo = this.add.image(this.slotBody.x + this.slotBody.displayWidth / 2, this.slotBody.y - (190 * this.slotBody.scaleX), 'slot_logo').setOrigin(0.5, 0);
                         this.slotLogo.setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
+
+
+
+                        backgroundMusic = this.sound.add('background_music', { volume: 0.6, loop: true });
+
+                        slotClickFX = this.sound.add('slot-click_sfx', { volume: 0.8 });
+                        slotTickFX = this.sound.add('slot-tick_sfx');
+                        slotWinFX = this.sound.add('slot-win_sfx');
+                        slotMegaWinFX = this.sound.add('slot-mega-win_sfx');
+                        slotWinJollyFX = this.sound.add('slot-win-jolly_sfx');
+                        slotFreeSpinFX = this.sound.add('slot-free-spin_sfx');
                     }
 
                     /*update() {
