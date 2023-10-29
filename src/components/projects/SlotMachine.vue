@@ -71,6 +71,7 @@
             const loaderProgress = ref('0');
             const isLoadingComplete = ref(false);
             const loaderBtnRef = ref(null);
+            const SLOT_FONT = 'Rimbo-Regular';
 
             const canvasRef = ref(null);
             const ANIMATION_FPS = 24;
@@ -271,6 +272,13 @@
                         this.slotMinusUI;
                         this.slotPlusUI;
                         this.slotWinUI;
+
+                        this.slotWinLabel;
+                        this.slotWinValue;
+                        this.slotAutoLabel;
+                        this.slotSpinLabel;
+                        this.slotBetLabel;
+                        this.slotBetValue;
                     }
 
                     preload() {
@@ -464,6 +472,10 @@
                         this.slotWinUI.setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
                         this.slotWinUI.setPosition(canvasRef.value.offsetWidth / 2, canvasRef.value.offsetHeight - this.slotWinUI.displayHeight - (50 * this.slotBody.scaleX));
 
+                        this.slotWinLabel = this.add.text(this.slotWinUI.x, this.slotWinUI.y + (12 * this.slotBody.scaleX), 'win', { fontFamily: SLOT_FONT, fontSize: 30, color: '#ffffff' }).setOrigin(0.5, 0);
+                        this.slotWinValue = this.add.text(this.slotWinUI.x, this.slotWinUI.y + (94 * this.slotBody.scaleX), '1000', { fontFamily: SLOT_FONT, fontSize: 60, color: '#ffffff' }).setOrigin(0.5, 0);
+
+
                         this.slotAutoUI = this.add.image(0, 0, 'slot-auto_ui').setOrigin(0.5, 0);
                         this.slotAutoUI.setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
                         this.slotAutoUI.setPosition(this.slotWinUI.x + (550 * this.slotBody.scaleX), canvasRef.value.offsetHeight - this.slotAutoUI.displayHeight - (50 * this.slotBody.scaleX));
@@ -471,6 +483,10 @@
                         this.slotSpinUI = this.add.image(0, 0, 'slot-spin_ui').setOrigin(0.5, 0);
                         this.slotSpinUI.setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
                         this.slotSpinUI.setPosition(this.slotWinUI.x + (840 * this.slotBody.scaleX), canvasRef.value.offsetHeight - this.slotSpinUI.displayHeight - (50 * this.slotBody.scaleX));
+
+                        this.slotAutoLabel = this.add.text(this.slotAutoUI.x, this.slotAutoUI.y + (66 * this.slotBody.scaleX), 'auto', { fontFamily: SLOT_FONT, fontSize: 20, color: '#ffffff' }).setOrigin(0.5, 0);
+                        this.slotSpinLabel = this.add.text(this.slotSpinUI.x, this.slotSpinUI.y + (40 * this.slotBody.scaleX), 'spin', { fontFamily: SLOT_FONT, fontSize: 50, color: '#ffffff' }).setOrigin(0.5, 0);
+
 
                         this.slotPlusUI = this.add.image(0, 0, 'slot-plus_ui').setOrigin(0.5, 0);
                         this.slotPlusUI.setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
@@ -483,6 +499,11 @@
                         this.slotMinusUI = this.add.image(0, 0, 'slot-minus_ui').setOrigin(0.5, 0);
                         this.slotMinusUI.setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
                         this.slotMinusUI.setPosition(this.slotWinUI.x - (1040 * this.slotBody.scaleX), canvasRef.value.offsetHeight - this.slotMinusUI.displayHeight - (50 * this.slotBody.scaleX));
+
+                        this.slotBetLabel = this.add.text(this.slotBetUI.x, this.slotBetUI.y + (10 * this.slotBody.scaleX), 'bet', { fontFamily: SLOT_FONT, fontSize: 30, color: '#ffffff' }).setOrigin(0.5, 0);
+                        this.slotBetValue = this.add.text(this.slotBetUI.x, this.slotBetUI.y + (86 * this.slotBody.scaleX), '100', { fontFamily: SLOT_FONT, fontSize: 30, color: '#ffffff' }).setOrigin(0.5, 0);
+
+
                     }
 
                     /*update() {
