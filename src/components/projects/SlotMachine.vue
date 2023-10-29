@@ -670,6 +670,11 @@
                         slotMegaWinFX = this.sound.add('slot-mega-win_sfx');
                         slotWinJollyFX = this.sound.add('slot-win-jolly_sfx');
                         slotFreeSpinFX = this.sound.add('slot-free-spin_sfx');
+
+                        this.input.keyboard.on('keyup-SPACE', () => {
+                            if (isGamePlaying.value) return;
+                            spin();
+                        });
                     }
 
                     /*update() {
