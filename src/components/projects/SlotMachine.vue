@@ -2,14 +2,24 @@
     <div id="slot-machine">
         <canvas ref="canvasRef"></canvas>
         <i id="play-btn" :class="['fas fa-play', { 'disabled': isGamePlaying }]" @click="!isGamePlaying ? spin() : undefined"></i>
+
+        <div v-if="isLoadingScreenActive" id="slot-machine_loader" class="d-flex column justify-ctr align-ctr">
+            <img id="logo-full" src="@/assets/projects/slotmachine/image/main/logo_full.png" alt="Fruit Cocktail" />
+            
+            <div id="loader-btn" :class="{ 'complete pointer': isLoadingComplete }" ref="loaderBtnRef">{{ !isLoadingComplete ? 'loading' : 'enter' }}</div>
+
+            <div id="progress-bar-container">
+                <div id="progress-bar" :style="`width: ${loaderProgress}%`"></div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
     import { ref, onMounted } from "vue";
     import Phaser from "phaser";
-    import { gsap } from "gsap";
-    import { getRandomNumber } from "@/assets/js/utils.js"
+    import { isDeviceMobile, getRandomNumber } from "@/assets/js/utils.js";
+    import { verticalLoop, getRandomWinMap, getRandomLose } from "@/assets/projects/slotmachine/js/slotmachine.js";
 
     import SlotBodyImage from "@/assets/projects/slotmachine/image/main/reel.png";
     import SlotCanopyImage from "@/assets/projects/slotmachine/image/main/canopy.png";
@@ -49,8 +59,11 @@
         name: "SlotMachine",
 
         setup() {
-            // RandomNumberGenerator
-            // ReturnToPlayer
+            const isMobile = isDeviceMobile();
+            const isLoadingScreenActive = ref(true);
+            const loaderProgress = ref('0');
+            const isLoadingComplete = ref(false);
+            const loaderBtnRef = ref(null);
 
             const canvasRef = ref(null);
             const ANIMATION_FPS = 24;
@@ -105,171 +118,6 @@
 
 
 
-            const verticalLoop = (items, reelContainer, elementsHeightWrap, config) => {
-                items = gsap.utils.toArray(items);
-                config = config || {};
-                let onChange = config.onChange,
-                    lastIndex = 0,
-                    tl = gsap.timeline({
-                        repeat: config.repeat,
-                        onUpdate:
-                            onChange &&
-                            function () {
-                                let i = tl.closestIndex();
-                                if (lastIndex !== i) {
-                                    lastIndex = i;
-                                    onChange(items[i], i);
-                                }
-                            },
-                        paused: config.paused,
-                        defaults: { ease: "none" },
-                        onReverseComplete: () =>
-                            tl.totalTime(tl.rawTime() + tl.duration() * 100),
-                    }),
-                    length = items.length,
-                    startY = items[REEL_LENGTH - 1].y,
-                    times = [],
-                    heights = [],
-                    curIndex = 0,
-                    center = config.center,
-                    clone = (obj) => {
-                        let result = {},
-                            p;
-                        for (p in obj) {
-                            result[p] = obj[p];
-                        }
-                        return result;
-                    },
-                    timeOffset = 0,
-                    container = reelContainer,
-                    totalHeight = 0,
-                    populateHeights = () => {
-                        items.forEach((el, i) => {
-                            heights[i] = el.displayHeight - elementsHeightWrap[i];
-                            totalHeight += heights[i];
-                        });
-                    },
-                    timeWrap,
-                    populateOffsets = () => {
-                        timeOffset = center
-                            ? (tl.duration() * (container.width / 2)) /
-                              totalHeight
-                            : 0;
-                        center &&
-                            times.forEach((t, i) => {
-                                times[i] = timeWrap(
-                                    tl.labels["label" + i] +
-                                        (tl.duration() * heights[i]) /
-                                            2 /
-                                            totalHeight -
-                                        timeOffset
-                                );
-                            });
-                    },
-                    getClosest = (values, value, wrap) => {
-                        let i = values.length,
-                            closest = 1e10,
-                            index = 0,
-                            d;
-                        while (i--) {
-                            d = Math.abs(values[i] - value);
-                            if (d > wrap / 2) {
-                                d = wrap - d;
-                            }
-                            if (d < closest) {
-                                closest = d;
-                                index = i;
-                            }
-                        }
-                        return index;
-                    },
-                    populateTimeline = () => {
-                        let i, item, curY, distanceToStart, distanceToLoop;
-                        tl.clear();
-                        for (i = 0; i < length; i++) {
-                            item = items[i];
-                            curY = item.y;
-                            distanceToStart = startY - curY;
-                            distanceToLoop = distanceToStart;
-                            tl.to(
-                                item,
-                                {
-                                    y: curY + distanceToLoop,
-                                    duration: distanceToLoop
-                                },
-                                0
-                            )
-                            .fromTo(
-                                item,
-                                {
-                                    y: curY + distanceToLoop - totalHeight
-                                },
-                                {
-                                    y: curY,
-                                    duration: totalHeight - distanceToLoop,
-                                    immediateRender: false,
-                                },
-                                distanceToLoop
-                            )
-                            .add(
-                                "label" + i,
-                                distanceToStart
-                            );
-                            timeWrap = gsap.utils.wrap(0, tl.duration());
-                            times[i] = timeWrap(
-                                    tl.labels["label" + i] +
-                                        (tl.duration() * heights[i]) /
-                                            2 /
-                                            totalHeight -
-                                        timeOffset
-                                );
-                        }
-                        
-                    };
-                populateHeights();
-                populateTimeline();
-                populateOffsets();
-                function toIndex(index, vars) {
-                    vars = clone(vars);
-                    index -= 2; // End gap => show selected index on middle row
-                    let newIndex = gsap.utils.wrap(0, length, index),
-                        time = times[newIndex];
-                    if (time > tl.time() !== index > curIndex) {
-                        time += tl.duration() * (index > curIndex ? 1 : -1);
-                    }
-                    if (vars.revolutions) {
-                        time += tl.duration() * Math.round(vars.revolutions);
-                        delete vars.revolutions;
-                    }
-                    if (time < 0 || time > tl.duration()) {
-                        vars.modifiers = { time: timeWrap };
-                    }
-                    curIndex = newIndex;
-                    vars.overwrite = true;
-                    return tl.tweenTo(time, vars);
-                }
-                tl.elements = items;
-                tl.next = (vars) => toIndex(curIndex + 1, vars);
-                tl.previous = (vars) => toIndex(curIndex - 1, vars);
-                tl.current = () => curIndex;
-                tl.toIndex = (index, vars) => toIndex(index, vars);
-                tl.closestIndex = (setCurrent) => {
-                    let index = getClosest(times, tl.time(), tl.duration());
-                    setCurrent && (curIndex = index);
-                    return index;
-                };
-                tl.times = times;
-                tl.progress(1, true).progress(0, true); // pre-render for performance
-                if (config.reversed) {
-                    tl.vars.onReverseComplete();
-                    tl.reverse();
-                }
-                tl.closestIndex(true);
-                onChange && onChange(items[curIndex], curIndex);
-
-                return tl;
-            }
-
             const animateOnComplete = () => {
                 isGamePlaying.value = false;
 
@@ -289,6 +137,9 @@
             }
 
             const spin = () => {
+                // ReturnToPlayer
+                // RandomNumberGenerator
+
                 isGamePlaying.value = true;
                 slotClickFX.play();
 
@@ -314,117 +165,11 @@
                     indexReel5: null
                 }
 
-                const getRandomWinMap = ({ indexReel1, indexReel2, indexReel3, indexReel4, indexReel5 }) => {
-                    // PAY TABLE => index reel is always in the middle row before win map
-                    const maps = [
-                        {
-                            indexReel1: indexReel1 - 1,
-                            indexReel2: indexReel2 - 1,
-                            indexReel3: indexReel3,
-                            indexReel4: indexReel4 - 1,
-                            indexReel5: indexReel5 - 1
-                        },
-                        {
-                            indexReel1: indexReel1 + 1,
-                            indexReel2: indexReel2 + 1,
-                            indexReel3: indexReel3,
-                            indexReel4: indexReel4 + 1,
-                            indexReel5: indexReel5 + 1
-                        },
-                        {
-                            indexReel1: indexReel1,
-                            indexReel2: indexReel2 - 1,
-                            indexReel3: indexReel3 - 1,
-                            indexReel4: indexReel4 - 1,
-                            indexReel5: indexReel5
-                        },
-                        {
-                            indexReel1: indexReel1,
-                            indexReel2: indexReel2 + 1,
-                            indexReel3: indexReel3 + 1,
-                            indexReel4: indexReel4 + 1,
-                            indexReel5: indexReel5
-                        },
-                        {
-                            indexReel1: indexReel1 - 1,
-                            indexReel2: indexReel2 - 1,
-                            indexReel3: indexReel3 - 1,
-                            indexReel4: indexReel4 - 1,
-                            indexReel5: indexReel5 - 1
-                        },
-                        {
-                            indexReel1: indexReel1,
-                            indexReel2: indexReel2,
-                            indexReel3: indexReel3,
-                            indexReel4: indexReel4,
-                            indexReel5: indexReel5
-                        },
-                        {
-                            indexReel1: indexReel1 + 1,
-                            indexReel2: indexReel2 + 1,
-                            indexReel3: indexReel3 + 1,
-                            indexReel4: indexReel4 + 1,
-                            indexReel5: indexReel5 + 1
-                        },
-                        {
-                            indexReel1: indexReel1 - 1,
-                            indexReel2: indexReel2,
-                            indexReel3: indexReel3 + 1,
-                            indexReel4: indexReel4,
-                            indexReel5: indexReel5 - 1
-                        },
-                        {
-                            indexReel1: indexReel1 + 1,
-                            indexReel2: indexReel2,
-                            indexReel3: indexReel3 - 1,
-                            indexReel4: indexReel4,
-                            indexReel5: indexReel5 + 1
-                        }
-                    ];
-
-                    const random = getRandomNumber(0, maps.length - 1);
-                    return maps[random];
-                }
-
-                const getRandomLose = (indexReels) => {
-                    const obj = Object.assign(indexReels);
-
-                    for (let i = 1; i <= REELS_X_SLOT; i++) {
-                        obj[`indexReel${i}`] = getRandomNumber(0, SYMBOLS.length - 1);
-                    }
-
-                    // Need to verify at least 2 random reels, starting from reel number 2
-                    const checkReelIndex1 = getRandomNumber(2, REELS_X_SLOT);
-                    let checkReelIndex2;
-                    do checkReelIndex2 = getRandomNumber(2, REELS_X_SLOT);
-                    while (checkReelIndex1 === checkReelIndex2);
-
-                    const getNewReelIndex = (id) => {
-                        const symbolReel1 = SLOT_MAP.REEL_1_MAP[obj.indexReel1];
-                        let randomNumber = getRandomNumber(0, SYMBOLS.length - 1);
-                        const whatSymbolIndexInReel = SLOT_MAP[`REEL_${id}_MAP`].indexOf(symbolReel1);
-                        let diffIndex = Math.abs(randomNumber - whatSymbolIndexInReel);
-
-                        // Get out of win map
-                        while (diffIndex <= 1) {
-                            randomNumber = getRandomNumber(0, SYMBOLS.length - 1);
-                            diffIndex = Math.abs(randomNumber - whatSymbolIndexInReel);
-                        }
-
-                        return randomNumber;
-                    }
-
-                    obj[`indexReel${checkReelIndex1}`] = getNewReelIndex(checkReelIndex1);
-                    obj[`indexReel${checkReelIndex2}`] = getNewReelIndex(checkReelIndex2);
-
-                    return obj;
-                }
-
                 selectedCondition = conditions[getRandomNumber(0, conditions.length - 1)];
 
                 switch (selectedCondition) {
                     case 'lose':
-                        indexReels = getRandomLose(indexReels);
+                        indexReels = getRandomLose(indexReels, REELS_X_SLOT, SYMBOLS, SLOT_MAP);
                         break
                     case 'fake-win':
                     case 'win':
@@ -507,6 +252,21 @@
                     }
 
                     preload() {
+                        this.input.enabled = false;
+                        this.input.keyboard.enabled = false;
+                        this.load.on('progress', (value) => {
+                            loaderProgress.value = (value * 100).toFixed(2);
+                        });
+                        this.load.on('complete', () => {
+                            isLoadingComplete.value = true;
+                            loaderBtnRef.value.addEventListener('click', () => {
+                                isLoadingScreenActive.value = false;
+                                this.input.enabled = true;
+                                this.input.keyboard.enabled = true;
+                                backgroundMusic.play();
+                            });
+                        });
+
                         this.load.image('slot_body', SlotBodyImage);
                         this.load.image('slot_canopy', SlotCanopyImage);
                         this.load.image('slot_logo', SlotLogoImage);
@@ -534,21 +294,12 @@
 
                     create() {
                         this.slotBody = this.add.image(0, 0, 'slot_body').setOrigin(0, 0);
-
                         const ratio = this.slotBody.height / this.slotBody.width;
-                        this.slotBody.displayWidth =
-                            (canvasRef.value.offsetWidth * 50) / 100;
-                        this.slotBody.displayHeight =
-                            this.slotBody.displayWidth * ratio * 0.955;
+                        this.slotBody.displayWidth = isMobile ? (canvasRef.value.offsetWidth * 90) / 100 : (canvasRef.value.offsetWidth * 50) / 100;
+                        this.slotBody.displayHeight = this.slotBody.displayWidth * ratio * 0.955;
+                        this.slotBody.setPosition(canvasRef.value.offsetWidth / 2 - this.slotBody.displayWidth / 2, canvasRef.value.offsetHeight / 2 - this.slotBody.displayHeight / 2);
 
-                        this.slotBody.setPosition(
-                            canvasRef.value.offsetWidth / 2 -
-                                this.slotBody.displayWidth / 2,
-                            canvasRef.value.offsetHeight / 2 -
-                                this.slotBody.displayHeight / 2
-                        );
-
-                        this.characterDrink = this.add.sprite(0, 0, 'character-main_sprite', 'character-main-animation_01.png').setOrigin(0, 0);
+                        this.characterDrink = this.add.sprite(0, 0, 'character-drink_sprite', 'character-drink-animation_01.png').setOrigin(0, 0);
                         this.characterDrink.visible = false;
                         this.characterDrink.setScale(1.25 * this.slotBody.scaleX, 1.25 * this.slotBody.scaleX);
                         this.characterDrink.setPosition(canvasRef.value.offsetWidth - this.characterDrink.displayWidth - (40 * this.slotBody.scaleX), canvasRef.value.offsetHeight - this.characterDrink.displayHeight - (105 * this.slotBody.scaleX));
@@ -559,12 +310,13 @@
                             repeat: -1
                         });
 
+                        // TODO su mobile è troppo grande lo sprite......
                         this.characterMain = this.add.sprite(0, 0, 'character-main_sprite', 'character-main-animation_01.png').setOrigin(0, 0);
                         this.characterMain.setScale(1.25 * this.slotBody.scaleX, 1.25 * this.slotBody.scaleX);
                         this.characterMain.setPosition(canvasRef.value.offsetWidth - this.characterMain.displayWidth - (75 * this.slotBody.scaleX), canvasRef.value.offsetHeight - this.characterMain.displayHeight - (45 * this.slotBody.scaleX));
                         this.anims.create({
                             key: 'character-main_animation',
-                            frames: this.anims.generateFrameNames('character-main_sprite', { start: 1, end: 80, zeroPad: 2, prefix: 'character-main-animation_', suffix: '.png' }),
+                            frames: this.anims.generateFrameNames('character-main_sprite', { start: 1, end: 40, zeroPad: 2, prefix: 'character-main-animation_', suffix: '.png' }),
                             frameRate: ANIMATION_FPS,
                             repeat: -1
                         });
@@ -576,8 +328,6 @@
                             this.characterMain.anims.pause();
                             this.characterDrink.visible = true;
                             this.characterDrink.anims.play('character-drink_animation');
-
-                            backgroundMusic.play();
                         });
                         this.characterDrink.setInteractive();
                         this.characterDrink.on('pointerdown', () => {
@@ -662,9 +412,9 @@
 
 
 
-                        backgroundMusic = this.sound.add('background_music', { volume: 0.6, loop: true });
+                        backgroundMusic = this.sound.add('background_music', { volume: 0.4, loop: true });
 
-                        slotClickFX = this.sound.add('slot-click_sfx', { volume: 0.8 });
+                        slotClickFX = this.sound.add('slot-click_sfx', { volume: 0.6 });
                         slotTickFX = this.sound.add('slot-tick_sfx');
                         slotWinFX = this.sound.add('slot-win_sfx');
                         slotMegaWinFX = this.sound.add('slot-mega-win_sfx');
@@ -700,6 +450,10 @@
             });
 
             return {
+                isLoadingScreenActive,
+                loaderProgress,
+                isLoadingComplete,
+                loaderBtnRef,
                 canvasRef,
                 isGamePlaying,
                 spin
@@ -709,7 +463,14 @@
 </script>
 
 <style scoped>
+    @font-face {
+        font-family: Rimbo-Regular;
+        src: url("@/assets/font/Rimbo-Regular.ttf") format('truetype');
+    }
     #slot-machine {
+        font-family: Rimbo-Regular, 'Ubuntu', sans-serif;
+        color: #ffffff;
+        text-shadow: 5px 5px 10px #000000;
         width: 100%;
         height: 100dvh;
         position: relative;
@@ -723,6 +484,7 @@
         width: 100%;
         height: 100%;
     }
+
     #play-btn {
         position: absolute;
         bottom: 50px;
@@ -739,5 +501,57 @@
     #play-btn.disabled {
         opacity: 0.8;
         cursor: auto;
+    }
+
+    #slot-machine_loader {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: 999;
+
+        background-image: url("@/assets/projects/slotmachine/image/main/back.png");
+        background-repeat: no-repeat;
+        background-position: right bottom;
+        background-size: cover;
+    }
+
+    #logo-full {
+        width: calc(100% / 3);
+    }
+    #loader-btn {
+        color: #be0100;
+        font-size: 50px;
+        margin: 25px 0;
+        padding: 25px;
+        border: 5px solid transparent;
+        border-radius: 15px;
+        transition: all 0.2s ease-in-out;
+    }
+    #loader-btn.complete {
+        color: #ffffff;
+        background-color: rgba(190, 0, 0, 1);
+        border-color: #be0100;
+    }
+    #loader-btn.complete:hover {
+        background-color: rgba(190, 0, 0, 0.8);
+    }
+    #progress-bar-container {
+        width: 50%;
+        height: 40px;
+        border: 4px solid #be0100;
+        background-color: #f36300;
+        border-radius: calc(15px + 4px);
+        padding: 4px;
+        overflow: hidden;
+    }
+    #progress-bar {
+        width: 0;
+        height: 100%;
+        background: rgb(254, 205, 0);
+        background: linear-gradient(90deg, rgba(254, 205, 0, 1) 0%, rgba(255, 255, 255, 1) 100%);
+        border-radius: 15px;
+        transition: width 0.2s ease-in-out;
     }
 </style>
