@@ -302,7 +302,7 @@
                         this.characterDrink = this.add.sprite(0, 0, 'character-drink_sprite', 'character-drink-animation_01.png').setOrigin(0, 0);
                         this.characterDrink.visible = false;
                         this.characterDrink.setScale(1.25 * this.slotBody.scaleX, 1.25 * this.slotBody.scaleX);
-                        this.characterDrink.setPosition(canvasRef.value.offsetWidth - this.characterDrink.displayWidth - (40 * this.slotBody.scaleX), canvasRef.value.offsetHeight - this.characterDrink.displayHeight - (105 * this.slotBody.scaleX));
+                        this.characterDrink.setPosition(canvasRef.value.offsetWidth - this.characterDrink.displayWidth - (40 * this.slotBody.scaleX), canvasRef.value.offsetHeight - this.characterDrink.displayHeight - (45 * this.slotBody.scaleX));
                         this.anims.create({
                             key: 'character-drink_animation',
                             frames: this.anims.generateFrameNames('character-drink_sprite', { start: 1, end: 40, zeroPad: 2, prefix: 'character-drink-animation_', suffix: '.png' }),
@@ -310,14 +310,13 @@
                             repeat: -1
                         });
 
-                        // TODO su mobile è troppo grande lo sprite......
                         this.characterMain = this.add.sprite(0, 0, 'character-main_sprite', 'character-main-animation_01.png').setOrigin(0, 0);
                         this.characterMain.setScale(1.25 * this.slotBody.scaleX, 1.25 * this.slotBody.scaleX);
-                        this.characterMain.setPosition(canvasRef.value.offsetWidth - this.characterMain.displayWidth - (75 * this.slotBody.scaleX), canvasRef.value.offsetHeight - this.characterMain.displayHeight - (45 * this.slotBody.scaleX));
+                        this.characterMain.setPosition(canvasRef.value.offsetWidth - this.characterMain.displayWidth - (80 * this.slotBody.scaleX), canvasRef.value.offsetHeight - this.characterMain.displayHeight - (45 * this.slotBody.scaleX));
                         this.anims.create({
                             key: 'character-main_animation',
                             frames: this.anims.generateFrameNames('character-main_sprite', { start: 1, end: 40, zeroPad: 2, prefix: 'character-main-animation_', suffix: '.png' }),
-                            frameRate: ANIMATION_FPS,
+                            frameRate: ANIMATION_FPS / 1.5,
                             repeat: -1
                         });
                         this.characterMain.anims.play('character-main_animation');
