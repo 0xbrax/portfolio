@@ -3,7 +3,7 @@
         <canvas ref="canvasRef"></canvas>
         <i id="play-btn" :class="['fas fa-play', { 'disabled': isGamePlaying }]" @click="!isGamePlaying ? spin() : undefined"></i>
 
-        <div v-if="isLoadingScreenActive" id="slot-machine_loader" class="d-flex column justify-ctr align-ctr">
+        <!--<div v-if="isLoadingScreenActive" id="slot-machine_loader" class="d-flex column justify-ctr align-ctr">
             <img id="logo-full" src="@/assets/projects/slotmachine/image/main/logo_full.png" alt="Fruit Cocktail" />
             
             <div id="loader-btn" :class="{ 'complete pointer': isLoadingComplete }" ref="loaderBtnRef">{{ !isLoadingComplete ? 'loading' : 'enter' }}</div>
@@ -11,7 +11,7 @@
             <div id="progress-bar-container">
                 <div id="progress-bar" :style="`width: ${loaderProgress}%`"></div>
             </div>
-        </div>
+        </div>-->
     </div>
 </template>
 
@@ -54,6 +54,13 @@
     import SlotMegaWinSfx from "@/assets/projects/slotmachine/audio/slot_mega-win.mp3";
     import SlotWinJollySfx from "@/assets/projects/slotmachine/audio/slot_win-jolly.mp3";
     import SlotFreeSpinSfx from "@/assets/projects/slotmachine/audio/slot_free-spin.mp3";
+
+    import SpinUI from "@/assets/projects/slotmachine/image/main/ui_spin.png";
+    import AutoUI from "@/assets/projects/slotmachine/image/main/ui_auto.png";
+    import BetUI from "@/assets/projects/slotmachine/image/main/ui_bet.png";
+    import MinusUI from "@/assets/projects/slotmachine/image/main/ui_minus.png";
+    import PlusUI from "@/assets/projects/slotmachine/image/main/ui_plus.png";
+    import WinUI from "@/assets/projects/slotmachine/image/main/ui_win.png";
 
     export default {
         name: "SlotMachine",
@@ -239,6 +246,14 @@
 
 
             onMounted(() => {
+                /*const onWindowResize = () => {
+                    canvasRef.width = window.innerWidth;
+                    canvasRef.height = window.innerHeight;
+                };
+                window.addEventListener('resize', onWindowResize);*/
+
+
+
                 class GameScene extends Phaser.Scene {
                     constructor() {
                         super({ key: 'gameScene' });
@@ -249,10 +264,17 @@
 
                         this.characterMain;
                         this.characterDrink;
+
+                        this.slotSpinUI;
+                        this.slotAutoUI;
+                        this.slotBetUI;
+                        this.slotMinusUI;
+                        this.slotPlusUI;
+                        this.slotWinUI;
                     }
 
                     preload() {
-                        this.input.enabled = false;
+                        /*this.input.enabled = false;
                         this.input.keyboard.enabled = false;
                         this.load.on('progress', (value) => {
                             loaderProgress.value = (value * 100).toFixed(2);
@@ -265,7 +287,7 @@
                                 this.input.keyboard.enabled = true;
                                 backgroundMusic.play();
                             });
-                        });
+                        });*/
 
                         this.load.image('slot_body', SlotBodyImage);
                         this.load.image('slot_canopy', SlotCanopyImage);
@@ -290,12 +312,20 @@
                         this.load.audio('slot-mega-win_sfx', SlotMegaWinSfx);
                         this.load.audio('slot-win-jolly_sfx', SlotWinJollySfx);
                         this.load.audio('slot-free-spin_sfx', SlotFreeSpinSfx);
+
+                        this.load.image('slot-spin_ui', SpinUI);
+                        this.load.image('slot-auto_ui', AutoUI);
+                        this.load.image('slot-bet_ui', BetUI);
+                        this.load.image('slot-minus_ui', MinusUI);
+                        this.load.image('slot-plus_ui', PlusUI);
+                        this.load.image('slot-win_ui', WinUI);
                     }
 
                     create() {
+                        // Slot elements
                         this.slotBody = this.add.image(0, 0, 'slot_body').setOrigin(0, 0);
                         const ratio = this.slotBody.height / this.slotBody.width;
-                        this.slotBody.displayWidth = isMobile ? (canvasRef.value.offsetWidth * 90) / 100 : (canvasRef.value.offsetWidth * 50) / 100;
+                        this.slotBody.displayWidth = isMobile ? (canvasRef.value.offsetWidth * 90) / 100 : (canvasRef.value.offsetWidth * 60) / 100;
                         this.slotBody.displayHeight = this.slotBody.displayWidth * ratio * 0.955;
                         this.slotBody.setPosition(canvasRef.value.offsetWidth / 2 - this.slotBody.displayWidth / 2, canvasRef.value.offsetHeight / 2 - this.slotBody.displayHeight / 2);
 
@@ -404,6 +434,7 @@
 
 
 
+                        // Slot elements
                         this.slotCanopy = this.add.image(this.slotBody.x + this.slotBody.displayWidth / 2, this.slotBody.y - (140 * this.slotBody.scaleX), 'slot_canopy').setOrigin(0.5, 0);
                         this.slotCanopy.setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
                         this.slotLogo = this.add.image(this.slotBody.x + this.slotBody.displayWidth / 2, this.slotBody.y - (190 * this.slotBody.scaleX), 'slot_logo').setOrigin(0.5, 0);
@@ -411,6 +442,7 @@
 
 
 
+                        // Audio
                         backgroundMusic = this.sound.add('background_music', { volume: 0.4, loop: true });
 
                         slotClickFX = this.sound.add('slot-click_sfx', { volume: 0.6 });
@@ -424,6 +456,33 @@
                             if (isGamePlaying.value) return;
                             spin();
                         });
+
+
+
+                        // UI/UX
+                        this.slotWinUI = this.add.image(0, 0, 'slot-win_ui').setOrigin(0.5, 0);
+                        this.slotWinUI.setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
+                        this.slotWinUI.setPosition(canvasRef.value.offsetWidth / 2, canvasRef.value.offsetHeight - this.slotWinUI.displayHeight - (50 * this.slotBody.scaleX));
+
+                        this.slotAutoUI = this.add.image(0, 0, 'slot-auto_ui').setOrigin(0.5, 0);
+                        this.slotAutoUI.setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
+                        this.slotAutoUI.setPosition(this.slotWinUI.x + (550 * this.slotBody.scaleX), canvasRef.value.offsetHeight - this.slotAutoUI.displayHeight - (50 * this.slotBody.scaleX));
+
+                        this.slotSpinUI = this.add.image(0, 0, 'slot-spin_ui').setOrigin(0.5, 0);
+                        this.slotSpinUI.setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
+                        this.slotSpinUI.setPosition(this.slotWinUI.x + (840 * this.slotBody.scaleX), canvasRef.value.offsetHeight - this.slotSpinUI.displayHeight - (50 * this.slotBody.scaleX));
+
+                        this.slotPlusUI = this.add.image(0, 0, 'slot-plus_ui').setOrigin(0.5, 0);
+                        this.slotPlusUI.setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
+                        this.slotPlusUI.setPosition(this.slotWinUI.x - (520 * this.slotBody.scaleX), canvasRef.value.offsetHeight - this.slotPlusUI.displayHeight - (50 * this.slotBody.scaleX));
+
+                        this.slotBetUI = this.add.image(0, 0, 'slot-bet_ui').setOrigin(0.5, 0);
+                        this.slotBetUI.setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
+                        this.slotBetUI.setPosition(this.slotWinUI.x - (780 * this.slotBody.scaleX), canvasRef.value.offsetHeight - this.slotBetUI.displayHeight - (50 * this.slotBody.scaleX));
+
+                        this.slotMinusUI = this.add.image(0, 0, 'slot-minus_ui').setOrigin(0.5, 0);
+                        this.slotMinusUI.setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
+                        this.slotMinusUI.setPosition(this.slotWinUI.x - (1040 * this.slotBody.scaleX), canvasRef.value.offsetHeight - this.slotMinusUI.displayHeight - (50 * this.slotBody.scaleX));
                     }
 
                     /*update() {
