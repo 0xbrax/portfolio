@@ -137,7 +137,7 @@
                     constructor() {
                         super({ key: 'gameScene' });
 
-                        this.TEXT_STYLE = { fontFamily: SLOT_FONT, color: '#ffffff' };
+                        this.TEXT_STYLE = { fontFamily: SLOT_FONT, color: '#ffffff', resolution: 2 };
 
                         this.slotBody;
                         this.slotCanopy;
@@ -362,10 +362,10 @@
                         // UI/UX
                         const UI_BOTTOM_DISTANCE = 5;
                         this.TEXT_STYLE.shadow = {
-                            offsetX: 5 * this.slotBody.scaleX,
-                            offsetY: 5 * this.slotBody.scaleX,
+                            offsetX: 15 * this.slotBody.scaleX,
+                            offsetY: 15 * this.slotBody.scaleX,
                             color: '#000000',
-                            blur: 10 * this.slotBody.scaleX,
+                            blur: 20 * this.slotBody.scaleX,
                             fill: true,
                             fillAlpha: 1
                         };
@@ -415,45 +415,47 @@
 
                         // Mobile
                         if (isMobile) {
-                            this.characterDrink.setScale(1.2 * this.slotBody.scaleX, 1.2 * this.slotBody.scaleX);
-                            this.characterDrink.setPosition(canvasRef.value.offsetWidth - this.characterDrink.displayWidth - (-10 * this.slotBody.scaleX), this.slotBody.y - (600 * this.slotBody.scaleX));
-                            this.characterMain.setScale(1.2 * this.slotBody.scaleX, 1.2 * this.slotBody.scaleX);
-                            this.characterMain.setPosition(canvasRef.value.offsetWidth - this.characterMain.displayWidth - (30 * this.slotBody.scaleX), this.slotBody.y - (600 * this.slotBody.scaleX));
+                            this.slotLogo.setScale(1.5 * this.slotBody.scaleX, 1.5 * this.slotBody.scaleX);
+                            this.slotLogo.y = this.slotBody.y - (300 * this.slotBody.scaleX);
+
+                            this.characterDrink.setPosition(canvasRef.value.offsetWidth - this.characterDrink.displayWidth - (10 * this.slotBody.scaleX), this.slotBody.y - (650 * this.slotBody.scaleX));
+                            this.characterMain.setPosition(canvasRef.value.offsetWidth - this.characterMain.displayWidth - (50 * this.slotBody.scaleX), this.slotBody.y - (600 * this.slotBody.scaleX));
 
 
-                            this.slotBalanceUI.setScale(3 * this.slotBody.scaleX, 3 * this.slotBody.scaleX);
-                            this.slotBalanceUI.setPosition(this.slotBody.x + this.slotBody.displayWidth / 2, 100 * this.slotBody.scaleX);
-                            this.slotBalanceValue.setFontSize(150 * this.slotBody.scaleX);
-                            this.slotBalanceValue.setPosition(this.slotBalanceUI.x + (530 * this.slotBody.scaleX), this.slotBalanceUI.y + (46 * this.slotBody.scaleX));
+                            this.slotBalanceUI.setScale(2 * this.slotBody.scaleX, 2 * this.slotBody.scaleX);
+                            this.slotBalanceUI.setPosition(this.slotBody.x + this.slotBody.displayWidth / 2, 50 * this.slotBody.scaleX);
+                            this.slotBalanceValue.setFontSize(100 * this.slotBody.scaleX);
+                            this.slotBalanceValue.setPosition(this.slotBalanceUI.x + (335 * this.slotBody.scaleX), this.slotBalanceUI.y + (32 * this.slotBody.scaleX));
 
                             this.slotWinUI.setScale(2 * this.slotBody.scaleX, 2 * this.slotBody.scaleX);
-                            this.slotWinUI.setPosition(this.slotBalanceUI.x, 455 * this.slotBody.scaleX);
+                            this.slotWinUI.setPosition(this.slotBalanceUI.x, 255 * this.slotBody.scaleX);
                             this.slotWinLabel.setFontSize(110 * this.slotBody.scaleX);
                             this.slotWinLabel.setPosition(this.slotWinUI.x, this.slotWinUI.y + (26 * this.slotBody.scaleX));
                             this.slotWinValue.setFontSize(140 * this.slotBody.scaleX);
                             this.slotWinValue.setPosition(this.slotWinUI.x, this.slotWinUI.y + (160 * this.slotBody.scaleX));
 
-                            this.slotSpinUI.setScale(2.5 * this.slotBody.scaleX, 2.5 * this.slotBody.scaleX);
-                            this.slotSpinUI.setPosition(this.slotBalanceUI.x, canvasRef.value.offsetHeight - this.slotSpinUI.displayHeight - (100 * this.slotBody.scaleX));
-                            this.slotSpinLabel.setFontSize(250 * this.slotBody.scaleX);
-                            this.slotSpinLabel.setPosition(this.slotSpinUI.x, this.slotSpinUI.y + (94 * this.slotBody.scaleX));
 
-                            this.slotAutoUI.setScale(2 * this.slotBody.scaleX, 2 * this.slotBody.scaleX);
-                            this.slotAutoUI.setPosition(this.slotSpinUI.x - (685 * this.slotBody.scaleX), canvasRef.value.offsetHeight - this.slotAutoUI.displayHeight - (100 * this.slotBody.scaleX));
-                            this.slotAutoLabel.setFontSize(90 * this.slotBody.scaleX);
-                            this.slotAutoLabel.setPosition(this.slotAutoUI.x, this.slotAutoUI.y + (128 * this.slotBody.scaleX));
+                            this.slotBetUI.setScale(1.5 * this.slotBody.scaleX, 1.5 * this.slotBody.scaleX);
+                            this.slotBetUI.setPosition(this.slotBalanceUI.x, canvasRef.value.offsetHeight - this.slotBetUI.displayHeight - (50 * this.slotBody.scaleX));
+                            this.slotBetLabel.setFontSize(80 * this.slotBody.scaleX);
+                            this.slotBetLabel.setPosition(this.slotBetUI.x, this.slotBetUI.y + (18 * this.slotBody.scaleX));
+                            this.slotBetValue.setFontSize(120 * this.slotBody.scaleX);
+                            this.slotBetValue.setPosition(this.slotBetUI.x, this.slotBetUI.y + (114 * this.slotBody.scaleX));
 
-                            this.slotBetUI.setScale(2 * this.slotBody.scaleX, 2 * this.slotBody.scaleX);
-                            this.slotBetUI.setPosition(this.slotSpinUI.x, canvasRef.value.offsetHeight - this.slotBetUI.displayHeight - (585 * this.slotBody.scaleX));
-                            this.slotBetLabel.setFontSize(110 * this.slotBody.scaleX);
-                            this.slotBetLabel.setPosition(this.slotBetUI.x, this.slotBetUI.y + (26 * this.slotBody.scaleX));
-                            this.slotBetValue.setFontSize(140 * this.slotBody.scaleX);
-                            this.slotBetValue.setPosition(this.slotBetUI.x, this.slotBetUI.y + (160 * this.slotBody.scaleX));
+                            this.slotPlusUI.setScale(1.5 * this.slotBody.scaleX, 1.5 * this.slotBody.scaleX);
+                            this.slotPlusUI.setPosition(this.slotBetUI.x + (415 * this.slotBody.scaleX), canvasRef.value.offsetHeight - this.slotPlusUI.displayHeight - (50 * this.slotBody.scaleX));
+                            this.slotMinusUI.setScale(1.5 * this.slotBody.scaleX, 1.5 * this.slotBody.scaleX);
+                            this.slotMinusUI.setPosition(this.slotBetUI.x - (415 * this.slotBody.scaleX), canvasRef.value.offsetHeight - this.slotMinusUI.displayHeight - (50 * this.slotBody.scaleX));
 
-                            this.slotPlusUI.setScale(2 * this.slotBody.scaleX, 2 * this.slotBody.scaleX);
-                            this.slotPlusUI.setPosition(this.slotSpinUI.x + (540 * this.slotBody.scaleX), canvasRef.value.offsetHeight - this.slotPlusUI.displayHeight - (585 * this.slotBody.scaleX));
-                            this.slotMinusUI.setScale(2 * this.slotBody.scaleX, 2 * this.slotBody.scaleX);
-                            this.slotMinusUI.setPosition(this.slotSpinUI.x - (540 * this.slotBody.scaleX), canvasRef.value.offsetHeight - this.slotMinusUI.displayHeight - (585 * this.slotBody.scaleX));
+                            this.slotSpinUI.setScale(2.25 * this.slotBody.scaleX, 2.25 * this.slotBody.scaleX);
+                            this.slotSpinUI.setPosition(this.slotBalanceUI.x, canvasRef.value.offsetHeight - this.slotSpinUI.displayHeight - (350 * this.slotBody.scaleX));
+                            this.slotSpinLabel.setFontSize(220 * this.slotBody.scaleX);
+                            this.slotSpinLabel.setPosition(this.slotSpinUI.x, this.slotSpinUI.y + (88 * this.slotBody.scaleX));
+
+                            this.slotAutoUI.setScale(1.75 * this.slotBody.scaleX, 1.75 * this.slotBody.scaleX);
+                            this.slotAutoUI.setPosition(this.slotSpinUI.x - (660 * this.slotBody.scaleX), canvasRef.value.offsetHeight - this.slotAutoUI.displayHeight - (350 * this.slotBody.scaleX));
+                            this.slotAutoLabel.setFontSize(80 * this.slotBody.scaleX);
+                            this.slotAutoLabel.setPosition(this.slotAutoUI.x, this.slotAutoUI.y + (106 * this.slotBody.scaleX));
                         }
 
 
@@ -752,6 +754,7 @@
                     height: canvasRef.value.offsetHeight,
                     canvas: canvasRef.value,
                     transparent: true,
+                    antialias: true,
                     scale: {
                         mode: Phaser.Scale.FIT,
                         autoCenter: Phaser.Scale.CENTER_BOTH,
@@ -788,6 +791,7 @@
         height: 100dvh;
         position: relative;
         overflow-y: hidden;
+
         background-image: url("@/assets/projects/slotmachine/image/main/back.png");
         background-repeat: no-repeat;
         background-position: right bottom;
@@ -819,8 +823,8 @@
     #loader-btn {
         color: #be0100;
         font-size: 50px;
-        margin: 25px 0;
-        padding: 25px;
+        margin: 40px 0;
+        padding: 20px 35px;
         border: 5px solid transparent;
         border-radius: 15px;
         transition: all 0.2s ease-in-out;
@@ -856,9 +860,29 @@
 
     /* MEDIA */
     @media screen and (max-width: 576px) {
+        #slot-machine {
+            background-position: left bottom;
+        }
+
+        #slot-machine_loader {
+            background-position: center center;
+        }
+
         #logo-full,
         #progress-bar-container {
             width: 80%;
+        }
+        #progress-bar-container {
+            height: 30px;
+            border: 3px solid #be0100;
+            border-radius: calc(15px + 3px);
+            padding: 3px;
+        }
+
+        #loader-btn {
+            font-size: 35px;
+            margin: 60px 0;
+            padding: 15px 25px;
         }
     }
 </style>
