@@ -126,123 +126,6 @@
 
 
 
-            const animateOnComplete = () => {
-                isGamePlaying.value = false;
-
-                if (!randomWinSymbol) return;
-
-                for (let i = 1; i <= REELS_X_SLOT; i++) {
-                    if (jollyRandomReel && i === jollyRandomReel) {
-                        reels[`reel${i}`][`${JOLLY}Sheet`].anims.play(`reel${i}-${JOLLY}_animation`);
-                        continue;
-                    }
-                    reels[`reel${i}`][`${randomWinSymbol}Sheet`].anims.play(`reel${i}-${randomWinSymbol}_animation`);
-                }
-
-                if (selectedCondition === 'mega-win') slotMegaWinFX.play();
-                else if (jollyRandomReel) slotWinJollyFX.play(); // Not playing with mega win
-                else if (selectedCondition === 'win') slotWinFX.play(); // Not playing with jolly
-            }
-
-            const spin = () => {
-                // ReturnToPlayer
-                // RandomNumberGenerator
-
-                isGamePlaying.value = true;
-                slotClickFX.play();
-
-                if (randomWinSymbol) {
-                    for (let i = 1; i <= REELS_X_SLOT; i++) {
-                        if (jollyRandomReel && i === jollyRandomReel) {
-                            reels[`reel${i}`][`${JOLLY}Sheet`].anims.stop();
-                            reels[`reel${i}`][`${JOLLY}Sheet`].setFrame(`${JOLLY}-animation_30.png`);
-                            jollyRandomReel = null;
-                            continue;
-                        }
-                        reels[`reel${i}`][`${randomWinSymbol}Sheet`].anims.stop();
-                        reels[`reel${i}`][`${randomWinSymbol}Sheet`].setFrame(`${randomWinSymbol}-animation_30.png`);
-                    }
-                    randomWinSymbol = null;
-                }
-
-                let indexReels = {
-                    indexReel1: null,
-                    indexReel2: null,
-                    indexReel3: null,
-                    indexReel4: null,
-                    indexReel5: null
-                }
-
-                selectedCondition = conditions[getRandomNumber(0, conditions.length - 1)];
-
-                switch (selectedCondition) {
-                    case 'lose':
-                        indexReels = getRandomLose(indexReels, REELS_X_SLOT, SYMBOLS, SLOT_MAP);
-                        break
-                    case 'fake-win':
-                    case 'win':
-                    case 'mega-win':
-                        randomWinSymbol = selectedCondition === 'win' ? SYMBOLS[getRandomNumber(0, SYMBOLS.length - 1)] : MEGA_WIN;
-
-                        for (let i = 1; i <= REELS_X_SLOT; i++) {
-                            indexReels[`indexReel${i}`] = SLOT_MAP[`REEL_${i}_MAP`].indexOf(randomWinSymbol);
-                        }
-
-                        if (selectedCondition === 'fake-win') {
-                            const randomReel = getRandomNumber(1, REELS_X_SLOT);
-                            const filteredSymbols = [...SYMBOLS, MEGA_WIN].filter(el => el !== randomWinSymbol);
-                            const loseSymbol = filteredSymbols[getRandomNumber(0, filteredSymbols.length - 1)];
-                            indexReels[`indexReel${randomReel}`] = SLOT_MAP[`REEL_${randomReel}_MAP`].indexOf(loseSymbol);
-
-                            randomWinSymbol = null;
-                        }
-
-                        if (selectedCondition !== 'fake-win') {
-                            const jollyCondition = jollyWinRatio[getRandomNumber(0, jollyWinRatio.length -1)];
-
-                            if (jollyCondition) {
-                                jollyRandomReel = getRandomNumber(1, REELS_X_SLOT);
-                                indexReels[`indexReel${jollyRandomReel}`] = SLOT_MAP[`REEL_${jollyRandomReel}_MAP`].indexOf(JOLLY);
-                            }
-                        }
-
-                        indexReels = Object.assign(getRandomWinMap(indexReels));
-                }
-
-                const animRevolutions = 20; // Increase this value for faster animations
-                const animDuration = 4;
-                let newAnimDuration = getRandomNumber(30, 50);
-                newAnimDuration = newAnimDuration / 10;
-                const newAnimRevolutions = Math.floor((animRevolutions / animDuration) * newAnimDuration);
-
-                for (let i = 1; i <= REELS_X_SLOT; i++) {
-                    let animDelay;
-                    switch (i) {
-                        case 1:
-                            animDelay = 0.10;
-                            break;
-                        case 2:
-                            animDelay = 0.25;
-                            break;
-                        case 3:
-                            animDelay = 0.42;
-                            break;
-                        case 4:
-                            animDelay = 0.63;
-                            break;
-                        case 5:
-                            animDelay = 0.91;
-                    }
-
-                    const animConfig = { duration: parseFloat((newAnimDuration + animDelay).toFixed(2)), revolutions: newAnimRevolutions, ease: 'power2.inOut' };
-                    animConfig.onComplete = () => {
-                        slotTickFX.play();
-                        if (i === 5) animateOnComplete();
-                    }
-
-                    slotAnimation[`reel${i}Animation`].toIndex(indexReels[`indexReel${i}`], animConfig);
-                }
-            }
 
 
 
@@ -258,6 +141,8 @@
                 class GameScene extends Phaser.Scene {
                     constructor() {
                         super({ key: 'gameScene' });
+
+                        this.TEXT_STYLE = { fontFamily: SLOT_FONT, color: '#ffffff' };
 
                         this.slotBody;
                         this.slotCanopy;
@@ -336,7 +221,7 @@
                         // Slot elements
                         this.slotBody = this.add.image(0, 0, 'slot_body').setOrigin(0, 0);
                         const ratio = this.slotBody.height / this.slotBody.width;
-                        this.slotBody.displayWidth = isMobile ? (canvasRef.value.offsetWidth * 90) / 100 : (canvasRef.value.offsetWidth * 60) / 100;
+                        this.slotBody.displayWidth = isMobile ? (canvasRef.value.offsetWidth * 90) / 100 : (canvasRef.value.offsetWidth * 55) / 100;
                         this.slotBody.displayHeight = this.slotBody.displayWidth * ratio * 0.955;
                         this.slotBody.setPosition(canvasRef.value.offsetWidth / 2 - this.slotBody.displayWidth / 2, canvasRef.value.offsetHeight / 2 - this.slotBody.displayHeight / 2 - 20 * this.slotBody.scaleX);
 
@@ -463,21 +348,25 @@
                         slotWinJollyFX = this.sound.add('slot-win-jolly_sfx');
                         slotFreeSpinFX = this.sound.add('slot-free-spin_sfx');
 
-                        this.input.keyboard.on('keyup-SPACE', () => {
-                            if (isGamePlaying.value) return;
-                            spin();
-                        });
-
 
 
                         // UI/UX
                         const UI_BOTTOM_DISTANCE = 5;
+                        this.TEXT_STYLE.shadow = {
+                            offsetX: 5 * this.slotBody.scaleX,
+                            offsetY: 5 * this.slotBody.scaleX,
+                            color: '#000000',
+                            blur: 10 * this.slotBody.scaleX,
+                            fill: true,
+                            fillAlpha: 1
+                        };
+
                         this.slotWinUI = this.add.image(0, 0, 'slot-win_ui').setOrigin(0.5, 0);
                         this.slotWinUI.setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
                         this.slotWinUI.setPosition(canvasRef.value.offsetWidth / 2, canvasRef.value.offsetHeight - this.slotWinUI.displayHeight - (UI_BOTTOM_DISTANCE * this.slotBody.scaleX));
 
-                        this.slotWinLabel = this.add.text(this.slotWinUI.x, this.slotWinUI.y + (12 * this.slotBody.scaleX), 'win', { fontFamily: SLOT_FONT, fontSize: 30, color: '#ffffff' }).setOrigin(0.5, 0);
-                        this.slotWinValue = this.add.text(this.slotWinUI.x, this.slotWinUI.y + (94 * this.slotBody.scaleX), '1000', { fontFamily: SLOT_FONT, fontSize: 60, color: '#ffffff' }).setOrigin(0.5, 0);
+                        this.slotWinLabel = this.add.text(this.slotWinUI.x, this.slotWinUI.y + (16 * this.slotBody.scaleX), 'win', { ...this.TEXT_STYLE, fontSize: 50 * this.slotBody.scaleX }).setOrigin(0.5, 0);
+                        this.slotWinValue = this.add.text(this.slotWinUI.x, this.slotWinUI.y + (100 * this.slotBody.scaleX), '1000', { ...this.TEXT_STYLE, fontSize: 100 * this.slotBody.scaleX }).setOrigin(0.5, 0);
 
 
                         this.slotAutoUI = this.add.image(0, 0, 'slot-auto_ui').setOrigin(0.5, 0);
@@ -488,8 +377,8 @@
                         this.slotSpinUI.setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
                         this.slotSpinUI.setPosition(this.slotWinUI.x + (840 * this.slotBody.scaleX), canvasRef.value.offsetHeight - this.slotSpinUI.displayHeight - (UI_BOTTOM_DISTANCE * this.slotBody.scaleX));
 
-                        this.slotAutoLabel = this.add.text(this.slotAutoUI.x, this.slotAutoUI.y + (66 * this.slotBody.scaleX), 'auto', { fontFamily: SLOT_FONT, fontSize: 20, color: '#ffffff' }).setOrigin(0.5, 0);
-                        this.slotSpinLabel = this.add.text(this.slotSpinUI.x, this.slotSpinUI.y + (40 * this.slotBody.scaleX), 'spin', { fontFamily: SLOT_FONT, fontSize: 50, color: '#ffffff' }).setOrigin(0.5, 0);
+                        this.slotAutoLabel = this.add.text(this.slotAutoUI.x, this.slotAutoUI.y + (66 * this.slotBody.scaleX), 'auto', { ...this.TEXT_STYLE, fontSize: 40 * this.slotBody.scaleX }).setOrigin(0.5, 0);
+                        this.slotSpinLabel = this.add.text(this.slotSpinUI.x, this.slotSpinUI.y + (40 * this.slotBody.scaleX), 'spin', { ...this.TEXT_STYLE, fontSize: 100 * this.slotBody.scaleX }).setOrigin(0.5, 0);
 
 
                         this.slotPlusUI = this.add.image(0, 0, 'slot-plus_ui').setOrigin(0.5, 0);
@@ -504,33 +393,168 @@
                         this.slotMinusUI.setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
                         this.slotMinusUI.setPosition(this.slotWinUI.x - (1040 * this.slotBody.scaleX), canvasRef.value.offsetHeight - this.slotMinusUI.displayHeight - (UI_BOTTOM_DISTANCE * this.slotBody.scaleX));
 
-                        this.slotBetLabel = this.add.text(this.slotBetUI.x, this.slotBetUI.y + (10 * this.slotBody.scaleX), 'bet', { fontFamily: SLOT_FONT, fontSize: 30, color: '#ffffff' }).setOrigin(0.5, 0);
-                        this.slotBetValue = this.add.text(this.slotBetUI.x, this.slotBetUI.y + (86 * this.slotBody.scaleX), '100', { fontFamily: SLOT_FONT, fontSize: 30, color: '#ffffff' }).setOrigin(0.5, 0);
+                        this.slotBetLabel = this.add.text(this.slotBetUI.x, this.slotBetUI.y + (14 * this.slotBody.scaleX), 'bet', { ...this.TEXT_STYLE, fontSize: 50 * this.slotBody.scaleX }).setOrigin(0.5, 0);
+                        this.slotBetValue = this.add.text(this.slotBetUI.x, this.slotBetUI.y + (84 * this.slotBody.scaleX), '100', { ...this.TEXT_STYLE, fontSize: 60 * this.slotBody.scaleX }).setOrigin(0.5, 0);
 
 
                         this.slotBalanceUI = this.add.image(0, 0, 'slot-balance_ui').setOrigin(0.5, 0);
                         this.slotBalanceUI.setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
                         this.slotBalanceUI.setPosition(this.slotBody.x + (364 * this.slotBody.scaleX), this.slotBody.y - (72 * this.slotBody.scaleX));
 
-                        this.slotBalanceValue = this.add.text(this.slotBalanceUI.x + (176 * this.slotBody.scaleX), this.slotBalanceUI.y + (18 * this.slotBody.scaleX), '999.999', { fontFamily: SLOT_FONT, fontSize: 25, color: '#ffffff' }).setOrigin(1, 0);
+                        this.slotBalanceValue = this.add.text(this.slotBalanceUI.x + (175 * this.slotBody.scaleX), this.slotBalanceUI.y + (15 * this.slotBody.scaleX), '999.999', { ...this.TEXT_STYLE, fontSize: 50 * this.slotBody.scaleX }).setOrigin(1, 0);
 
 
 
                         // Events control
+                        this.input.keyboard.on('keydown-SPACE', () => this.spin());
+
                         this.slotSpinUI.setInteractive({ useHandCursor: true });
-                        this.slotSpinUI.on('pointerdown', () => {
-                            if (isGamePlaying.value) return;
-
-                            spin(); // TODO mettila nella classe così ho il this per gestire bottoni e labels
-
-                            //this.slotSpinUI.setAlpha(0.5);
-                        });
-
+                        this.slotSpinUI.on('pointerdown', () => this.spin());
                     }
 
                     /*update() {
                         //
                     }*/
+
+
+
+                    // Custom methods
+                    spin() {
+                        // ReturnToPlayer
+                        // RandomNumberGenerator
+
+                        if (isGamePlaying.value) return;
+
+                        this.slotSpinUI.input.enabled = false;
+                        isGamePlaying.value = true;
+                        this.slotSpinUI.setAlpha(0.5);
+                        this.slotSpinUI.input.cursor = false;
+                        this.input.setDefaultCursor('default');
+                        slotClickFX.play();
+
+                        if (randomWinSymbol) {
+                            for (let i = 1; i <= REELS_X_SLOT; i++) {
+                                if (jollyRandomReel && i === jollyRandomReel) {
+                                    reels[`reel${i}`][`${JOLLY}Sheet`].anims.stop();
+                                    reels[`reel${i}`][`${JOLLY}Sheet`].setFrame(`${JOLLY}-animation_30.png`);
+                                    jollyRandomReel = null;
+                                    continue;
+                                }
+                                reels[`reel${i}`][`${randomWinSymbol}Sheet`].anims.stop();
+                                reels[`reel${i}`][`${randomWinSymbol}Sheet`].setFrame(`${randomWinSymbol}-animation_30.png`);
+                            }
+                            randomWinSymbol = null;
+                        }
+
+                        let indexReels = {
+                            indexReel1: null,
+                            indexReel2: null,
+                            indexReel3: null,
+                            indexReel4: null,
+                            indexReel5: null
+                        }
+
+                        selectedCondition = conditions[getRandomNumber(0, conditions.length - 1)];
+
+                        switch (selectedCondition) {
+                            case 'lose':
+                                indexReels = getRandomLose(indexReels, REELS_X_SLOT, SYMBOLS, SLOT_MAP);
+                                break
+                            case 'fake-win':
+                            case 'win':
+                            case 'mega-win':
+                                randomWinSymbol = selectedCondition === 'win' ? SYMBOLS[getRandomNumber(0, SYMBOLS.length - 1)] : MEGA_WIN;
+
+                                for (let i = 1; i <= REELS_X_SLOT; i++) {
+                                    indexReels[`indexReel${i}`] = SLOT_MAP[`REEL_${i}_MAP`].indexOf(randomWinSymbol);
+                                }
+
+                                if (selectedCondition === 'fake-win') {
+                                    const randomReel = getRandomNumber(1, REELS_X_SLOT);
+                                    const filteredSymbols = [...SYMBOLS, MEGA_WIN].filter(el => el !== randomWinSymbol);
+                                    const loseSymbol = filteredSymbols[getRandomNumber(0, filteredSymbols.length - 1)];
+                                    indexReels[`indexReel${randomReel}`] = SLOT_MAP[`REEL_${randomReel}_MAP`].indexOf(loseSymbol);
+
+                                    randomWinSymbol = null;
+                                }
+
+                                if (selectedCondition !== 'fake-win') {
+                                    const jollyCondition = jollyWinRatio[getRandomNumber(0, jollyWinRatio.length -1)];
+
+                                    if (jollyCondition) {
+                                        jollyRandomReel = getRandomNumber(1, REELS_X_SLOT);
+                                        indexReels[`indexReel${jollyRandomReel}`] = SLOT_MAP[`REEL_${jollyRandomReel}_MAP`].indexOf(JOLLY);
+                                    }
+                                }
+
+                                indexReels = Object.assign(getRandomWinMap(indexReels));
+                        }
+
+                        const animRevolutions = 20; // Increase this value for faster animations
+                        const animDuration = 4;
+                        let newAnimDuration = getRandomNumber(30, 50);
+                        newAnimDuration = newAnimDuration / 10;
+                        const newAnimRevolutions = Math.floor((animRevolutions / animDuration) * newAnimDuration);
+
+                        for (let i = 1; i <= REELS_X_SLOT; i++) {
+                            let animDelay;
+                            switch (i) {
+                                case 1:
+                                    animDelay = 0.10;
+                                    break;
+                                case 2:
+                                    animDelay = 0.25;
+                                    break;
+                                case 3:
+                                    animDelay = 0.42;
+                                    break;
+                                case 4:
+                                    animDelay = 0.63;
+                                    break;
+                                case 5:
+                                    animDelay = 0.91;
+                            }
+
+                            const animConfig = { duration: parseFloat((newAnimDuration + animDelay).toFixed(2)), revolutions: newAnimRevolutions, ease: 'power2.inOut' };
+                            animConfig.onComplete = () => {
+                                slotTickFX.play();
+                                if (i === 5) this.animateOnComplete();
+                            }
+
+                            slotAnimation[`reel${i}Animation`].toIndex(indexReels[`indexReel${i}`], animConfig);
+                        }
+                    }
+
+                    animateOnComplete() {
+                        isGamePlaying.value = false;
+                        this.slotSpinUI.input.enabled = true;
+                        this.slotSpinUI.setAlpha(1);
+                        this.slotSpinUI.input.cursor = 'pointer';
+
+                        if (
+                            this.input.x >= this.slotSpinUI.x - (this.slotSpinUI.displayWidth / 2) &&
+                            this.input.x <= this.slotSpinUI.x - (this.slotSpinUI.displayWidth / 2) + this.slotSpinUI.displayWidth &&
+                            this.input.y >= this.slotSpinUI.y &&
+                            this.input.y <= this.slotSpinUI.y + this.slotSpinUI.displayHeight
+                        ) {
+                            this.input.setDefaultCursor('pointer');
+                            this.slotSpinUI.on('pointerout', () => this.input.setDefaultCursor('default'));
+                        }
+
+                        if (!randomWinSymbol) return;
+
+                        for (let i = 1; i <= REELS_X_SLOT; i++) {
+                            if (jollyRandomReel && i === jollyRandomReel) {
+                                reels[`reel${i}`][`${JOLLY}Sheet`].anims.play(`reel${i}-${JOLLY}_animation`);
+                                continue;
+                            }
+                            reels[`reel${i}`][`${randomWinSymbol}Sheet`].anims.play(`reel${i}-${randomWinSymbol}_animation`);
+                        }
+
+                        if (selectedCondition === 'mega-win') slotMegaWinFX.play();
+                        else if (jollyRandomReel) slotWinJollyFX.play(); // Not playing with mega win
+                        else if (selectedCondition === 'win') slotWinFX.play(); // Not playing with jolly
+                    }
                 }
 
                 const config = {
@@ -542,7 +566,7 @@
                     scale: {
                         mode: Phaser.Scale.FIT,
                         autoCenter: Phaser.Scale.CENTER_BOTH,
-                    },
+                    }
                 };
 
                 const game = new Phaser.Game(config);
@@ -556,8 +580,7 @@
                 isLoadingComplete,
                 loaderBtnRef,
                 canvasRef,
-                isGamePlaying,
-                spin
+                isGamePlaying
             };
         },
     };
