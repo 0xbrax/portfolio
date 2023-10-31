@@ -15,7 +15,7 @@
 </template>
 
 <script>
-    import { ref, onMounted } from "vue";
+    import { ref, onMounted, watch } from "vue";
     import Phaser from "phaser";
     import { isDeviceMobile, getRandomNumber } from "@/assets/js/utils.js";
     import { verticalLoop, getRandomWinMap, getRandomLose } from "@/assets/projects/slotmachine/js/slotmachine.js";
@@ -406,10 +406,49 @@
 
 
                         // Events control
-                        this.input.keyboard.on('keydown-SPACE', () => this.spin());
+                        let isAutoSpinActive = false;
+                        let isGamePlayingWatch;
+
+                        this.input.keyboard.on('keydown-SPACE', () => {
+                            if (isAutoSpinActive) return;
+                            this.spin();
+                        });
 
                         this.slotSpinUI.setInteractive({ useHandCursor: true });
                         this.slotSpinUI.on('pointerdown', () => this.spin());
+
+                        this.slotAutoUI.setInteractive({ useHandCursor: true });
+                        this.slotAutoUI.on('pointerdown', () => {
+                            if (isAutoSpinActive) {
+                                isGamePlayingWatch(); // watch stop
+                                isAutoSpinActive = false;
+                                this.slotSpinUI.input.enabled = true;
+                                this.slotAutoUI.setAlpha(1);
+                                return;
+                            }
+
+                            isAutoSpinActive = true;
+                            this.slotSpinUI.input.enabled = false;
+                            this.slotAutoUI.setAlpha(0.5);
+                            this.spin();
+
+                            isGamePlayingWatch = watch(
+                                () => isGamePlaying.value,
+                                (val) => {
+                                    if (!val) {
+                                        if (selectedCondition === 'lose' || selectedCondition === 'fake-win') {
+                                            setTimeout(() => {
+                                                this.spin();
+                                            }, 500);
+                                        } else {
+                                            setTimeout(() => {
+                                                this.spin();
+                                            }, 2000);
+                                        }
+                                    }
+                                }
+                            )
+                        });
                     }
 
                     /*update() {
