@@ -166,6 +166,8 @@
                         this.slotBetLabel;
                         this.slotBetValue;
                         this.slotBalanceValue;
+
+                        this.isAutoSpinActive = false;
                     }
 
                     preload() {
@@ -401,35 +403,48 @@
                         this.slotBalanceUI.setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
                         this.slotBalanceUI.setPosition(this.slotBody.x + (364 * this.slotBody.scaleX), this.slotBody.y - (72 * this.slotBody.scaleX));
 
-                        this.slotBalanceValue = this.add.text(this.slotBalanceUI.x + (175 * this.slotBody.scaleX), this.slotBalanceUI.y + (15 * this.slotBody.scaleX), '999.999', { ...this.TEXT_STYLE, fontSize: 50 * this.slotBody.scaleX }).setOrigin(1, 0);
+                        this.slotBalanceValue = this.add.text(this.slotBalanceUI.x + (174 * this.slotBody.scaleX), this.slotBalanceUI.y + (16 * this.slotBody.scaleX), '999.999', { ...this.TEXT_STYLE, fontSize: 50 * this.slotBody.scaleX }).setOrigin(1, 0);
 
 
 
                         // Events control
-                        let isAutoSpinActive = false;
                         let isGamePlayingWatch;
 
                         this.input.keyboard.on('keydown-SPACE', () => {
-                            if (isAutoSpinActive) return;
+                            if (this.isAutoSpinActive) return;
                             this.spin();
                         });
 
                         this.slotSpinUI.setInteractive({ useHandCursor: true });
-                        this.slotSpinUI.on('pointerdown', () => this.spin());
+                        this.slotSpinUI.on('pointerdown', () => {
+                            if (this.isAutoSpinActive) return;
+                            this.spin();
+                        });
 
                         this.slotAutoUI.setInteractive({ useHandCursor: true });
                         this.slotAutoUI.on('pointerdown', () => {
-                            if (isAutoSpinActive) {
-                                isGamePlayingWatch(); // watch stop
-                                isAutoSpinActive = false;
-                                this.slotSpinUI.input.enabled = true;
-                                this.slotAutoUI.setAlpha(1);
+                            if (this.isAutoSpinActive) {
+                                isGamePlayingWatch(); // watch stop - unwatch
+                                this.isAutoSpinActive = false;
+                                this.slotAutoUI.postPipelines = [];
+
+                                if (isGamePlaying.value) {
+                                    this.slotSpinUI.setAlpha(0.5);
+                                    this.slotSpinUI.input.cursor = false;
+                                } else {
+                                    this.slotSpinUI.setAlpha(1);
+                                    this.slotSpinUI.input.cursor = 'pointer';
+                                }
+
                                 return;
                             }
 
-                            isAutoSpinActive = true;
-                            this.slotSpinUI.input.enabled = false;
-                            this.slotAutoUI.setAlpha(0.5);
+                            if (isGamePlaying.value) return;
+
+                            this.isAutoSpinActive = true;
+                            this.slotAutoUI.postFX.addGlow(0xbe0100, 10 * this.slotBody.scaleX, 0);
+                            this.slotSpinUI.setAlpha(0.5);
+                            this.slotSpinUI.input.cursor = false;
                             this.spin();
 
                             isGamePlayingWatch = watch(
@@ -438,10 +453,12 @@
                                     if (!val) {
                                         if (selectedCondition === 'lose' || selectedCondition === 'fake-win') {
                                             setTimeout(() => {
+                                                if (!this.isAutoSpinActive) return;
                                                 this.spin();
                                             }, 500);
                                         } else {
                                             setTimeout(() => {
+                                                if (!this.isAutoSpinActive) return;
                                                 this.spin();
                                             }, 2000);
                                         }
@@ -464,23 +481,27 @@
 
                         if (isGamePlaying.value) return;
 
-                        this.slotSpinUI.input.enabled = false;
                         isGamePlaying.value = true;
-                        this.slotSpinUI.setAlpha(0.5);
-                        this.slotSpinUI.input.cursor = false;
-                        this.input.setDefaultCursor('default');
                         slotClickFX.play();
+
+                        if (!this.isAutoSpinActive) {
+                            this.slotSpinUI.setAlpha(0.5);
+                            this.slotSpinUI.input.cursor = false;
+                            this.input.setDefaultCursor('default');
+                        }
 
                         if (randomWinSymbol) {
                             for (let i = 1; i <= REELS_X_SLOT; i++) {
                                 if (jollyRandomReel && i === jollyRandomReel) {
                                     reels[`reel${i}`][`${JOLLY}Sheet`].anims.stop();
                                     reels[`reel${i}`][`${JOLLY}Sheet`].setFrame(`${JOLLY}-animation_30.png`);
+                                    reels[`reel${i}`][`${JOLLY}Sheet`].postPipelines = [];
                                     jollyRandomReel = null;
                                     continue;
                                 }
                                 reels[`reel${i}`][`${randomWinSymbol}Sheet`].anims.stop();
                                 reels[`reel${i}`][`${randomWinSymbol}Sheet`].setFrame(`${randomWinSymbol}-animation_30.png`);
+                                reels[`reel${i}`][`${randomWinSymbol}Sheet`].postPipelines = [];
                             }
                             randomWinSymbol = null;
                         }
@@ -566,28 +587,42 @@
 
                     animateOnComplete() {
                         isGamePlaying.value = false;
-                        this.slotSpinUI.input.enabled = true;
-                        this.slotSpinUI.setAlpha(1);
-                        this.slotSpinUI.input.cursor = 'pointer';
 
-                        if (
-                            this.input.x >= this.slotSpinUI.x - (this.slotSpinUI.displayWidth / 2) &&
-                            this.input.x <= this.slotSpinUI.x - (this.slotSpinUI.displayWidth / 2) + this.slotSpinUI.displayWidth &&
-                            this.input.y >= this.slotSpinUI.y &&
-                            this.input.y <= this.slotSpinUI.y + this.slotSpinUI.displayHeight
-                        ) {
-                            this.input.setDefaultCursor('pointer');
-                            this.slotSpinUI.on('pointerout', () => this.input.setDefaultCursor('default'));
-                        }
+                        if (!this.isAutoSpinActive) {
+                            this.slotSpinUI.setAlpha(1);
+                            this.slotSpinUI.input.cursor = 'pointer';
+
+                            if (
+                                this.input.x >= this.slotSpinUI.x - (this.slotSpinUI.displayWidth / 2) &&
+                                this.input.x <= this.slotSpinUI.x - (this.slotSpinUI.displayWidth / 2) + this.slotSpinUI.displayWidth &&
+                                this.input.y >= this.slotSpinUI.y &&
+                                this.input.y <= this.slotSpinUI.y + this.slotSpinUI.displayHeight
+                            ) {
+                                this.input.setDefaultCursor('pointer');
+                                this.slotSpinUI.on('pointerout', () => this.input.setDefaultCursor('default'));
+                            }
+                        } 
 
                         if (!randomWinSymbol) return;
 
                         for (let i = 1; i <= REELS_X_SLOT; i++) {
+                            let symbolWinFX;
                             if (jollyRandomReel && i === jollyRandomReel) {
                                 reels[`reel${i}`][`${JOLLY}Sheet`].anims.play(`reel${i}-${JOLLY}_animation`);
-                                continue;
+                                symbolWinFX = reels[`reel${i}`][`${JOLLY}Sheet`].postFX.addGlow(0xffffff, 0, 0);
+                            } else {
+                                reels[`reel${i}`][`${randomWinSymbol}Sheet`].anims.play(`reel${i}-${randomWinSymbol}_animation`);
+                                symbolWinFX = reels[`reel${i}`][`${randomWinSymbol}Sheet`].postFX.addGlow(0xffffff, 0, 0);
                             }
-                            reels[`reel${i}`][`${randomWinSymbol}Sheet`].anims.play(`reel${i}-${randomWinSymbol}_animation`);
+
+                            this.tweens.add({
+                                targets: symbolWinFX,
+                                duration: 1250 / 2, // sync with sprite animation
+                                outerStrength: 10 * this.slotBody.scaleX,
+                                yoyo: true,
+                                loop: -1,
+                                ease: 'sine.inout'
+                            });
                         }
 
                         if (selectedCondition === 'mega-win') slotMegaWinFX.play();
