@@ -5,7 +5,13 @@
         <div v-if="isLoadingScreenActive" id="slot-machine_loader" class="d-flex column justify-ctr align-ctr">
             <img id="logo-full" src="@/assets/projects/slotmachine/image/main/logo_full.png" alt="Fruit Cocktail" />
             
-            <div id="loader-btn" :class="{ 'complete pointer': isLoadingComplete }" ref="loaderBtnRef">{{ !isLoadingComplete ? 'loading' : 'enter' }}</div>
+            <div 
+                id="loader-btn" 
+                :class="{ 'complete pointer': isLoadingComplete }"
+                @click="isGameEntered = !isGameEntered"
+            >
+                {{ !isLoadingComplete ? 'loading' : 'enter' }}
+            </div>
 
             <div id="progress-bar-container">
                 <div id="progress-bar" :style="`width: ${loaderProgress}%`"></div>
@@ -70,7 +76,7 @@
             const isLoadingScreenActive = ref(true);
             const loaderProgress = ref('0');
             const isLoadingComplete = ref(false);
-            const loaderBtnRef = ref(null);
+            const isGameEntered = ref(false);
             const SLOT_FONT = 'Rimbo-Regular';
 
             const canvasRef = ref(null);
@@ -122,7 +128,7 @@
             let slotWinFX;
             let slotMegaWinFX;
             let slotWinJollyFX;
-            //let slotFreeSpinFX;
+            let slotFreeSpinFX;
 
 
 
@@ -171,13 +177,18 @@
                         });
                         this.load.on('complete', () => {
                             isLoadingComplete.value = true;
-                            loaderBtnRef.value.addEventListener('click', () => {
-                                isLoadingScreenActive.value = false;
-                                this.input.enabled = true;
-                                this.input.keyboard.enabled = true;
-                                backgroundMusic.play();
-                            });
                         });
+                        watch(
+                            () => isGameEntered.value,
+                            (val) => {
+                                if (val) {
+                                    isLoadingScreenActive.value = false;
+                                    this.input.enabled = true;
+                                    this.input.keyboard.enabled = true;
+                                    backgroundMusic.play();
+                                }
+                            }
+                        );
 
                         this.load.image('slot_body', SlotBodyImage);
                         this.load.image('slot_canopy', SlotCanopyImage);
@@ -709,7 +720,7 @@
                 isLoadingScreenActive,
                 loaderProgress,
                 isLoadingComplete,
-                loaderBtnRef,
+                isGameEntered,
                 canvasRef,
                 isGamePlaying
             };
