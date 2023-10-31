@@ -3,5 +3,5 @@ export const getRandomNumber = (min, max) => {
 }
 
 export const isDeviceMobile = () => {
-    return !window.matchMedia('screen and (min-width:576px)').matches;
+    return !window.matchMedia('screen and (min-width: 576px)').matches;
 }
