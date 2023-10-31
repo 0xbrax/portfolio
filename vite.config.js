@@ -15,6 +15,6 @@ export default defineConfig(({ command, mode }) => {
       },
     },
     assetsInclude: ['**/*.glb'],
-    base: env.NODE_ENV === 'production' ? env.BASE_URL : '/',
+    publicPath: process.env.NODE_ENV === 'production' ? env.BASE_URL : '/',
   }
 });
