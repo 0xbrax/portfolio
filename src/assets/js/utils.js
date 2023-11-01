@@ -1,7 +1,7 @@
 export const getRandomNumber = (min, max) => {
-    return Math.random() * (max - min) + min;
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 export const isDeviceMobile = () => {
-    return !window.matchMedia('screen and (min-width:576px)').matches;
+    return !window.matchMedia('screen and (min-width: 576px)').matches;
 }
