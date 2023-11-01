@@ -70,6 +70,9 @@
     import BalanceUI from "@/assets/projects/slotmachine/image/main/ui_balance.png";
     import CoinImage from"@/assets/projects/slotmachine/image/main/coin.png";
 
+    import MegaWinTextImage from"@/assets/projects/slotmachine/image/main/megawin_text.png";
+    import MegaWinCoinImage from"@/assets/projects/slotmachine/image/main/megawin_coin.png";
+
 
 
     export default {
@@ -86,6 +89,7 @@
 
             const canvasRef = ref(null);
             const ANIMATION_FPS = 24;
+            const ANIMATION_DURATION = 1250;
             const REELS_X_SLOT = 5;
             const REEL_LENGTH = 8;
             const SYMBOL_X_REEL = 3;
@@ -181,8 +185,13 @@
                         this.freeSpinLevel;
                         this.freeSpinLabel;
                         this.freeSpinValue = 0;
-                        this.freeSpinIncrement = 25;
+                        this.freeSpinIncrement = 10;
                         this.freeSpinAnimation;
+
+                        this.megaWinScreenOverlay;
+                        this.megaWinScreenText;
+                        this.megaWinScreenCoin;
+                        this.megaWinScreenAnimation = {};
 
                         this.slotBet = 200;
                         this.slotBetIncrement = 100;
@@ -248,6 +257,9 @@
                         this.load.image('slot-plus_ui', PlusUI);
                         this.load.image('slot-win_ui', WinUI);
                         this.load.image('slot-balance_ui', BalanceUI);
+
+                        this.load.image('mega-win_text', MegaWinTextImage);
+                        this.load.image('mega-win_coin', MegaWinCoinImage);
                     }
 
                     create() {
@@ -578,12 +590,12 @@
                                             setTimeout(() => {
                                                 if (!this.isAutoSpinActive) return;
                                                 this.spin();
-                                            }, 1250 / 2);
+                                            }, ANIMATION_DURATION / 2);
                                         } else {
                                             setTimeout(() => {
                                                 if (!this.isAutoSpinActive) return;
                                                 this.spin();
-                                            }, 1250);
+                                            }, ANIMATION_DURATION);
                                         }
                                     }
                                 }
@@ -637,6 +649,23 @@
                                 this.slotPlusUI.input.cursor = 'pointer';
                             }
                         });
+
+
+
+                        this.megaWinScreenOverlay = this.add.graphics();
+                        this.megaWinScreenOverlay.fillStyle(0x000000, 0.5);
+                        this.megaWinScreenOverlay.fillRect(0, 0, canvasRef.value.offsetWidth, canvasRef.value.offsetHeight);
+                        this.megaWinScreenOverlay.setAlpha(0);
+
+                        this.megaWinScreenText = this.add.image(0, 0, 'mega-win_text').setOrigin(0.5, 0.5);
+                        this.megaWinScreenText.setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
+                        this.megaWinScreenText.setPosition(canvasRef.value.offsetWidth / 2, canvasRef.value.offsetHeight / 2);
+                        this.megaWinScreenText.setAlpha(0);
+
+                        this.megaWinScreenCoin = this.add.image(0, 0, 'mega-win_coin').setOrigin(0.5, 0.5);
+                        this.megaWinScreenCoin.setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
+                        this.megaWinScreenCoin.setPosition(canvasRef.value.offsetWidth / 2, canvasRef.value.offsetHeight / 2);
+                        this.megaWinScreenCoin.setAlpha(0);
                     }
 
 
@@ -806,7 +835,7 @@
 
                             this.freeSpinAnimation = this.tweens.add({
                                 targets: freeSpinFX,
-                                duration: 1250 / 2, // sync with sprite animation
+                                duration: ANIMATION_DURATION / 2, // sync with sprite animation
                                 outerStrength: 10 * this.slotBody.scaleX,
                                 yoyo: true,
                                 loop: -1,
@@ -858,7 +887,7 @@
 
                             this.symbolsAnimations[i] = this.tweens.add({
                                 targets: symbolWinFX,
-                                duration: 1250 / 2, // sync with sprite animation
+                                duration: ANIMATION_DURATION / 2, // sync with sprite animation
                                 outerStrength: 10 * this.slotBody.scaleX,
                                 yoyo: true,
                                 loop: -1,
@@ -868,9 +897,44 @@
 
                         if (this.freeSpinValue === 100) this.slotBet = this.slotBetIncrement; // min bet x free spin
 
+
+
                         if (selectedCondition === 'mega-win') {
                             slotMegaWinFX.play();
                             this.slotWin = this.slotBet * 5;
+
+                            for (let i = 0; i < 3; i++) {
+                                this.input.enabled = false;
+                                this.input.keyboard.enabled = false;
+
+                                let megaWinKey;
+                                switch (i) {
+                                    case 0:
+                                        megaWinKey = 'megaWinScreenOverlay';
+                                        break;
+                                    case 1:
+                                        megaWinKey = 'megaWinScreenText';
+                                        break;
+                                    case 2:
+                                        megaWinKey = 'megaWinScreenCoin';
+                                }
+
+                                const megaWinTween = this.tweens.add({
+                                    targets: this[megaWinKey],
+                                    alpha: 1,
+                                    duration: 200,
+                                    ease: 'sine.inout'
+                                });
+                                this.megaWinScreenAnimation[i] = megaWinTween;
+
+                                setTimeout(() => {
+                                    this[megaWinKey].setAlpha(0);
+                                    this.megaWinScreenAnimation[i].destroy();
+
+                                    this.input.enabled = true;
+                                    this.input.keyboard.enabled = true;
+                                }, ANIMATION_DURATION * 2);
+                            }
                         } else if (jollyRandomReel) {
                             slotWinJollyFX.play(); // Not playing with mega win
                             this.slotWin = this.slotBet * 3;
