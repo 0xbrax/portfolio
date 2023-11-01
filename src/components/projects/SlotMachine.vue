@@ -181,7 +181,7 @@
                         this.freeSpinLevel;
                         this.freeSpinLabel;
                         this.freeSpinValue = 0;
-                        this.freeSpinIncrement = 10;
+                        this.freeSpinIncrement = 25;
                         this.freeSpinAnimation;
 
                         this.slotBet = 200;
@@ -456,7 +456,7 @@
                         this.freeSpinLevel.fillRoundedRect(0, 0, freeSpinWidth - (10 * this.slotBody.scaleX), 0, 0);
                         this.freeSpinLevel.setPosition(this.freeSpinContainer.x + (5 * this.slotBody.scaleX), this.freeSpinContainer.y + freeSpinHeight - freeSpinHeightLevel + (5 * this.slotBody.scaleX));
 
-                        this.freeSpinLabel = this.add.text(this.freeSpinContainer.x + (20 * this.slotBody.scaleX), this.freeSpinContainer.y - (100 * this.slotBody.scaleX), 'free\nspin', { ...this.TEXT_STYLE, fontSize: 80 * this.slotBody.scaleX }).setOrigin(0.5, 0.5);
+                        if (!isMobile) this.freeSpinLabel = this.add.text(this.freeSpinContainer.x + (20 * this.slotBody.scaleX), this.freeSpinContainer.y - (100 * this.slotBody.scaleX), 'free\nspin', { ...this.TEXT_STYLE, fontSize: 80 * this.slotBody.scaleX }).setOrigin(0.5, 0.5);
 
 
 
@@ -513,7 +513,15 @@
                             this.slotForward.setPosition(this.slotForwardUI.x, this.slotForwardUI.y + (148 * this.slotBody.scaleX));
 
 
-                            //this.freeSpinContainer.rotation = Phaser.Math.DegToRad(90);
+                            this.freeSpinContainer.rotation = Phaser.Math.DegToRad(-90);
+                            this.freeSpinContainer.setScale(7 * this.slotBody.scaleX, 7 * this.slotBody.scaleX);
+                            this.freeSpinContainer.setPosition(this.slotSpinUI.x - ((freeSpinHeight * this.freeSpinContainer.scaleY) / 2), canvasRef.value.offsetHeight - (824 * this.slotBody.scaleX));
+
+                            this.freeSpinLevel.rotation = Phaser.Math.DegToRad(-90);
+                            this.freeSpinLevel.setScale(7 * this.slotBody.scaleX, 7 * this.slotBody.scaleX);
+                            this.freeSpinLevel.setPosition(this.slotSpinUI.x - ((freeSpinHeight * this.freeSpinLevel.scaleY) / 2) + (7 * this.slotBody.scaleX), canvasRef.value.offsetHeight - (824 * this.slotBody.scaleX) - (7 * this.slotBody.scaleX));
+
+                            this.freeSpinLabel = this.add.text(this.slotSpinUI.x, this.slotSpinUI.y - (86 * this.slotBody.scaleX), 'free spin', { ...this.TEXT_STYLE, fontSize: 80 * this.slotBody.scaleX }).setOrigin(0.5, 0.5);
                         }
 
 
@@ -787,7 +795,11 @@
                         const freeSpinHeightLevel = (freeSpinHeight / 100) * this.freeSpinValue;
 
                         this.freeSpinLevel.fillRoundedRect(0, 0, freeSpinWidth - (10 * this.slotBody.scaleX), this.freeSpinValue !== 0 ? freeSpinHeightLevel - (10 * this.slotBody.scaleX) : 0, this.freeSpinValue !== 0 ? freeSpinRadius - (5 * this.slotBody.scaleX) : 0);
-                        this.freeSpinLevel.setPosition(this.freeSpinContainer.x + (5 * this.slotBody.scaleX), this.freeSpinContainer.y + freeSpinHeight - freeSpinHeightLevel + (5 * this.slotBody.scaleX));
+                        if (isMobile) {
+                            this.freeSpinLevel.setPosition(this.slotSpinUI.x - ((freeSpinHeight * this.freeSpinLevel.scaleY) / 2) + (7 * this.slotBody.scaleX), canvasRef.value.offsetHeight - (824 * this.slotBody.scaleX) - (7 * this.slotBody.scaleX));
+                        } else {
+                            this.freeSpinLevel.setPosition(this.freeSpinContainer.x + (5 * this.slotBody.scaleX), this.freeSpinContainer.y + freeSpinHeight - freeSpinHeightLevel + (5 * this.slotBody.scaleX));
+                        }
 
                         if (this.freeSpinValue >= 100) {
                             const freeSpinFX = this.freeSpinLabel.postFX.addGlow(0xbe0100, 0, 0);
