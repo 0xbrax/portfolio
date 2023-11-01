@@ -16,6 +16,6 @@ export default defineConfig(({ mode }) => {
       },
     },
     assetsInclude: ['**/*.glb'],
-    publicPath: process.env.NODE_ENV === 'production' ? env.BASE_URL : '/',
+    publicPath: mode === 'production' ? env.VUE_APP_BASE_URL : '/',
   }
 });
