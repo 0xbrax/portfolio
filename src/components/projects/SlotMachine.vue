@@ -70,6 +70,8 @@
     import BalanceUI from "@/assets/projects/slotmachine/image/main/ui_balance.png";
     import CoinImage from"@/assets/projects/slotmachine/image/main/coin.png";
 
+
+
     export default {
         name: 'SlotMachine',
 
@@ -176,14 +178,20 @@
                         this.slotBalanceCoin;
 
                         this.freeSpinContainer;
-                        this.freeSpinValue;
+                        this.freeSpinLevel;
+                        this.freeSpinLabel;
+                        this.freeSpinValue = 0;
+                        this.freeSpinIncrement = 10;
+                        this.freeSpinAnimation;
 
                         this.slotBet = 200;
                         this.slotBetIncrement = 100;
                         this.slotWin = null;
-                        this.slotBalance = 1_000;
+                        this.slotBalance = 1_000_000;
                         this.isAutoSpinActive = false;
                         this.isFastForwardActive = false;
+
+                        this.symbolsAnimations = {};
                     }
 
                     preload() {
@@ -261,7 +269,7 @@
                             }
                             const mask = this.add.graphics();
 
-                            //mask.fillStyle(0xff0000, 1); // DEBUG TOOL
+                            mask.fillStyle(0xff0000, 0); // DEBUG TOOL: 0 => 1
 
                             mask.fillRect(0, 0, maskDimension.width, maskDimension.height);
                             mask.setPosition(this.slotBody.x + (xGap * this.slotBody.scaleX), this.slotBody.y + (96 * this.slotBody.scaleX));
@@ -349,21 +357,6 @@
                         });
                         this.characterMain.anims.play('character-main_animation');
 
-                        this.characterMain.setInteractive();
-                        this.characterMain.on('pointerdown', () => {
-                            this.characterMain.visible = false;
-                            this.characterMain.anims.pause();
-                            this.characterDrink.visible = true;
-                            this.characterDrink.anims.play('character-drink_animation');
-                        });
-                        this.characterDrink.setInteractive();
-                        this.characterDrink.on('pointerdown', () => {
-                            this.characterDrink.visible = false;
-                            this.characterDrink.anims.pause();
-                            this.characterMain.visible = true;
-                            this.characterMain.anims.play('character-main_animation');
-                        });
-
 
 
                         // Audio
@@ -388,13 +381,15 @@
                             fill: true,
                             fillAlpha: 1
                         };
+                        this.TEXT_STYLE.padding = this.TEXT_STYLE.shadow.blur;
+
 
                         this.slotWinUI = isMobile ? this.add.image(0, 0, 'slot-bet_ui').setOrigin(0.5, 0) : this.add.image(0, 0, 'slot-win_ui').setOrigin(0.5, 0);
                         this.slotWinUI.setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
                         this.slotWinUI.setPosition(canvasRef.value.offsetWidth / 2, canvasRef.value.offsetHeight - this.slotWinUI.displayHeight - (UI_BOTTOM_DISTANCE * this.slotBody.scaleX));
 
-                        this.slotWinLabel = this.add.text(this.slotWinUI.x, this.slotWinUI.y + (16 * this.slotBody.scaleX), 'win', { ...this.TEXT_STYLE, fontSize: 50 * this.slotBody.scaleX }).setOrigin(0.5, 0);
-                        this.slotWinValue = this.add.text(this.slotWinUI.x, this.slotWinUI.y + (100 * this.slotBody.scaleX), formatNumber(this.slotWin), { ...this.TEXT_STYLE, fontSize: 100 * this.slotBody.scaleX }).setOrigin(0.5, 0);
+                        this.slotWinLabel = this.add.text(this.slotWinUI.x, this.slotWinUI.y + (-4 * this.slotBody.scaleX), 'win', { ...this.TEXT_STYLE, fontSize: 50 * this.slotBody.scaleX }).setOrigin(0.5, 0);
+                        this.slotWinValue = this.add.text(this.slotWinUI.x, this.slotWinUI.y + (80 * this.slotBody.scaleX), formatNumber(this.slotWin), { ...this.TEXT_STYLE, fontSize: 100 * this.slotBody.scaleX }).setOrigin(0.5, 0);
 
 
                         this.slotAutoUI = this.add.image(0, 0, 'slot-auto_ui').setOrigin(0.5, 0);
@@ -409,10 +404,10 @@
                         this.slotForwardUI.setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
                         this.slotForwardUI.setPosition(this.slotWinUI.x + (1130 * this.slotBody.scaleX), canvasRef.value.offsetHeight - this.slotForwardUI.displayHeight - (UI_BOTTOM_DISTANCE * this.slotBody.scaleX));
 
-                        this.slotAutoLabel = this.add.text(this.slotAutoUI.x, this.slotAutoUI.y + (66 * this.slotBody.scaleX), 'auto', { ...this.TEXT_STYLE, fontSize: 40 * this.slotBody.scaleX }).setOrigin(0.5, 0);
-                        this.slotSpinLabel = this.add.text(this.slotSpinUI.x, this.slotSpinUI.y + (40 * this.slotBody.scaleX), 'spin', { ...this.TEXT_STYLE, fontSize: 100 * this.slotBody.scaleX }).setOrigin(0.5, 0);
+                        this.slotAutoLabel = this.add.text(this.slotAutoUI.x, this.slotAutoUI.y + (46 * this.slotBody.scaleX), 'auto', { ...this.TEXT_STYLE, fontSize: 40 * this.slotBody.scaleX }).setOrigin(0.5, 0);
+                        this.slotSpinLabel = this.add.text(this.slotSpinUI.x, this.slotSpinUI.y + (20 * this.slotBody.scaleX), 'spin', { ...this.TEXT_STYLE, fontSize: 100 * this.slotBody.scaleX }).setOrigin(0.5, 0);
                         this.slotForward = this.add.image(0, 0, 'slot-forward_icon');
-                        this.slotForward.setScale(0.15 * this.slotBody.scaleX, 0.15 * this.slotBody.scaleX);
+                        this.slotForward.setScale(0.16 * this.slotBody.scaleX, 0.16 * this.slotBody.scaleX);
                         this.slotForward.setPosition(this.slotForwardUI.x, this.slotForwardUI.y + (86 * this.slotBody.scaleX));
 
 
@@ -428,18 +423,40 @@
                         this.slotMinusUI.setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
                         this.slotMinusUI.setPosition(this.slotWinUI.x - (1040 * this.slotBody.scaleX), canvasRef.value.offsetHeight - this.slotMinusUI.displayHeight - (UI_BOTTOM_DISTANCE * this.slotBody.scaleX));
 
-                        this.slotBetLabel = this.add.text(this.slotBetUI.x, this.slotBetUI.y + (14 * this.slotBody.scaleX), 'bet', { ...this.TEXT_STYLE, fontSize: 50 * this.slotBody.scaleX }).setOrigin(0.5, 0);
-                        this.slotBetValue = this.add.text(this.slotBetUI.x, this.slotBetUI.y + (84 * this.slotBody.scaleX), formatNumber(this.slotBet), { ...this.TEXT_STYLE, fontSize: 60 * this.slotBody.scaleX }).setOrigin(0.5, 0);
+                        this.slotBetLabel = this.add.text(this.slotBetUI.x, this.slotBetUI.y + (-4 * this.slotBody.scaleX), 'bet', { ...this.TEXT_STYLE, fontSize: 50 * this.slotBody.scaleX }).setOrigin(0.5, 0);
+                        this.slotBetValue = this.add.text(this.slotBetUI.x, this.slotBetUI.y + (64 * this.slotBody.scaleX), formatNumber(this.slotBet), { ...this.TEXT_STYLE, fontSize: 60 * this.slotBody.scaleX }).setOrigin(0.5, 0);
 
 
                         this.slotBalanceUI = this.add.image(0, 0, 'slot-balance_ui').setOrigin(0.5, 0);
                         this.slotBalanceUI.setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
                         this.slotBalanceUI.setPosition(this.slotBody.x + (364 * this.slotBody.scaleX), this.slotBody.y - (72 * this.slotBody.scaleX));
 
-                        this.slotBalanceValue = this.add.text(this.slotBalanceUI.x + (174 * this.slotBody.scaleX), this.slotBalanceUI.y + (16 * this.slotBody.scaleX), formatNumber(this.slotBalance), { ...this.TEXT_STYLE, fontSize: 50 * this.slotBody.scaleX }).setOrigin(1, 0);
+                        this.slotBalanceValue = this.add.text(this.slotBalanceUI.x + (194 * this.slotBody.scaleX), this.slotBalanceUI.y + (-4 * this.slotBody.scaleX), formatNumber(this.slotBalance), { ...this.TEXT_STYLE, fontSize: 50 * this.slotBody.scaleX }).setOrigin(1, 0);
                         this.slotBalanceCoin = this.add.image(0, 0, 'slot_coin').setOrigin(0, 0);
                         this.slotBalanceCoin.setScale(1.4 * this.slotBody.scaleX, 1.4 * this.slotBody.scaleX);
                         this.slotBalanceCoin.setPosition(this.slotBalanceUI.x - (304 * this.slotBody.scaleX), this.slotBalanceUI.y);
+
+
+
+                        const freeSpinWidth = 50 * this.slotBody.scaleX;
+                        const freeSpinHeight = 800 * this.slotBody.scaleX;
+                        const freeSpinBorder = 10 * this.slotBody.scaleX;
+                        const freeSpinRadius = freeSpinWidth / 2;
+                        const freeSpinHeightLevel = (freeSpinHeight / 100) * this.freeSpinValue;
+
+                        this.freeSpinContainer = this.add.graphics();
+                        this.freeSpinContainer.fillStyle(0x4bc8ff, 0.5);
+                        this.freeSpinContainer.fillRoundedRect(0, 0, freeSpinWidth, freeSpinHeight, freeSpinRadius);
+                        this.freeSpinContainer.lineStyle(freeSpinBorder, 0x86318c);
+                        this.freeSpinContainer.strokeRoundedRect(0, 0, freeSpinWidth, freeSpinHeight, freeSpinRadius);
+                        this.freeSpinContainer.setPosition(250 * this.slotBody.scaleX, (canvasRef.value.offsetHeight / 2) - (freeSpinHeight / 2));
+
+                        this.freeSpinLevel = this.add.graphics();
+                        this.freeSpinLevel.fillStyle(0xf96000);
+                        this.freeSpinLevel.fillRoundedRect(0, 0, freeSpinWidth - (10 * this.slotBody.scaleX), 0, 0);
+                        this.freeSpinLevel.setPosition(this.freeSpinContainer.x + (5 * this.slotBody.scaleX), this.freeSpinContainer.y + freeSpinHeight - freeSpinHeightLevel + (5 * this.slotBody.scaleX));
+
+                        this.freeSpinLabel = this.add.text(this.freeSpinContainer.x + (20 * this.slotBody.scaleX), this.freeSpinContainer.y - (100 * this.slotBody.scaleX), 'free\nspin', { ...this.TEXT_STYLE, fontSize: 80 * this.slotBody.scaleX }).setOrigin(0.5, 0.5);
 
 
 
@@ -455,24 +472,24 @@
                             this.slotBalanceUI.setScale(2 * this.slotBody.scaleX, 2 * this.slotBody.scaleX);
                             this.slotBalanceUI.setPosition(this.slotBody.x + this.slotBody.displayWidth / 2, 50 * this.slotBody.scaleX);
                             this.slotBalanceValue.setFontSize(100 * this.slotBody.scaleX);
-                            this.slotBalanceValue.setPosition(this.slotBalanceUI.x + (334 * this.slotBody.scaleX), this.slotBalanceUI.y + (32 * this.slotBody.scaleX));
+                            this.slotBalanceValue.setPosition(this.slotBalanceUI.x + (354 * this.slotBody.scaleX), this.slotBalanceUI.y + (12 * this.slotBody.scaleX));
                             this.slotBalanceCoin.setScale(2.8 * this.slotBody.scaleX, 2.8 * this.slotBody.scaleX);
                             this.slotBalanceCoin.setPosition(this.slotBalanceUI.x - (620 * this.slotBody.scaleX), this.slotBalanceUI.y);
 
                             this.slotWinUI.setScale(2 * this.slotBody.scaleX, 2 * this.slotBody.scaleX);
                             this.slotWinUI.setPosition(this.slotBalanceUI.x, 255 * this.slotBody.scaleX);
                             this.slotWinLabel.setFontSize(110 * this.slotBody.scaleX);
-                            this.slotWinLabel.setPosition(this.slotWinUI.x, this.slotWinUI.y + (26 * this.slotBody.scaleX));
+                            this.slotWinLabel.setPosition(this.slotWinUI.x, this.slotWinUI.y + (6 * this.slotBody.scaleX));
                             this.slotWinValue.setFontSize(140 * this.slotBody.scaleX);
-                            this.slotWinValue.setPosition(this.slotWinUI.x, this.slotWinUI.y + (160 * this.slotBody.scaleX));
+                            this.slotWinValue.setPosition(this.slotWinUI.x, this.slotWinUI.y + (140 * this.slotBody.scaleX));
 
 
                             this.slotBetUI.setScale(1.5 * this.slotBody.scaleX, 1.5 * this.slotBody.scaleX);
                             this.slotBetUI.setPosition(this.slotBalanceUI.x, canvasRef.value.offsetHeight - this.slotBetUI.displayHeight - (50 * this.slotBody.scaleX));
                             this.slotBetLabel.setFontSize(80 * this.slotBody.scaleX);
-                            this.slotBetLabel.setPosition(this.slotBetUI.x, this.slotBetUI.y + (18 * this.slotBody.scaleX));
+                            this.slotBetLabel.setPosition(this.slotBetUI.x, this.slotBetUI.y + (-2 * this.slotBody.scaleX));
                             this.slotBetValue.setFontSize(120 * this.slotBody.scaleX);
-                            this.slotBetValue.setPosition(this.slotBetUI.x, this.slotBetUI.y + (114 * this.slotBody.scaleX));
+                            this.slotBetValue.setPosition(this.slotBetUI.x, this.slotBetUI.y + (94 * this.slotBody.scaleX));
 
                             this.slotPlusUI.setScale(1.5 * this.slotBody.scaleX, 1.5 * this.slotBody.scaleX);
                             this.slotPlusUI.setPosition(this.slotBetUI.x + (415 * this.slotBody.scaleX), canvasRef.value.offsetHeight - this.slotPlusUI.displayHeight - (50 * this.slotBody.scaleX));
@@ -483,17 +500,20 @@
                             this.slotSpinUI.setScale(2.25 * this.slotBody.scaleX, 2.25 * this.slotBody.scaleX);
                             this.slotSpinUI.setPosition(this.slotBalanceUI.x, canvasRef.value.offsetHeight - this.slotSpinUI.displayHeight - (350 * this.slotBody.scaleX));
                             this.slotSpinLabel.setFontSize(220 * this.slotBody.scaleX);
-                            this.slotSpinLabel.setPosition(this.slotSpinUI.x, this.slotSpinUI.y + (88 * this.slotBody.scaleX));
+                            this.slotSpinLabel.setPosition(this.slotSpinUI.x, this.slotSpinUI.y + (68 * this.slotBody.scaleX));
 
                             this.slotAutoUI.setScale(1.75 * this.slotBody.scaleX, 1.75 * this.slotBody.scaleX);
                             this.slotAutoUI.setPosition(this.slotSpinUI.x - (660 * this.slotBody.scaleX), canvasRef.value.offsetHeight - this.slotAutoUI.displayHeight - (350 * this.slotBody.scaleX));
                             this.slotAutoLabel.setFontSize(80 * this.slotBody.scaleX);
-                            this.slotAutoLabel.setPosition(this.slotAutoUI.x, this.slotAutoUI.y + (106 * this.slotBody.scaleX));
+                            this.slotAutoLabel.setPosition(this.slotAutoUI.x, this.slotAutoUI.y + (86 * this.slotBody.scaleX));
 
                             this.slotForwardUI.setScale(1.75 * this.slotBody.scaleX, 1.75 * this.slotBody.scaleX);
                             this.slotForwardUI.setPosition(this.slotSpinUI.x + (660 * this.slotBody.scaleX), canvasRef.value.offsetHeight - this.slotForwardUI.displayHeight - (350 * this.slotBody.scaleX));
-                            this.slotForward.setScale(0.30 * this.slotBody.scaleX, 0.30 * this.slotBody.scaleX);
-                            this.slotForward.setPosition(this.slotForwardUI.x, this.slotForwardUI.y + (150 * this.slotBody.scaleX));
+                            this.slotForward.setScale(0.25 * this.slotBody.scaleX, 0.25 * this.slotBody.scaleX);
+                            this.slotForward.setPosition(this.slotForwardUI.x, this.slotForwardUI.y + (148 * this.slotBody.scaleX));
+
+
+                            //this.freeSpinContainer.rotation = Phaser.Math.DegToRad(90);
                         }
 
 
@@ -502,21 +522,21 @@
                         let isGamePlayingWatch;
 
                         this.input.keyboard.on('keydown-SPACE', () => {
-                            if (this.slotBet > this.slotBalance) return;
+                            if (this.slotBet > this.slotBalance && this.freeSpinValue !== 100) return;
                             if (this.isAutoSpinActive) return;
                             this.spin();
                         });
 
                         this.slotSpinUI.setInteractive({ useHandCursor: true });
                         this.slotSpinUI.on('pointerdown', () => {
-                            if (this.slotBet > this.slotBalance) return;
+                            if (this.slotBet > this.slotBalance && this.freeSpinValue !== 100) return;
                             if (this.isAutoSpinActive) return;
                             this.spin();
                         });
 
                         this.slotAutoUI.setInteractive({ useHandCursor: true });
                         this.slotAutoUI.on('pointerdown', () => {
-                            if (this.slotBet > this.slotBalance) return;
+                            if (this.slotBet > this.slotBalance && this.freeSpinValue !== 100) return;
 
                             if (this.isAutoSpinActive) {
                                 isGamePlayingWatch(); // watch stop, unwatch
@@ -575,6 +595,8 @@
                         this.slotMinusUI.setInteractive({ useHandCursor: true });
 
                         this.slotPlusUI.on('pointerdown', () => {
+                            if (this.freeSpinValue === 100) return;
+
                             this.slotBet += this.slotBetIncrement;
                             this.slotBetValue.setText(formatNumber(this.slotBet));
 
@@ -590,6 +612,8 @@
                             }
                         });
                         this.slotMinusUI.on('pointerdown', () => {
+                            if (this.freeSpinValue === 100) return;
+
                             this.slotBet -= this.slotBetIncrement;
                             this.slotBetValue.setText(formatNumber(this.slotBet));
 
@@ -630,13 +654,14 @@
 
                         isGamePlaying.value = true;
                         slotClickFX.play();
+                        if (this.freeSpinAnimation) this.freeSpinAnimation.destroy();
 
                         this.slotPlusUI.input.enabled = false;
                         this.slotPlusUI.setAlpha(0.5);
                         this.slotMinusUI.input.enabled = false;
                         this.slotMinusUI.setAlpha(0.5);
 
-                        this.slotBalance -= this.slotBet;
+                        if (this.freeSpinValue !== 100) this.slotBalance -= this.slotBet;
                         this.slotBalanceValue.setText(formatNumber(this.slotBalance));
                         this.slotWin = null;
                         this.slotWinValue.setText('');
@@ -653,6 +678,7 @@
                                 reels[`reel${i}`][`${randomWinSymbol}Sheet`].anims.stop();
                                 reels[`reel${i}`][`${randomWinSymbol}Sheet`].setFrame(`${randomWinSymbol}-animation_30.png`);
                                 reels[`reel${i}`][`${randomWinSymbol}Sheet`].postPipelines = [];
+                                this.symbolsAnimations[i].destroy();
                             }
                             randomWinSymbol = null;
                         }
@@ -740,6 +766,52 @@
                     animateOnComplete() {
                         isGamePlaying.value = false;
 
+                        if (this.freeSpinValue >= 100) {
+                            this.freeSpinValue = 0;
+                            this.freeSpinLabel.postPipelines = [];
+                            this.slotBetValue.setText(formatNumber(this.slotBet));
+                            this.freeSpinLevel.clear();
+                            this.freeSpinLevel.fillStyle(0xf96000);
+
+                            this.characterDrink.visible = false;
+                            this.characterDrink.anims.pause();
+                            this.characterMain.visible = true;
+                            this.characterMain.anims.play('character-main_animation');
+                        } else {
+                            this.freeSpinValue += this.freeSpinIncrement;
+                        }
+
+                        const freeSpinWidth = 50 * this.slotBody.scaleX;
+                        const freeSpinHeight = 800 * this.slotBody.scaleX;
+                        const freeSpinRadius = freeSpinWidth / 2;
+                        const freeSpinHeightLevel = (freeSpinHeight / 100) * this.freeSpinValue;
+
+                        this.freeSpinLevel.fillRoundedRect(0, 0, freeSpinWidth - (10 * this.slotBody.scaleX), this.freeSpinValue !== 0 ? freeSpinHeightLevel - (10 * this.slotBody.scaleX) : 0, this.freeSpinValue !== 0 ? freeSpinRadius - (5 * this.slotBody.scaleX) : 0);
+                        this.freeSpinLevel.setPosition(this.freeSpinContainer.x + (5 * this.slotBody.scaleX), this.freeSpinContainer.y + freeSpinHeight - freeSpinHeightLevel + (5 * this.slotBody.scaleX));
+
+                        if (this.freeSpinValue >= 100) {
+                            const freeSpinFX = this.freeSpinLabel.postFX.addGlow(0xbe0100, 0, 0);
+
+                            this.freeSpinAnimation = this.tweens.add({
+                                targets: freeSpinFX,
+                                duration: 1250 / 2, // sync with sprite animation
+                                outerStrength: 10 * this.slotBody.scaleX,
+                                yoyo: true,
+                                loop: -1,
+                                ease: 'sine.inout'
+                            });
+
+                            slotFreeSpinFX.play();
+                            this.slotBetValue.setText('free');
+
+                            this.characterMain.visible = false;
+                            this.characterMain.anims.pause();
+                            this.characterDrink.visible = true;
+                            this.characterDrink.anims.play('character-drink_animation');
+                        }
+
+
+
                         if (!this.isAutoSpinActive) {
                             this.slotSpinUI.setAlpha(1);
                             this.slotSpinUI.input.cursor = 'pointer';
@@ -772,7 +844,7 @@
                                 symbolWinFX = reels[`reel${i}`][`${randomWinSymbol}Sheet`].postFX.addGlow(0xffffff, 0, 0);
                             }
 
-                            this.tweens.add({
+                            this.symbolsAnimations[i] = this.tweens.add({
                                 targets: symbolWinFX,
                                 duration: 1250 / 2, // sync with sprite animation
                                 outerStrength: 10 * this.slotBody.scaleX,
@@ -781,6 +853,8 @@
                                 ease: 'sine.inout'
                             });
                         }
+
+                        if (this.freeSpinValue === 100) this.slotBet = this.slotBetIncrement; // min bet x free spin
 
                         if (selectedCondition === 'mega-win') {
                             slotMegaWinFX.play();
