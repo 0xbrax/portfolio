@@ -21,9 +21,9 @@
 </template>
 
 <script>
-    import { ref, onMounted, watch } from "vue";
+    import { ref, onMounted, watch, onUnmounted } from "vue";
     import Phaser from "phaser";
-    import { isDeviceMobile, getRandomNumber } from "@/assets/js/utils.js";
+    import { isDeviceMobile, getRandomNumber, formatNumber } from "@/assets/js/utils.js";
     import { verticalLoop, getRandomWinMap, getRandomLose } from "@/assets/projects/slotmachine/js/slotmachine.js";
 
     import SlotBodyImage from "@/assets/projects/slotmachine/image/main/reel.png";
@@ -75,6 +75,7 @@
 
         setup() {
             const isMobile = isDeviceMobile();
+            let wakeLock;
             const isLoadingScreenActive = ref(true);
             const loaderProgress = ref('0');
             const isLoadingComplete = ref(false);
@@ -116,10 +117,10 @@
                 reel5Animation: null
             };
 
-            const conditions = [...Array(10).fill('lose'), ...Array(15).fill('fake-win'), ...Array(45).fill('win'), ...Array(5).fill('mega-win')];
+            const conditions = [...Array(4).fill('lose'), ...Array(6).fill('fake-win'), ...Array(10).fill('win'), ...Array(1).fill('mega-win')];
             let selectedCondition = null;
 
-            const jollyWinRatio = [1, ...Array(2).fill(0)]; // 1 => true, 0 => false
+            const jollyWinRatio = [1, ...Array(4).fill(0)]; // 1 => true, 0 => false
             let jollyRandomReel = null;
 
             const isGamePlaying = ref(false);
@@ -134,7 +135,14 @@
 
 
 
-            onMounted(() => {
+            // INIT
+            onMounted(async () => {
+                try {
+                    wakeLock = await navigator.wakeLock.request('screen'); // screen lock
+                } catch (err) {
+                    //
+                }
+
                 class GameScene extends Phaser.Scene {
                     constructor() {
                         super({ key: 'gameScene' });
@@ -165,12 +173,15 @@
                         this.slotBetLabel;
                         this.slotBetValue;
                         this.slotBalanceValue;
-                        this.slotCoin;
+                        this.slotBalanceCoin;
+
+                        this.freeSpinContainer;
+                        this.freeSpinValue;
 
                         this.slotBet = 200;
                         this.slotBetIncrement = 100;
                         this.slotWin = null;
-                        this.slotBalance = 1_000_000;
+                        this.slotBalance = 1_000;
                         this.isAutoSpinActive = false;
                         this.isFastForwardActive = false;
                     }
@@ -199,6 +210,7 @@
                         this.load.image('slot_body', SlotBodyImage);
                         this.load.image('slot_canopy', SlotCanopyImage);
                         this.load.image('slot_logo', SlotLogoImage);
+                        this.load.image('slot_coin', CoinImage);
 
                         this.load.atlas('character-main_sprite', CharacterMainPng, CharacterMainJson);
                         this.load.atlas('character-drink_sprite', CharacterDrinkPng, CharacterDrinkJson);
@@ -228,7 +240,6 @@
                         this.load.image('slot-plus_ui', PlusUI);
                         this.load.image('slot-win_ui', WinUI);
                         this.load.image('slot-balance_ui', BalanceUI);
-                        this.load.image('slot-coin_img', CoinImage);
                     }
 
                     create() {
@@ -383,7 +394,7 @@
                         this.slotWinUI.setPosition(canvasRef.value.offsetWidth / 2, canvasRef.value.offsetHeight - this.slotWinUI.displayHeight - (UI_BOTTOM_DISTANCE * this.slotBody.scaleX));
 
                         this.slotWinLabel = this.add.text(this.slotWinUI.x, this.slotWinUI.y + (16 * this.slotBody.scaleX), 'win', { ...this.TEXT_STYLE, fontSize: 50 * this.slotBody.scaleX }).setOrigin(0.5, 0);
-                        this.slotWinValue = this.add.text(this.slotWinUI.x, this.slotWinUI.y + (100 * this.slotBody.scaleX), this.slotWin, { ...this.TEXT_STYLE, fontSize: 100 * this.slotBody.scaleX }).setOrigin(0.5, 0);
+                        this.slotWinValue = this.add.text(this.slotWinUI.x, this.slotWinUI.y + (100 * this.slotBody.scaleX), formatNumber(this.slotWin), { ...this.TEXT_STYLE, fontSize: 100 * this.slotBody.scaleX }).setOrigin(0.5, 0);
 
 
                         this.slotAutoUI = this.add.image(0, 0, 'slot-auto_ui').setOrigin(0.5, 0);
@@ -418,13 +429,17 @@
                         this.slotMinusUI.setPosition(this.slotWinUI.x - (1040 * this.slotBody.scaleX), canvasRef.value.offsetHeight - this.slotMinusUI.displayHeight - (UI_BOTTOM_DISTANCE * this.slotBody.scaleX));
 
                         this.slotBetLabel = this.add.text(this.slotBetUI.x, this.slotBetUI.y + (14 * this.slotBody.scaleX), 'bet', { ...this.TEXT_STYLE, fontSize: 50 * this.slotBody.scaleX }).setOrigin(0.5, 0);
-                        this.slotBetValue = this.add.text(this.slotBetUI.x, this.slotBetUI.y + (84 * this.slotBody.scaleX), this.slotBet, { ...this.TEXT_STYLE, fontSize: 60 * this.slotBody.scaleX }).setOrigin(0.5, 0);
+                        this.slotBetValue = this.add.text(this.slotBetUI.x, this.slotBetUI.y + (84 * this.slotBody.scaleX), formatNumber(this.slotBet), { ...this.TEXT_STYLE, fontSize: 60 * this.slotBody.scaleX }).setOrigin(0.5, 0);
+
 
                         this.slotBalanceUI = this.add.image(0, 0, 'slot-balance_ui').setOrigin(0.5, 0);
                         this.slotBalanceUI.setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
                         this.slotBalanceUI.setPosition(this.slotBody.x + (364 * this.slotBody.scaleX), this.slotBody.y - (72 * this.slotBody.scaleX));
 
-                        this.slotBalanceValue = this.add.text(this.slotBalanceUI.x + (174 * this.slotBody.scaleX), this.slotBalanceUI.y + (16 * this.slotBody.scaleX), this.slotBalance, { ...this.TEXT_STYLE, fontSize: 50 * this.slotBody.scaleX }).setOrigin(1, 0);
+                        this.slotBalanceValue = this.add.text(this.slotBalanceUI.x + (174 * this.slotBody.scaleX), this.slotBalanceUI.y + (16 * this.slotBody.scaleX), formatNumber(this.slotBalance), { ...this.TEXT_STYLE, fontSize: 50 * this.slotBody.scaleX }).setOrigin(1, 0);
+                        this.slotBalanceCoin = this.add.image(0, 0, 'slot_coin').setOrigin(0, 0);
+                        this.slotBalanceCoin.setScale(1.4 * this.slotBody.scaleX, 1.4 * this.slotBody.scaleX);
+                        this.slotBalanceCoin.setPosition(this.slotBalanceUI.x - (304 * this.slotBody.scaleX), this.slotBalanceUI.y);
 
 
 
@@ -440,7 +455,9 @@
                             this.slotBalanceUI.setScale(2 * this.slotBody.scaleX, 2 * this.slotBody.scaleX);
                             this.slotBalanceUI.setPosition(this.slotBody.x + this.slotBody.displayWidth / 2, 50 * this.slotBody.scaleX);
                             this.slotBalanceValue.setFontSize(100 * this.slotBody.scaleX);
-                            this.slotBalanceValue.setPosition(this.slotBalanceUI.x + (335 * this.slotBody.scaleX), this.slotBalanceUI.y + (32 * this.slotBody.scaleX));
+                            this.slotBalanceValue.setPosition(this.slotBalanceUI.x + (334 * this.slotBody.scaleX), this.slotBalanceUI.y + (32 * this.slotBody.scaleX));
+                            this.slotBalanceCoin.setScale(2.8 * this.slotBody.scaleX, 2.8 * this.slotBody.scaleX);
+                            this.slotBalanceCoin.setPosition(this.slotBalanceUI.x - (620 * this.slotBody.scaleX), this.slotBalanceUI.y);
 
                             this.slotWinUI.setScale(2 * this.slotBody.scaleX, 2 * this.slotBody.scaleX);
                             this.slotWinUI.setPosition(this.slotBalanceUI.x, 255 * this.slotBody.scaleX);
@@ -485,18 +502,22 @@
                         let isGamePlayingWatch;
 
                         this.input.keyboard.on('keydown-SPACE', () => {
+                            if (this.slotBet > this.slotBalance) return;
                             if (this.isAutoSpinActive) return;
                             this.spin();
                         });
 
                         this.slotSpinUI.setInteractive({ useHandCursor: true });
                         this.slotSpinUI.on('pointerdown', () => {
+                            if (this.slotBet > this.slotBalance) return;
                             if (this.isAutoSpinActive) return;
                             this.spin();
                         });
 
                         this.slotAutoUI.setInteractive({ useHandCursor: true });
                         this.slotAutoUI.on('pointerdown', () => {
+                            if (this.slotBet > this.slotBalance) return;
+
                             if (this.isAutoSpinActive) {
                                 isGamePlayingWatch(); // watch stop, unwatch
                                 this.isAutoSpinActive = false;
@@ -555,7 +576,7 @@
 
                         this.slotPlusUI.on('pointerdown', () => {
                             this.slotBet += this.slotBetIncrement;
-                            this.slotBetValue.setText(this.slotBet);
+                            this.slotBetValue.setText(formatNumber(this.slotBet));
 
                             if (this.slotBet >= 1000) {
                                 this.slotPlusUI.input.enabled = false;
@@ -570,7 +591,7 @@
                         });
                         this.slotMinusUI.on('pointerdown', () => {
                             this.slotBet -= this.slotBetIncrement;
-                            this.slotBetValue.setText(this.slotBet);
+                            this.slotBetValue.setText(formatNumber(this.slotBet));
 
                             if (this.slotBet <= 100) {
                                 this.slotMinusUI.input.enabled = false;
@@ -607,8 +628,6 @@
                             this.input.setDefaultCursor('default');
                         }
 
-                        if (this.slotBet > this.slotBalance) return;
-
                         isGamePlaying.value = true;
                         slotClickFX.play();
 
@@ -618,7 +637,7 @@
                         this.slotMinusUI.setAlpha(0.5);
 
                         this.slotBalance -= this.slotBet;
-                        this.slotBalanceValue.setText(this.slotBalance);
+                        this.slotBalanceValue.setText(formatNumber(this.slotBalance));
                         this.slotWin = null;
                         this.slotWinValue.setText('');
 
@@ -776,8 +795,8 @@
 
                         if (this.slotWin) this.slotBalance += this.slotWin;
 
-                        this.slotBalanceValue.setText(this.slotBalance);
-                        this.slotWinValue.setText(this.slotWin || '');
+                        this.slotBalanceValue.setText(formatNumber(this.slotBalance));
+                        this.slotWinValue.setText(formatNumber(this.slotWin));
                     }
                 }
 
@@ -798,6 +817,13 @@
                 game.scene.add('gameScene', GameScene);
                 game.scene.start('gameScene');
             });
+
+            onUnmounted(() => {
+                if (wakeLock) wakeLock.release();
+                if (backgroundMusic) backgroundMusic.pause();
+            });
+
+
 
             return {
                 isLoadingScreenActive,
