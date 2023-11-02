@@ -17,6 +17,29 @@
                 <div id="progress-bar" :style="`width: ${loaderProgress}%`"></div>
             </div>
         </div>
+
+        <transition name="slot-machine-fade_setting">
+            <i v-if="!isSettingOpened" @click="isSettingOpened = !isSettingOpened" id="menu-open-btn" class="fas fa-bars"></i>
+
+            <div v-else id="setting-container" class="d-flex column justify-btw align-ctr">
+                <i @click="isSettingOpened = !isSettingOpened" id="menu-close-btn" class="fa-solid fa-xmark"></i>
+
+                <div id="setting-title">settings</div>
+
+                <div>
+                    <router-link to="/"><i class="fas fa-house"></i></router-link>
+
+                    <i @click="setVolume()" v-if="!isVolumeActive" class="fas fa-volume-high"></i>
+                    <i @click="setVolume()" v-if="isVolumeActive" class="fas fa-volume-xmark"></i>
+                </div>
+                
+
+                <div class="w-100 text-ctr">
+                    <div id="pay-table-title" class="text-ctr">pay table</div>
+                    <img id="pay-table-img" src="@/assets/projects/slotmachine/image/main/paytable.png" />
+                </div>
+            </div>
+        </transition>
     </div>
 </template>
 
@@ -85,7 +108,10 @@
             const loaderProgress = ref('0');
             const isLoadingComplete = ref(false);
             const isGameEntered = ref(false);
+            const isSettingOpened = ref(false);
+            const isVolumeActive = ref(true);
             const SLOT_FONT = 'Rimbo-Regular';
+
 
             const canvasRef = ref(null);
             const ANIMATION_FPS = 24;
@@ -131,18 +157,45 @@
 
             const isGamePlaying = ref(false);
 
-            let backgroundMusic;
-            let slotClickFX;
-            let slotTickFX;
-            let slotWinFX;
-            let slotMegaWinFX;
-            let slotWinJollyFX;
-            let slotFreeSpinFX;
+            const mixerAudio = {
+                backgroundMusic: null,
+                slotClickFX: null,
+                slotTickFX: null,
+                slotWinFX: null,
+                slotMegaWinFX: null,
+                slotWinJollyFX: null,
+                slotFreeSpinFX: null,
+            }
+            const volumeCopy = {};
+
+            const setVolume = () => {
+                if (isVolumeActive.value) {
+                    for (const key in mixerAudio) {
+                        volumeCopy[key] = mixerAudio[key].volume;
+
+                        mixerAudio[key].setVolume(0);
+                    }
+                }
+
+                if (!isVolumeActive.value) {
+                    for (const key in mixerAudio) {
+                        mixerAudio[key].setVolume(volumeCopy[key]);
+                    }
+                }
+
+                isVolumeActive.value = !isVolumeActive.value;
+            }
 
 
 
             // INIT
             onMounted(async () => {
+                document.addEventListener('keydown', event => {
+                    if (isLoadingComplete.value && event.key === 'Enter') {
+                        isGameEntered.value = true;
+                    }
+                });
+
                 try {
                     wakeLock = await navigator.wakeLock.request('screen'); // screen lock
                 } catch (err) {
@@ -219,7 +272,7 @@
                                     isLoadingScreenActive.value = false;
                                     this.input.enabled = true;
                                     this.input.keyboard.enabled = true;
-                                    backgroundMusic.play();
+                                    mixerAudio.backgroundMusic.play();
                                 }
                             }
                         );
@@ -372,14 +425,14 @@
 
 
                         // Audio
-                        backgroundMusic = this.sound.add('background_music', { volume: 0.4, loop: true });
+                        mixerAudio.backgroundMusic = this.sound.add('background_music', { volume: 0.5, loop: true });
 
-                        slotClickFX = this.sound.add('slot-click_sfx', { volume: 0.6 });
-                        slotTickFX = this.sound.add('slot-tick_sfx');
-                        slotWinFX = this.sound.add('slot-win_sfx');
-                        slotMegaWinFX = this.sound.add('slot-mega-win_sfx');
-                        slotWinJollyFX = this.sound.add('slot-win-jolly_sfx');
-                        slotFreeSpinFX = this.sound.add('slot-free-spin_sfx');
+                        mixerAudio.slotClickFX = this.sound.add('slot-click_sfx', { volume: 0.5, loop: false });
+                        mixerAudio.slotTickFX = this.sound.add('slot-tick_sfx');
+                        mixerAudio.slotWinFX = this.sound.add('slot-win_sfx');
+                        mixerAudio.slotMegaWinFX = this.sound.add('slot-mega-win_sfx');
+                        mixerAudio.slotWinJollyFX = this.sound.add('slot-win-jolly_sfx');
+                        mixerAudio.slotFreeSpinFX = this.sound.add('slot-free-spin_sfx');
 
 
 
@@ -541,7 +594,9 @@
                         // Events control
                         let isGamePlayingWatch;
 
+                        this.input.keyboard.on('keyup-ESC', () => isSettingOpened.value = false);
                         this.input.keyboard.on('keydown-SPACE', () => {
+                            if (isSettingOpened.value) return;
                             if (this.slotBet > this.slotBalance && this.freeSpinValue !== 100) return;
                             if (this.isAutoSpinActive) return;
                             this.spin();
@@ -549,6 +604,7 @@
 
                         this.slotSpinUI.setInteractive({ useHandCursor: true });
                         this.slotSpinUI.on('pointerdown', () => {
+                            if (isSettingOpened.value) return;
                             if (this.slotBet > this.slotBalance && this.freeSpinValue !== 100) return;
                             if (this.isAutoSpinActive) return;
                             this.spin();
@@ -556,6 +612,7 @@
 
                         this.slotAutoUI.setInteractive({ useHandCursor: true });
                         this.slotAutoUI.on('pointerdown', () => {
+                            if (isSettingOpened.value) return;
                             if (this.slotBet > this.slotBalance && this.freeSpinValue !== 100) return;
 
                             if (this.isAutoSpinActive) {
@@ -604,6 +661,7 @@
 
                         this.slotForwardUI.setInteractive({ useHandCursor: true });
                         this.slotForwardUI.on('pointerdown', () => {
+                            if (isSettingOpened.value) return;
                             this.isFastForwardActive = !this.isFastForwardActive;
 
                             if (this.isFastForwardActive) this.slotForwardUI.postFX.addGlow(0xbe0100, 10 * this.slotBody.scaleX, 0);
@@ -615,6 +673,7 @@
                         this.slotMinusUI.setInteractive({ useHandCursor: true });
 
                         this.slotPlusUI.on('pointerdown', () => {
+                            if (isSettingOpened.value) return;
                             if (this.freeSpinValue === 100) return;
 
                             this.slotBet += this.slotBetIncrement;
@@ -632,6 +691,7 @@
                             }
                         });
                         this.slotMinusUI.on('pointerdown', () => {
+                            if (isSettingOpened.value) return;
                             if (this.freeSpinValue === 100) return;
 
                             this.slotBet -= this.slotBetIncrement;
@@ -690,7 +750,7 @@
                         }
 
                         isGamePlaying.value = true;
-                        slotClickFX.play();
+                        mixerAudio.slotClickFX.play();
                         if (this.freeSpinAnimation) this.freeSpinAnimation.destroy();
 
                         this.slotPlusUI.input.enabled = false;
@@ -792,7 +852,7 @@
 
                             const animConfig = { duration: parseFloat((newAnimDuration + animDelay).toFixed(2)), revolutions: newAnimRevolutions, ease: 'power2.inOut' };
                             animConfig.onComplete = () => {
-                                slotTickFX.play();
+                                mixerAudio.slotTickFX.play();
                                 if (i === 5) this.animateOnComplete();
                             }
 
@@ -842,7 +902,7 @@
                                 ease: 'sine.inout'
                             });
 
-                            slotFreeSpinFX.play();
+                            mixerAudio.slotFreeSpinFX.play();
                             this.slotBetValue.setText('free');
 
                             this.characterMain.visible = false;
@@ -900,7 +960,7 @@
 
 
                         if (selectedCondition === 'mega-win') {
-                            slotMegaWinFX.play();
+                            mixerAudio.slotMegaWinFX.play();
                             this.slotWin = this.slotBet * 5;
 
                             for (let i = 0; i < 3; i++) {
@@ -936,10 +996,10 @@
                                 }, ANIMATION_DURATION * 2);
                             }
                         } else if (jollyRandomReel) {
-                            slotWinJollyFX.play(); // Not playing with mega win
+                            mixerAudio.slotWinJollyFX.play(); // Not playing with mega win
                             this.slotWin = this.slotBet * 3;
                         } else if (selectedCondition === 'win') {
-                            slotWinFX.play(); // Not playing with jolly
+                            mixerAudio.slotWinFX.play(); // Not playing with jolly
                             this.slotWin = this.slotBet * 2;
                         }
 
@@ -970,7 +1030,7 @@
 
             onUnmounted(() => {
                 if (wakeLock) wakeLock.release();
-                if (backgroundMusic) backgroundMusic.pause();
+                if (mixerAudio.backgroundMusic) mixerAudio.backgroundMusic.pause();
             });
 
 
@@ -981,6 +1041,9 @@
                 isLoadingComplete,
                 isGameEntered,
                 canvasRef,
+                isSettingOpened,
+                isVolumeActive,
+                setVolume,
                 isGamePlaying
             };
         },
@@ -1018,7 +1081,7 @@
         height: 100%;
         top: 0;
         left: 0;
-        z-index: 999;
+        z-index: 9999;
 
         background-image: url("@/assets/projects/slotmachine/image/main/back.png");
         background-repeat: no-repeat;
@@ -1066,6 +1129,81 @@
     }
 
 
+    .slot-machine-fade_setting-enter-from,
+    .slot-machine-fade_setting-leave-to {
+        opacity: 0;
+    }
+    .slot-machine-fade_setting-enter-active,
+    .slot-machine-fade_setting-leave-active {
+        transition: opacity 0.2s ease-in-out;
+    }
+    .slot-machine-fade_setting-enter-to,
+    .slot-machine-fade_setting-leave-from {
+        opacity: 1;
+    }
+
+
+    i {
+        color: #ffffff;
+        font-size: 25px;
+        width: 50px;
+        aspect-ratio: 1/ 1;
+        line-height: 50px;
+        text-align: center;
+        background-color: rgba(255, 255, 255, 0.5);
+        text-shadow: none;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: background-color 0.2s ease-in-out;
+    }
+    i:hover {
+        background-color: rgba(255, 255, 255, 0.8);
+    }
+
+    #menu-open-btn {
+        color: #000000;
+        position: absolute;
+        top: 25px;
+        left: 25px;
+        z-index: 999;
+    }
+    #menu-close-btn {
+        position: absolute;
+        top: 25px;
+        right: 25px;
+        z-index: 1001;
+    }
+
+    #setting-container {
+        width: calc(100% - (25px * 2));
+        height: calc(100% - (25px * 2));
+        background-color: rgba(0, 0, 0, 0.8);
+        border-radius: 25px;
+        padding: 25px;
+        position: absolute;
+        z-index: 1000;
+        top: 25px;
+        left: 25px;
+    }
+
+    #setting-title {
+        font-size: 75px;
+        line-height: 50px;
+    }
+
+    .fas.fa-house {
+        margin-right: 75px;
+    }
+
+    #pay-table-title {
+        font-size: 50px;
+        margin-bottom: 25px;
+    }
+    #pay-table-img {
+        width: 50%;
+    }
+
+
 
     /* MEDIA */
     @media screen and (max-width: 576px) {
@@ -1089,6 +1227,27 @@
             font-size: 35px;
             margin: 60px 0;
             padding: 15px 25px;
+        }
+
+        #setting-container {
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            border-radius: 0;
+        }
+        #menu-close-btn {
+            left: 25px;
+        }
+        #setting-title {
+            font-size: 30px;
+        }
+
+        #pay-table-title {
+            font-size: 20px;
+        }
+        #pay-table-img {
+            width: 100%;
         }
     }
 </style>
