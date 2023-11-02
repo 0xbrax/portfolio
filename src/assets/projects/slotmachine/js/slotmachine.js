@@ -167,7 +167,7 @@ export const verticalLoop = (items, reelContainer, elementsHeightWrap, config) =
 }
 
 export const getRandomWinMap = ({ indexReel1, indexReel2, indexReel3, indexReel4, indexReel5 }) => {
-    // PAY TABLE => index reel is always in the middle row before win map
+    // PAY TABLE => 9 Maps, index reel is always in the middle row before win map
     const maps = [
         {
             indexReel1: indexReel1 - 1,
