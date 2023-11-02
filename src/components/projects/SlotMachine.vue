@@ -4,7 +4,7 @@
 
         <div v-if="isLoadingScreenActive" id="slot-machine_loader" class="d-flex column justify-ctr align-ctr">
             <img id="logo-full" src="@/assets/projects/slotmachine/image/main/logo_full.png" alt="Fruit Cocktail" />
-            
+
             <div 
                 id="loader-btn" 
                 :class="{ 'complete pointer': isLoadingComplete }"
@@ -125,12 +125,13 @@
             const MEGA_WIN = 'fruitcocktail';
             let randomWinSymbol = null;
 
+            // Never set on 0 index 'splash' an 'coconut' because they have a special animation
             const SLOT_MAP = {
-                REEL_1_MAP: ['lemon', 'coconut', 'watermelon', 'cherry', 'fruitcocktail', 'grapefruit', 'apple', 'splash'],
+                REEL_1_MAP: ['lemon', 'coconut', 'watermelon', 'cherry', 'fruitcocktail', 'splash', 'grapefruit', 'apple'],
                 REEL_2_MAP: ['apple', 'cherry', 'coconut', 'fruitcocktail', 'grapefruit', 'lemon', 'splash', 'watermelon'],
-                REEL_3_MAP: ['fruitcocktail', 'grapefruit', 'cherry', 'coconut', 'watermelon', 'splash', 'apple', 'lemon'],
+                REEL_3_MAP: ['fruitcocktail', 'grapefruit', 'cherry', 'coconut', 'splash', 'watermelon', 'apple', 'lemon'],
                 REEL_4_MAP: ['watermelon', 'splash', 'lemon', 'grapefruit', 'fruitcocktail', 'coconut', 'cherry', 'apple'],
-                REEL_5_MAP: ['splash', 'apple', 'grapefruit', 'fruitcocktail', 'cherry', 'watermelon', 'coconut', 'lemon']
+                REEL_5_MAP: ['apple', 'grapefruit', 'splash', 'fruitcocktail', 'cherry', 'watermelon', 'coconut', 'lemon']
             };
 
             const reels = {
@@ -356,7 +357,7 @@
                                 elementsHeightWrap.push((67.9 * this.slotBody.scaleX) * 2);
                             }
 
-                            // resize after sheet creation to render animation out of the reel
+                            // Resize after sheet creation to render animation out of the reel
                             mask.scaleX = 1.5;
                             mask.x -= 75 * this.slotBody.scaleX;
 
@@ -824,7 +825,7 @@
                                 indexReels = Object.assign(getRandomWinMap(indexReels));
                         }
 
-                        const animRevolutions = 20; // Increase this value for faster animations
+                        const animRevolutions = 20; // Increase this value for faster animations with same duration
                         const animDuration = 4;
                         let newAnimDuration = getRandomNumber(30, 50);
                         newAnimDuration = newAnimDuration / 10;
