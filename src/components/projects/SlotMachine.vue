@@ -355,48 +355,6 @@
 
 
 
-                        const generateReel = (id, reelMap, xGap) => {
-                            const reel = [];
-                            const elementsHeightWrap = [];
-                            const maskDimension = {
-                                width: 322 * this.slotBody.scaleX,
-                                height: 322 * this.slotBody.scaleX * SYMBOL_X_REEL
-                            }
-                            const mask = this.add.graphics();
-
-                            mask.fillStyle(0xff0000, 0); // DEBUG TOOL: 0 => 1
-
-                            mask.fillRect(0, 0, maskDimension.width, maskDimension.height);
-                            mask.setPosition(this.slotBody.x + (xGap * this.slotBody.scaleX), this.slotBody.y + (96 * this.slotBody.scaleX));
-
-                            for (let i = 0; i < reelMap.length; i++) {
-                                reels[`reel${id}`][`${reelMap[i]}Sheet`] = this.add.sprite(mask.x - (67 * this.slotBody.scaleX), 0, `${reelMap[i]}_sprite`, `${reelMap[i]}-animation_30.png`).setOrigin(0, 0);
-                                reels[`reel${id}`][`${reelMap[i]}Sheet`].setScale(0.98 * this.slotBody.scaleX, 0.98 * this.slotBody.scaleX);
-                                reels[`reel${id}`][`${reelMap[i]}Sheet`].y = mask.y + (maskDimension.width * i) - (87 * this.slotBody.scaleX);
-                                reels[`reel${id}`][`${reelMap[i]}Sheet`].setMask(mask.createGeometryMask());
-
-                                this.anims.create({
-                                    key: `reel${id}-${reelMap[i]}_animation`,
-                                    frames: this.anims.generateFrameNames(`${reelMap[i]}_sprite`, { start: 1, end: 30, zeroPad: 2, prefix: `${reelMap[i]}-animation_`, suffix: '.png' }),
-                                    frameRate: ANIMATION_FPS,
-                                    repeat: -1
-                                });
-
-                                reel.push(reels[`reel${id}`][`${reelMap[i]}Sheet`]);
-                                elementsHeightWrap.push((67.9 * this.slotBody.scaleX) * 2);
-                            }
-
-                            // Resize after sheet creation to render animation out of the reel
-                            mask.scaleX = 1.5;
-                            mask.x -= 75 * this.slotBody.scaleX;
-
-                            return verticalLoop(reel, maskDimension, elementsHeightWrap, {
-                                repeat: -1,
-                                paused: true,
-                                center: true,
-                            });
-                        }
-
                         let xGap;
                         for (let i = 1; i <= REELS_X_SLOT; i++) {
                             switch (i) {
@@ -416,7 +374,7 @@
                                     xGap = 1402;
                             }
 
-                            slotAnimation[`reel${i}Animation`] = generateReel(i, SLOT_MAP[`REEL_${i}_MAP`], xGap);
+                            slotAnimation[`reel${i}Animation`] = this.generateReel(i, SLOT_MAP[`REEL_${i}_MAP`], xGap);
                         }
 
 
@@ -771,6 +729,48 @@
 
 
                     // Custom methods
+                    generateReel(id, reelMap, xGap) {
+                        const reel = [];
+                        const elementsHeightWrap = [];
+                        const maskDimension = {
+                            width: 322 * this.slotBody.scaleX,
+                            height: 322 * this.slotBody.scaleX * SYMBOL_X_REEL
+                        }
+                        const mask = this.add.graphics();
+
+                        mask.fillStyle(0xff0000, 0); // DEBUG TOOL: 0 => 1
+
+                        mask.fillRect(0, 0, maskDimension.width, maskDimension.height);
+                        mask.setPosition(this.slotBody.x + (xGap * this.slotBody.scaleX), this.slotBody.y + (96 * this.slotBody.scaleX));
+
+                        for (let i = 0; i < reelMap.length; i++) {
+                            reels[`reel${id}`][`${reelMap[i]}Sheet`] = this.add.sprite(mask.x - (67 * this.slotBody.scaleX), 0, `${reelMap[i]}_sprite`, `${reelMap[i]}-animation_30.png`).setOrigin(0, 0);
+                            reels[`reel${id}`][`${reelMap[i]}Sheet`].setScale(0.98 * this.slotBody.scaleX, 0.98 * this.slotBody.scaleX);
+                            reels[`reel${id}`][`${reelMap[i]}Sheet`].y = mask.y + (maskDimension.width * i) - (87 * this.slotBody.scaleX);
+                            reels[`reel${id}`][`${reelMap[i]}Sheet`].setMask(mask.createGeometryMask());
+
+                            this.anims.create({
+                                key: `reel${id}-${reelMap[i]}_animation`,
+                                frames: this.anims.generateFrameNames(`${reelMap[i]}_sprite`, { start: 1, end: 30, zeroPad: 2, prefix: `${reelMap[i]}-animation_`, suffix: '.png' }),
+                                frameRate: ANIMATION_FPS,
+                                repeat: -1
+                            });
+
+                            reel.push(reels[`reel${id}`][`${reelMap[i]}Sheet`]);
+                            elementsHeightWrap.push((67.9 * this.slotBody.scaleX) * 2);
+                        }
+
+                        // Resize after sheet creation to render animation out of the reel
+                        mask.scaleX = 1.5;
+                        mask.x -= 75 * this.slotBody.scaleX;
+
+                        return verticalLoop(reel, maskDimension, elementsHeightWrap, {
+                            repeat: -1,
+                            paused: true,
+                            center: true,
+                        });
+                    }
+
                     spin() {
                         // ReturnToPlayer
                         // RandomNumberGenerator
