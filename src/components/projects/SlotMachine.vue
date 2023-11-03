@@ -3,7 +3,7 @@
         <canvas ref="canvasRef"></canvas>
 
         <div v-if="isLoadingScreenActive" id="slot-machine_loader" class="d-flex column justify-ctr align-ctr">
-            <img id="logo-full" src="@/assets/projects/slotmachine/image/main/logo-full_COMPRESSED.jpg" alt="Fruit Cocktail" />
+            <img id="logo-full" src="@/assets/projects/slotmachine/image/main/logo-full_COMPRESSED.png" alt="Fruit Cocktail" />
 
             <div 
                 id="loader-btn" 
