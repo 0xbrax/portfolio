@@ -287,6 +287,8 @@
                     }
 
                     preload() {
+                        this.scale.setParentSize(window.innerWidth, window.innerHeight);
+
                         this.input.enabled = false;
                         this.input.keyboard.enabled = false;
                         this.load.on('progress', (value) => {
