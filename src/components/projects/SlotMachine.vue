@@ -63,7 +63,7 @@
     import { ref, onMounted, watch, onUnmounted } from "vue";
     import Phaser from "phaser";
     import { isDeviceMobile, getRandomNumber, formatNumber } from "@/assets/js/utils.js";
-    import { verticalLoop, getRandomWinMap, getRandomLose } from "@/assets/projects/slotmachine/js/slotmachine.js";
+    import { verticalLoop, getRandomWinMap, getRandomLose, getRandomFakeWin } from "@/assets/projects/slotmachine/js/slotmachine.js";
 
     import SlotBodyImage from "@/assets/projects/slotmachine/image/main/reel.png";
     import SlotCanopyImage from "@/assets/projects/slotmachine/image/main/canopy.png";
@@ -208,6 +208,8 @@
 
 
             // INIT
+            document.title = "0xbrax | Slot Machine";
+
             onMounted(async () => {
                 try {
                     wakeLock = await navigator.wakeLock.request('screen');
@@ -826,22 +828,25 @@
 
                         switch (selectedCondition) {
                             case 'lose':
-                                indexReels = getRandomLose(indexReels, REELS_X_SLOT, SYMBOLS, SLOT_MAP);
+                                indexReels = getRandomLose(indexReels, REELS_X_SLOT, [...SYMBOLS, MEGA_WIN, JOLLY], SLOT_MAP);
                                 break
                             case 'fake-win':
                             case 'win':
                             case 'mega-win':
-                                randomWinSymbol = selectedCondition === 'win' ? SYMBOLS[getRandomNumber(0, SYMBOLS.length - 1)] : MEGA_WIN;
+                                let symbolsWithoutJolly;
+                                if (selectedCondition === 'fake-win') {
+                                    symbolsWithoutJolly = [...SYMBOLS, MEGA_WIN];
+                                    randomWinSymbol = symbolsWithoutJolly[getRandomNumber(0, symbolsWithoutJolly.length - 1)];
+                                }
+                                if (selectedCondition === 'win') randomWinSymbol = SYMBOLS[getRandomNumber(0, SYMBOLS.length - 1)];
+                                if (selectedCondition === 'mega-win') randomWinSymbol = MEGA_WIN;
 
                                 for (let i = 1; i <= REELS_X_SLOT; i++) {
                                     indexReels[`indexReel${i}`] = SLOT_MAP[`REEL_${i}_MAP`].indexOf(randomWinSymbol);
                                 }
 
                                 if (selectedCondition === 'fake-win') {
-                                    const randomReel = getRandomNumber(1, REELS_X_SLOT);
-                                    const filteredSymbols = [...SYMBOLS, MEGA_WIN].filter(el => el !== randomWinSymbol);
-                                    const loseSymbol = filteredSymbols[getRandomNumber(0, filteredSymbols.length - 1)];
-                                    indexReels[`indexReel${randomReel}`] = SLOT_MAP[`REEL_${randomReel}_MAP`].indexOf(loseSymbol);
+                                    indexReels = getRandomFakeWin(indexReels, REELS_X_SLOT, symbolsWithoutJolly, SLOT_MAP, randomWinSymbol);
 
                                     randomWinSymbol = null;
                                 }
