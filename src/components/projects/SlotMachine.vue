@@ -287,8 +287,6 @@
                     }
 
                     preload() {
-                        this.scale.setParentSize(window.innerWidth, window.innerHeight);
-
                         this.input.enabled = false;
                         this.input.keyboard.enabled = false;
                         this.load.on('progress', (value) => {
@@ -1051,13 +1049,14 @@
                     }
                 }
 
+                const isIphone = /iPhone/.test(navigator.userAgent);
                 canvasRef.value.width = window.innerWidth;
-                canvasRef.value.height = window.innerHeight;
+                canvasRef.value.height = !isIphone ? window.innerHeight : window.innerHeight - 44; // Iphone bottom nav bar fix
 
                 const config = {
                     type: Phaser.WEBGL,
-                    width: window.innerWidth,
-                    height: window.innerHeight,
+                    width: canvasRef.value.offsetWidth,
+                    height: canvasRef.value.offsetHeight,
                     canvas: canvasRef.value,
                     transparent: true,
                     antialias: true,
