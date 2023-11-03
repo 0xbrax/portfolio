@@ -685,7 +685,8 @@
             const switchProject = (mode) => {
                 const obj = {
                     cubeModel_1,
-                    cubeModel_2
+                    cubeModel_2,
+                    cubeModel_3
                 }
 
                 let index = projectsArray.indexOf(whatProject.value);
@@ -694,6 +695,8 @@
                 if (mode === "left") {
                     if (index === projectsArray.length) index += -1;
                     else index += 1;
+
+                    console.log('LOG', obj[`cubeModel_${index}`])
 
                     obj[`cubeModel_${index}`]._listeners.click[0]();
                 }
@@ -1119,7 +1122,7 @@
                     PROJECT_NAME_3
                 );
                 dragonMixer_3 = project_3.dragonMixer;
-                cubeModel_2 = project_3.cubeModel;
+                cubeModel_3 = project_3.cubeModel;
                 projectGroup_3.position.set(-1.0, 0.5, -0.1);
                 scene.add(projectGroup_3);
 

@@ -26,7 +26,7 @@
 
                 <div id="setting-title">settings</div>
 
-                <div>
+                <div class="my-10">
                     <router-link to="/"><i class="fas fa-house"></i></router-link>
 
                     <i @click="setVolume()" v-if="!isVolumeActive" class="fas fa-volume-high"></i>
@@ -34,7 +34,7 @@
                 </div>
 
                 <div class="w-100 text-ctr">
-                    <div id="pay-table-title" class="text-ctr">pay table</div>
+                    <div id="pay-table-title">pay table</div>
                     <img id="pay-table-img" src="/src/assets/projects/slotmachine/image/main/paytable_COMPRESSED.png" />
 
                     <div id="bet-container">
@@ -213,13 +213,24 @@
 
             const isFullScreenActive = ref(false);
             const enterFullScreen = () => {
-                document.documentElement.requestFullscreen();
-                screen.orientation.lock('portrait-primary'); // auto unlock
-                isFullScreenActive.value = true;
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                    screen.orientation.lock('portrait-primary'); // auto unlock
+                    isFullScreenActive.value = true;
+                } else if (document.documentElement.webkitRequestFullscreen) {
+                    document.documentElement.webkitRequestFullscreen();
+                    screen.orientation.lock('portrait-primary'); // auto unlock
+                    isFullScreenActive.value = true;
+                }
             }
             const exitFullScreen = () => {
-                document.exitFullscreen();
-                isFullScreenActive.value = false;
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                    isFullScreenActive.value = false;
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                    isFullScreenActive.value = false;
+                }
             }
 
 
@@ -316,24 +327,28 @@
                             () => isGameEntered.value,
                             (val) => {
                                 if (val) {
-                                    if (isMobile) {
-                                        try {
-                                            document.documentElement.requestFullscreen();
-                                            screen.orientation.lock('portrait-primary'); // auto unlock
-                                            isFullScreenActive.value = true;
-                                            document.addEventListener('fullscreenchange', () => {
-                                                if (!document.fullscreenElement) {
-                                                    isFullScreenActive.value = false;
-                                                }
-                                            });
-                                        } catch (e) {
-                                            //
-                                        }
-                                    }
                                     isLoadingScreenActive.value = false;
                                     this.input.enabled = true;
                                     this.input.keyboard.enabled = true;
                                     mixerAudio.backgroundMusic.play();
+
+                                    if (isMobile) {
+                                        if (document.documentElement.requestFullscreen) {
+                                            document.documentElement.requestFullscreen();
+                                            screen.orientation.lock('portrait-primary'); // auto unlock
+                                            isFullScreenActive.value = true;
+                                            document.addEventListener('fullscreenchange', () => {
+                                                if (!document.fullscreenElement) isFullScreenActive.value = false;
+                                            });
+                                        } else if (document.documentElement.webkitRequestFullscreen) {
+                                            document.documentElement.webkitRequestFullscreen();
+                                            screen.orientation.lock('portrait-primary'); // auto unlock
+                                            isFullScreenActive.value = true;
+                                            document.addEventListener('webkitfullscreenchange', () => {
+                                                if (!document.webkitFullscreenElemen) isFullScreenActive.value = false;
+                                            });
+                                        }
+                                    }
                                 }
                             }
                         );
