@@ -3,7 +3,7 @@
         <canvas ref="canvasRef"></canvas>
 
         <div v-if="isLoadingScreenActive" id="slot-machine_loader" class="d-flex column justify-ctr align-ctr">
-            <img id="logo-full" src="@/assets/projects/slotmachine/image/main/logo_full.png" alt="Fruit Cocktail" />
+            <img id="logo-full" src="@/assets/projects/slotmachine/image/main/logo-full_COMPRESSED.jpg" alt="Fruit Cocktail" />
 
             <div 
                 id="loader-btn" 
@@ -1102,11 +1102,11 @@
         color: #ffffff;
         text-shadow: 5px 5px 10px #000000;
         width: 100%;
-        height: 100dvh;
+        height: 100vh;
         position: relative;
         overflow-y: hidden;
 
-        background-image: url("@/assets/projects/slotmachine/image/main/back.png");
+        background-image: url("@/assets/projects/slotmachine/image/main/back_COMPRESSED.jpg");
         background-repeat: no-repeat;
         background-position: right bottom;
         background-size: cover;
@@ -1125,7 +1125,7 @@
         left: 0;
         z-index: 9999;
 
-        background-image: url("@/assets/projects/slotmachine/image/main/back.png");
+        background-image: url("@/assets/projects/slotmachine/image/main/back_COMPRESSED.jpg");
         background-repeat: no-repeat;
         background-position: right bottom;
         background-size: cover;

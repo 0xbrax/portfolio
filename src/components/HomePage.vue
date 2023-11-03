@@ -107,7 +107,7 @@
         >
             <img
                 id="logo-img"
-                src="@/assets/image/LOGO-Brax_white-nobg.png"
+                src="@/assets/image/LOGO-Brax_white-nobg_COMPRESSED.png"
                 alt="Brax"
             />
 
