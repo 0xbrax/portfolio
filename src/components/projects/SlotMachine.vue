@@ -1051,8 +1051,8 @@
 
                 const config = {
                     type: Phaser.WEBGL,
-                    width: canvasRef.value.offsetWidth,
-                    height: canvasRef.value.offsetHeight,
+                    width: window.innerWidth,
+                    height: window.innerHeight,
                     canvas: canvasRef.value,
                     transparent: true,
                     antialias: true,
@@ -1102,7 +1102,7 @@
         color: #ffffff;
         text-shadow: 5px 5px 10px #000000;
         width: 100%;
-        height: 100%;
+        height: 100dvh;
         position: relative;
         overflow-y: hidden;
 
@@ -1110,10 +1110,6 @@
         background-repeat: no-repeat;
         background-position: right bottom;
         background-size: cover;
-    }
-    canvas {
-        width: 100%;
-        height: 100%;
     }
 
 
