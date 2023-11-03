@@ -1049,15 +1049,20 @@
                     }
                 }
 
-                canvasRef.value.width = window.innerWidth;
-                canvasRef.value.height = window.innerHeight; 
+
 
                 // Iphone bottom nav bar fix
                 const isIphone = /iPhone/.test(navigator.userAgent);
                 if (isIphone) {
                     canvasRef.value.position = 'relative';
-                    canvasRef.value.top = -(440 * window.devicePixelRatio) + 'px';
+                    canvasRef.value.top = -(40 * window.devicePixelRatio) + 'px';
                 }
+
+                console.log(Phaser.Scale)
+                console.log(Phaser.Scale.CENTER_BOTH)
+
+                canvasRef.value.width = window.innerWidth;
+                canvasRef.value.height = !isIphone ? window.innerHeight : '100svh';
 
                 const config = {
                     type: Phaser.WEBGL,
@@ -1075,6 +1080,11 @@
                 const game = new Phaser.Game(config);
                 game.scene.add('gameScene', GameScene);
                 game.scene.start('gameScene');
+
+                console.log(screen.orientation)
+                console.log('LOG', canvasRef.value.requestFullscreen)
+                //if (isMobile) canvasRef.value.requestFullscreen();
+                //screen.orientation.lock(!isMobile ? 'landscape-primary' : 'portrait-primary');
             });
 
             onUnmounted(() => {
