@@ -1049,9 +1049,15 @@
                     }
                 }
 
-                const isIphone = /iPhone/.test(navigator.userAgent);
                 canvasRef.value.width = window.innerWidth;
-                canvasRef.value.height = !isIphone ? window.innerHeight : window.innerHeight - 44; // Iphone bottom nav bar fix
+                canvasRef.value.height = window.innerHeight(); 
+
+                // Iphone bottom nav bar fix
+                const isIphone = /iPhone/.test(navigator.userAgent);
+                if (isIphone) {
+                    canvasRef.value.position = 'relative';
+                    canvasRef.value.top = -(44 * window.devicePixelRatio) + 'px';
+                }
 
                 const config = {
                     type: Phaser.WEBGL,
