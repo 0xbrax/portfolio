@@ -35,27 +35,32 @@
 
                 <div class="w-100 text-ctr">
                     <div id="pay-table-title" class="text-ctr">pay table</div>
-                    <img id="pay-table-img" src="@/assets/projects/slotmachine/image/main/paytable.png" />
+                    <img id="pay-table-img" src="/src/assets/projects/slotmachine/image/main/paytable_COMPRESSED.png" />
 
                     <div id="bet-container">
                         <div class="symbol-container">
                             <div class="symbol-text mb-10">symbols = bet x 2</div>
-                            <img v-for="symbol in SYMBOLS" class="symbol-icon" :src="`/src/assets/projects/slotmachine/image/icon/${symbol}.png`" :key="symbol" />
+                            <img v-for="symbol in SYMBOLS" class="symbol-icon" :src="`/src/assets/projects/slotmachine/image/icon/${symbol}_COMPRESSED.png`" :key="symbol" />
                         </div>
 
                         <div class="symbol-container">
                             <div class="symbol-text mb-10">jolly = bet x 3</div>
-                            <img class="symbol-icon" :src="`/src/assets/projects/slotmachine/image/icon/${JOLLY}.png`" />
+                            <img class="symbol-icon" :src="`/src/assets/projects/slotmachine/image/icon/${JOLLY}_COMPRESSED.png`" />
                         </div>
 
                         <div class="symbol-container">
                             <div class="symbol-text mb-10">mega win = bet x 5</div>
-                            <img class="symbol-icon" :src="`/src/assets/projects/slotmachine/image/icon/${MEGA_WIN}.png`" />
+                            <img class="symbol-icon" :src="`/src/assets/projects/slotmachine/image/icon/${MEGA_WIN}_COMPRESSED.png`" />
                         </div>
                     </div>
                 </div>
             </div>
         </transition>
+
+        <div v-if="isMobile" id="full-screen-handler">
+            <i v-if="!isFullScreenActive" class="fas fa-maximize" @click="enterFullScreen()"></i>
+            <i v-if="isFullScreenActive" class="fas fa-minimize" @click="exitFullScreen()"></i>
+        </div>
     </div>
 </template>
 
@@ -206,6 +211,18 @@
             }
 
 
+            const isFullScreenActive = ref(false);
+            const enterFullScreen = () => {
+                document.documentElement.requestFullscreen();
+                screen.orientation.lock('portrait-primary'); // auto unlock
+                isFullScreenActive.value = true;
+            }
+            const exitFullScreen = () => {
+                document.exitFullscreen();
+                isFullScreenActive.value = false;
+            }
+
+
 
             // INIT
             document.title = "0xbrax | Slot Machine";
@@ -299,6 +316,20 @@
                             () => isGameEntered.value,
                             (val) => {
                                 if (val) {
+                                    if (isMobile) {
+                                        try {
+                                            document.documentElement.requestFullscreen();
+                                            screen.orientation.lock('portrait-primary'); // auto unlock
+                                            isFullScreenActive.value = true;
+                                            document.addEventListener('fullscreenchange', () => {
+                                                if (!document.fullscreenElement) {
+                                                    isFullScreenActive.value = false;
+                                                }
+                                            });
+                                        } catch (e) {
+                                            //
+                                        }
+                                    }
                                     isLoadingScreenActive.value = false;
                                     this.input.enabled = true;
                                     this.input.keyboard.enabled = true;
@@ -306,6 +337,7 @@
                                 }
                             }
                         );
+
 
                         this.load.image('slot_body', SlotBodyImage);
                         this.load.image('slot_canopy', SlotCanopyImage);
@@ -356,7 +388,6 @@
                         this.slotBody.setPosition(canvasRef.value.offsetWidth / 2 - this.slotBody.displayWidth / 2, canvasRef.value.offsetHeight / 2 - this.slotBody.displayHeight / 2 - 20 * this.slotBody.scaleX);
 
 
-
                         let xGap;
                         for (let i = 1; i <= REELS_X_SLOT; i++) {
                             switch (i) {
@@ -380,7 +411,6 @@
                         }
 
 
-
                         // Slot elements
                         this.slotCanopy = this.add.image(this.slotBody.x + this.slotBody.displayWidth / 2, this.slotBody.y - (140 * this.slotBody.scaleX), 'slot_canopy').setOrigin(0.5, 0);
                         this.slotCanopy.setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
@@ -390,7 +420,6 @@
                         this.slotSplashLeft.setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
                         this.slotSplashRight = this.add.image(this.slotBody.x + (1749 * this.slotBody.scaleX), this.slotBody.y + (390 * this.slotBody.scaleX), 'slot_splash-right').setOrigin(0, 0);
                         this.slotSplashRight.setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
-
 
 
                         // Character
@@ -1051,18 +1080,8 @@
 
 
 
-                // Iphone bottom nav bar fix
-                const isIphone = /iPhone/.test(navigator.userAgent);
-                if (isIphone) {
-                    canvasRef.value.position = 'relative';
-                    canvasRef.value.top = -(40 * window.devicePixelRatio) + 'px';
-                }
-
-                console.log(Phaser.Scale)
-                console.log(Phaser.Scale.CENTER_BOTH)
-
                 canvasRef.value.width = window.innerWidth;
-                canvasRef.value.height = !isIphone ? window.innerHeight : '100svh';
+                canvasRef.value.height = window.innerHeight;
 
                 const config = {
                     type: Phaser.WEBGL,
@@ -1080,11 +1099,6 @@
                 const game = new Phaser.Game(config);
                 game.scene.add('gameScene', GameScene);
                 game.scene.start('gameScene');
-
-                console.log(screen.orientation)
-                console.log('LOG', canvasRef.value.requestFullscreen)
-                //if (isMobile) canvasRef.value.requestFullscreen();
-                //screen.orientation.lock(!isMobile ? 'landscape-primary' : 'portrait-primary');
             });
 
             onUnmounted(() => {
@@ -1100,6 +1114,10 @@
                 isLoadingComplete,
                 isGameEntered,
                 canvasRef,
+                isMobile,
+                isFullScreenActive,
+                enterFullScreen,
+                exitFullScreen,
                 isSettingOpened,
                 isVolumeActive,
                 setVolume,
@@ -1283,6 +1301,17 @@
     }
     .symbol-container:first-child .symbol-icon {
         width: 15%;
+    }
+
+
+    #full-screen-handler {
+        position: absolute;
+        top: 25px;
+        right: 25px;
+        z-index: 999;
+    }
+    #full-screen-handler i {
+        color: #000000;
     }
 
 
