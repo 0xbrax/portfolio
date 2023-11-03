@@ -1049,10 +1049,13 @@
                     }
                 }
 
+                canvasRef.value.width = window.innerWidth;
+                canvasRef.value.height = window.innerHeight;
+
                 const config = {
                     type: Phaser.WEBGL,
-                    width: window.innerWidth * window.devicePixelRatio,
-                    height: window.innerHeight * window.devicePixelRatio,
+                    width: window.innerWidth,
+                    height: window.innerHeight,
                     canvas: canvasRef.value,
                     transparent: true,
                     antialias: true,

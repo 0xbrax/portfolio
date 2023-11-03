@@ -1,6 +1,6 @@
 <template>
     <div id="home-page">
-        <div id="canvas" ref="canvasRef">
+        <div id="canvas" class="relative" ref="canvasRef">
             <div
                 id="ui-ux-control-container"
                 :class="[
