@@ -1051,8 +1051,8 @@
 
                 const config = {
                     type: Phaser.WEBGL,
-                    width: window.innerWidth,
-                    height: window.innerHeight,
+                    width: window.innerWidth * window.devicePixelRatio,
+                    height: window.innerHeight * window.devicePixelRatio,
                     canvas: canvasRef.value,
                     transparent: true,
                     antialias: true,
