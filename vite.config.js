@@ -12,5 +12,6 @@ export default defineConfig({
       '@': '/src',
     },
   },
-  assetsInclude: ['**/*.glb']
+  assetsInclude: ['**/*.glb'],
+  assetsDir: 'src/assets'
 });

@@ -11,6 +11,12 @@
     --pink-col: #FFB6D1;
     --blue-col: #B4E1FF;
     --green-col: #C1FF9B;
+
+    /* starway */
+    --main-purple-light: #fb4bc9;
+    --main-purple-dark: #3d135f;
+    --sec-blue-light: #53cef7;
+    --sec-blue-dark: #0d0918;
 }
 body {
     font-family: 'Ubuntu', sans-serif;
@@ -24,6 +30,9 @@ a:visited,
 a:active,
 a:hover {
     text-decoration: none;
+}
+ul {
+    list-style: none;
 }
 /********/
 

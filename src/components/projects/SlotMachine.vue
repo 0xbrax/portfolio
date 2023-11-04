@@ -35,7 +35,7 @@
 
                 <div class="w-100 text-ctr">
                     <div id="pay-table-title">pay table</div>
-                    <img id="pay-table-img" src="/src/assets/projects/slotmachine/image/main/paytable_COMPRESSED.png" />
+                    <img id="pay-table-img" src="@/assets/projects/slotmachine/image/main/paytable_COMPRESSED.png" />
 
                     <div id="bet-container">
                         <div class="symbol-container">
@@ -45,12 +45,12 @@
 
                         <div class="symbol-container">
                             <div class="symbol-text mb-10">jolly = bet x 3</div>
-                            <img class="symbol-icon" :src="`/src/assets/projects/slotmachine/image/icon/${JOLLY}_COMPRESSED.png`" />
+                            <img class="symbol-icon" src="@/assets/projects/slotmachine/image/icon/splash_COMPRESSED.png" />
                         </div>
 
                         <div class="symbol-container">
                             <div class="symbol-text mb-10">mega win = bet x 5</div>
-                            <img class="symbol-icon" :src="`/src/assets/projects/slotmachine/image/icon/${MEGA_WIN}_COMPRESSED.png`" />
+                            <img class="symbol-icon" src="@/assets/projects/slotmachine/image/icon/fruitcocktail_COMPRESSED.png" />
                         </div>
                     </div>
                 </div>
@@ -1137,9 +1137,7 @@
                 isVolumeActive,
                 setVolume,
                 isGamePlaying,
-                SYMBOLS,
-                JOLLY,
-                MEGA_WIN
+                SYMBOLS
             };
         },
     };

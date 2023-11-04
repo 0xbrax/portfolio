@@ -426,6 +426,7 @@
             const goBackToPlane = (mode) => {
                 whatProject.value = null;
 
+                // Force camera and position reset, use it for target blank projects
                 if (mode === "force") {
                     camera.position.set(0.8, 0.2, 0);
                     controls.target.set(0, 0, 0);
@@ -693,17 +694,15 @@
                 index += 1;
 
                 if (mode === "left") {
-                    if (index === projectsArray.length) index += -1;
+                    if (index === projectsArray.length) index = 1;
                     else index += 1;
-
-                    console.log('LOG', obj[`cubeModel_${index}`])
 
                     obj[`cubeModel_${index}`]._listeners.click[0]();
                 }
 
                 if (mode === "right") {
-                    if (index === projectsArray.length) index += -1;
-                    else index += 1;
+                    if (index === 1) index = projectsArray.length;
+                    else index += -1;
 
                     obj[`cubeModel_${index}`]._listeners.click[0]();
                 }
@@ -1019,26 +1018,21 @@
                     return;
                 }
 
+                audioArray.forEach((el) => {
+                    audioObject[el].pause();
+                    audioObject[el].currentTime = 0;
+                });
+
                 switch (whatProject.value) {
                     case "pikaride":
-                        audioArray.forEach((el) => {
-                            audioObject[el].pause();
-                            audioObject[el].currentTime = 0;
-                        });
-
                         router.push("/project/pikaride");
                         document.title = "0xbrax | Pika Ride";
                         break;
                     case "starway":
-                        goBackToPlane("force");
-                        window.open("https://starway.page", "_blank");
+                        router.push("/project/starway");
+                        document.title = "0xbrax | Starway";
                         break;
                     case "slotmachine":
-                        audioArray.forEach((el) => {
-                            audioObject[el].pause();
-                            audioObject[el].currentTime = 0;
-                        });
-
                         router.push("/project/slotmachine");
                         document.title = "0xbrax | Slot Machine";
                         break;
