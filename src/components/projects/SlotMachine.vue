@@ -3,7 +3,7 @@
         <canvas ref="canvasRef"></canvas>
 
         <div v-if="isLoadingScreenActive" id="slot-machine_loader" class="d-flex column justify-ctr align-ctr">
-            <img id="logo-full" src="@/assets/projects/slotmachine/image/main/logo_full.png" alt="Fruit Cocktail" />
+            <img id="logo-full" src="@/assets/projects/slotmachine/image/main/logo-full_COMPRESSED.png" alt="Fruit Cocktail" />
 
             <div 
                 id="loader-btn" 
@@ -26,20 +26,41 @@
 
                 <div id="setting-title">settings</div>
 
-                <div>
+                <div class="my-10">
                     <router-link to="/"><i class="fas fa-house"></i></router-link>
 
                     <i @click="setVolume()" v-if="!isVolumeActive" class="fas fa-volume-high"></i>
                     <i @click="setVolume()" v-if="isVolumeActive" class="fas fa-volume-xmark"></i>
                 </div>
-                
 
                 <div class="w-100 text-ctr">
-                    <div id="pay-table-title" class="text-ctr">pay table</div>
-                    <img id="pay-table-img" src="@/assets/projects/slotmachine/image/main/paytable.png" />
+                    <div id="pay-table-title">pay table</div>
+                    <img id="pay-table-img" src="@/assets/projects/slotmachine/image/main/paytable_COMPRESSED.png" />
+
+                    <div id="bet-container">
+                        <div class="symbol-container">
+                            <div class="symbol-text mb-10">symbols = bet x 2</div>
+                            <img v-for="symbol in SYMBOLS" class="symbol-icon" :src="imageUrl(`projects/slotmachine/image/icon/${symbol}_COMPRESSED.png`)" :key="symbol" />
+                        </div>
+
+                        <div class="symbol-container">
+                            <div class="symbol-text mb-10">jolly = bet x 3</div>
+                            <img class="symbol-icon" src="@/assets/projects/slotmachine/image/icon/splash_COMPRESSED.png" />
+                        </div>
+
+                        <div class="symbol-container">
+                            <div class="symbol-text mb-10">mega win = bet x 5</div>
+                            <img class="symbol-icon" src="@/assets/projects/slotmachine/image/icon/fruitcocktail_COMPRESSED.png" />
+                        </div>
+                    </div>
                 </div>
             </div>
         </transition>
+
+        <div v-if="isMobile" id="full-screen-handler">
+            <i v-if="!isFullScreenActive" class="fas fa-maximize" @click="enterFullScreen()"></i>
+            <i v-if="isFullScreenActive" class="fas fa-minimize" @click="exitFullScreen()"></i>
+        </div>
     </div>
 </template>
 
@@ -47,11 +68,13 @@
     import { ref, onMounted, watch, onUnmounted } from "vue";
     import Phaser from "phaser";
     import { isDeviceMobile, getRandomNumber, formatNumber } from "@/assets/js/utils.js";
-    import { verticalLoop, getRandomWinMap, getRandomLose } from "@/assets/projects/slotmachine/js/slotmachine.js";
+    import { verticalLoop, getRandomWinMap, getRandomLose, getRandomFakeWin } from "@/assets/projects/slotmachine/js/slotmachine.js";
 
     import SlotBodyImage from "@/assets/projects/slotmachine/image/main/reel.png";
     import SlotCanopyImage from "@/assets/projects/slotmachine/image/main/canopy.png";
     import SlotLogoImage from "@/assets/projects/slotmachine/image/main/logo.png";
+    import SlotSplashLeftImage from "@/assets/projects/slotmachine/image/main/splash_left.png";
+    import SlotSplashRightImage from "@/assets/projects/slotmachine/image/main/splash_right.png";
 
     import CharacterMainPng from "@/assets/projects/slotmachine/image/sprite/character-main_spritesheet.png";
     import CharacterMainJson from "@/assets/projects/slotmachine/image/sprite/character-main_spritesheet.json";
@@ -102,8 +125,12 @@
         name: 'SlotMachine',
 
         setup() {
+            const imageUrl = (path) => {
+                return new URL(`/src/assets/${path}`, import.meta.url).href;
+            }
+
             const isMobile = isDeviceMobile();
-            let wakeLock;
+            let wakeLock; // Screen lock
             const isLoadingScreenActive = ref(true);
             const loaderProgress = ref('0');
             const isLoadingComplete = ref(false);
@@ -188,19 +215,47 @@
             }
 
 
+            const isFullScreenActive = ref(false);
+            const enterFullScreen = () => {
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                    screen.orientation.lock('portrait-primary'); // auto unlock
+                    isFullScreenActive.value = true;
+                } else if (document.documentElement.webkitRequestFullscreen) {
+                    document.documentElement.webkitRequestFullscreen();
+                    screen.orientation.lock('portrait-primary'); // auto unlock
+                    isFullScreenActive.value = true;
+                }
+            }
+            const exitFullScreen = () => {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                    isFullScreenActive.value = false;
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                    isFullScreenActive.value = false;
+                }
+            }
+
+
 
             // INIT
-            onMounted(async () => {
-                document.addEventListener('keydown', event => {
-                    if (isLoadingComplete.value && event.key === 'Enter') {
-                        isGameEntered.value = true;
-                    }
-                });
+            document.title = "0xbrax | Slot Machine";
 
+            onMounted(async () => {
                 try {
-                    wakeLock = await navigator.wakeLock.request('screen'); // screen lock
+                    wakeLock = await navigator.wakeLock.request('screen');
                 } catch (err) {
                     //
+                }
+                if (wakeLock) {
+                    document.addEventListener('visibilitychange', async () => {
+                        if (document.visibilityState === 'visible') {
+                            wakeLock = await navigator.wakeLock.request('screen');
+                        } else {
+                            wakeLock.release();
+                        }
+                    });
                 }
 
                 class GameScene extends Phaser.Scene {
@@ -212,6 +267,8 @@
                         this.slotBody;
                         this.slotCanopy;
                         this.slotLogo;
+                        this.slotSplashLeft;
+                        this.slotSplashRight;
 
                         this.characterMain;
                         this.characterDrink;
@@ -251,6 +308,10 @@
                         this.slotBetIncrement = 100;
                         this.slotWin = null;
                         this.slotBalance = 1_000_000;
+                        this.slotWinMultiplier = 2;
+                        this.slotWinJollyMultiplier = 3;
+                        this.slotMegaWinMultiplier = 5;
+
                         this.isAutoSpinActive = false;
                         this.isFastForwardActive = false;
 
@@ -274,13 +335,34 @@
                                     this.input.enabled = true;
                                     this.input.keyboard.enabled = true;
                                     mixerAudio.backgroundMusic.play();
+
+                                    if (isMobile) {
+                                        if (document.documentElement.requestFullscreen) {
+                                            document.documentElement.requestFullscreen();
+                                            screen.orientation.lock('portrait-primary'); // auto unlock
+                                            isFullScreenActive.value = true;
+                                            document.addEventListener('fullscreenchange', () => {
+                                                if (!document.fullscreenElement) isFullScreenActive.value = false;
+                                            });
+                                        } else if (document.documentElement.webkitRequestFullscreen) {
+                                            document.documentElement.webkitRequestFullscreen();
+                                            screen.orientation.lock('portrait-primary'); // auto unlock
+                                            isFullScreenActive.value = true;
+                                            document.addEventListener('webkitfullscreenchange', () => {
+                                                if (!document.webkitFullscreenElemen) isFullScreenActive.value = false;
+                                            });
+                                        }
+                                    }
                                 }
                             }
                         );
 
+
                         this.load.image('slot_body', SlotBodyImage);
                         this.load.image('slot_canopy', SlotCanopyImage);
                         this.load.image('slot_logo', SlotLogoImage);
+                        this.load.image('slot_splash-left', SlotSplashLeftImage);
+                        this.load.image('slot_splash-right', SlotSplashRightImage);
                         this.load.image('slot_coin', CoinImage);
 
                         this.load.atlas('character-main_sprite', CharacterMainPng, CharacterMainJson);
@@ -325,49 +407,6 @@
                         this.slotBody.setPosition(canvasRef.value.offsetWidth / 2 - this.slotBody.displayWidth / 2, canvasRef.value.offsetHeight / 2 - this.slotBody.displayHeight / 2 - 20 * this.slotBody.scaleX);
 
 
-
-                        const generateReel = (id, reelMap, xGap) => {
-                            const reel = [];
-                            const elementsHeightWrap = [];
-                            const maskDimension = {
-                                width: 322 * this.slotBody.scaleX,
-                                height: 322 * this.slotBody.scaleX * SYMBOL_X_REEL
-                            }
-                            const mask = this.add.graphics();
-
-                            mask.fillStyle(0xff0000, 0); // DEBUG TOOL: 0 => 1
-
-                            mask.fillRect(0, 0, maskDimension.width, maskDimension.height);
-                            mask.setPosition(this.slotBody.x + (xGap * this.slotBody.scaleX), this.slotBody.y + (96 * this.slotBody.scaleX));
-
-                            for (let i = 0; i < reelMap.length; i++) {
-                                reels[`reel${id}`][`${reelMap[i]}Sheet`] = this.add.sprite(mask.x - (67 * this.slotBody.scaleX), 0, `${reelMap[i]}_sprite`, `${reelMap[i]}-animation_30.png`).setOrigin(0, 0);
-                                reels[`reel${id}`][`${reelMap[i]}Sheet`].setScale(0.98 * this.slotBody.scaleX, 0.98 * this.slotBody.scaleX);
-                                reels[`reel${id}`][`${reelMap[i]}Sheet`].y = mask.y + (maskDimension.width * i) - (87 * this.slotBody.scaleX);
-                                reels[`reel${id}`][`${reelMap[i]}Sheet`].setMask(mask.createGeometryMask());
-
-                                this.anims.create({
-                                    key: `reel${id}-${reelMap[i]}_animation`,
-                                    frames: this.anims.generateFrameNames(`${reelMap[i]}_sprite`, { start: 1, end: 30, zeroPad: 2, prefix: `${reelMap[i]}-animation_`, suffix: '.png' }),
-                                    frameRate: ANIMATION_FPS,
-                                    repeat: -1
-                                });
-
-                                reel.push(reels[`reel${id}`][`${reelMap[i]}Sheet`]);
-                                elementsHeightWrap.push((67.9 * this.slotBody.scaleX) * 2);
-                            }
-
-                            // Resize after sheet creation to render animation out of the reel
-                            mask.scaleX = 1.5;
-                            mask.x -= 75 * this.slotBody.scaleX;
-
-                            return verticalLoop(reel, maskDimension, elementsHeightWrap, {
-                                repeat: -1,
-                                paused: true,
-                                center: true,
-                            });
-                        }
-
                         let xGap;
                         for (let i = 1; i <= REELS_X_SLOT; i++) {
                             switch (i) {
@@ -387,9 +426,8 @@
                                     xGap = 1402;
                             }
 
-                            slotAnimation[`reel${i}Animation`] = generateReel(i, SLOT_MAP[`REEL_${i}_MAP`], xGap);
+                            slotAnimation[`reel${i}Animation`] = this.generateReel(i, SLOT_MAP[`REEL_${i}_MAP`], xGap);
                         }
-
 
 
                         // Slot elements
@@ -397,7 +435,10 @@
                         this.slotCanopy.setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
                         this.slotLogo = this.add.image(this.slotBody.x + this.slotBody.displayWidth / 2, this.slotBody.y - (190 * this.slotBody.scaleX), 'slot_logo').setOrigin(0.5, 0);
                         this.slotLogo.setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
-
+                        this.slotSplashLeft = this.add.image(this.slotBody.x - (176 * this.slotBody.scaleX), this.slotBody.y + (390 * this.slotBody.scaleX), 'slot_splash-left').setOrigin(0, 0);
+                        this.slotSplashLeft.setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
+                        this.slotSplashRight = this.add.image(this.slotBody.x + (1749 * this.slotBody.scaleX), this.slotBody.y + (390 * this.slotBody.scaleX), 'slot_splash-right').setOrigin(0, 0);
+                        this.slotSplashRight.setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
 
 
                         // Character
@@ -429,7 +470,7 @@
                         mixerAudio.backgroundMusic = this.sound.add('background_music', { volume: 0.5, loop: true });
 
                         mixerAudio.slotClickFX = this.sound.add('slot-click_sfx', { volume: 0.5, loop: false });
-                        mixerAudio.slotTickFX = this.sound.add('slot-tick_sfx');
+                        mixerAudio.slotTickFX = this.sound.add('slot-tick_sfx', { volume: 0.5, loop: false });
                         mixerAudio.slotWinFX = this.sound.add('slot-win_sfx');
                         mixerAudio.slotMegaWinFX = this.sound.add('slot-mega-win_sfx');
                         mixerAudio.slotWinJollyFX = this.sound.add('slot-win-jolly_sfx');
@@ -738,6 +779,48 @@
 
 
                     // Custom methods
+                    generateReel(id, reelMap, xGap) {
+                        const reel = [];
+                        const elementsHeightWrap = [];
+                        const maskDimension = {
+                            width: 322 * this.slotBody.scaleX,
+                            height: 322 * this.slotBody.scaleX * SYMBOL_X_REEL
+                        }
+                        const mask = this.add.graphics();
+
+                        mask.fillStyle(0xff0000, 0); // DEBUG TOOL: 0 => 1
+
+                        mask.fillRect(0, 0, maskDimension.width, maskDimension.height);
+                        mask.setPosition(this.slotBody.x + (xGap * this.slotBody.scaleX), this.slotBody.y + (96 * this.slotBody.scaleX));
+
+                        for (let i = 0; i < reelMap.length; i++) {
+                            reels[`reel${id}`][`${reelMap[i]}Sheet`] = this.add.sprite(mask.x - (67 * this.slotBody.scaleX), 0, `${reelMap[i]}_sprite`, `${reelMap[i]}-animation_30.png`).setOrigin(0, 0);
+                            reels[`reel${id}`][`${reelMap[i]}Sheet`].setScale(0.98 * this.slotBody.scaleX, 0.98 * this.slotBody.scaleX);
+                            reels[`reel${id}`][`${reelMap[i]}Sheet`].y = mask.y + (maskDimension.width * i) - (87 * this.slotBody.scaleX);
+                            reels[`reel${id}`][`${reelMap[i]}Sheet`].setMask(mask.createGeometryMask());
+
+                            this.anims.create({
+                                key: `reel${id}-${reelMap[i]}_animation`,
+                                frames: this.anims.generateFrameNames(`${reelMap[i]}_sprite`, { start: 1, end: 30, zeroPad: 2, prefix: `${reelMap[i]}-animation_`, suffix: '.png' }),
+                                frameRate: ANIMATION_FPS,
+                                repeat: -1
+                            });
+
+                            reel.push(reels[`reel${id}`][`${reelMap[i]}Sheet`]);
+                            elementsHeightWrap.push((67.9 * this.slotBody.scaleX) * 2);
+                        }
+
+                        // Resize after sheet creation to render animation out of the reel
+                        mask.scaleX = 1.5;
+                        mask.x -= 75 * this.slotBody.scaleX;
+
+                        return verticalLoop(reel, maskDimension, elementsHeightWrap, {
+                            repeat: -1,
+                            paused: true,
+                            center: true,
+                        });
+                    }
+
                     spin() {
                         // ReturnToPlayer
                         // RandomNumberGenerator
@@ -793,22 +876,25 @@
 
                         switch (selectedCondition) {
                             case 'lose':
-                                indexReels = getRandomLose(indexReels, REELS_X_SLOT, SYMBOLS, SLOT_MAP);
+                                indexReels = getRandomLose(indexReels, REELS_X_SLOT, [...SYMBOLS, MEGA_WIN, JOLLY], SLOT_MAP);
                                 break
                             case 'fake-win':
                             case 'win':
                             case 'mega-win':
-                                randomWinSymbol = selectedCondition === 'win' ? SYMBOLS[getRandomNumber(0, SYMBOLS.length - 1)] : MEGA_WIN;
+                                let symbolsWithoutJolly;
+                                if (selectedCondition === 'fake-win') {
+                                    symbolsWithoutJolly = [...SYMBOLS, MEGA_WIN];
+                                    randomWinSymbol = symbolsWithoutJolly[getRandomNumber(0, symbolsWithoutJolly.length - 1)];
+                                }
+                                if (selectedCondition === 'win') randomWinSymbol = SYMBOLS[getRandomNumber(0, SYMBOLS.length - 1)];
+                                if (selectedCondition === 'mega-win') randomWinSymbol = MEGA_WIN;
 
                                 for (let i = 1; i <= REELS_X_SLOT; i++) {
                                     indexReels[`indexReel${i}`] = SLOT_MAP[`REEL_${i}_MAP`].indexOf(randomWinSymbol);
                                 }
 
                                 if (selectedCondition === 'fake-win') {
-                                    const randomReel = getRandomNumber(1, REELS_X_SLOT);
-                                    const filteredSymbols = [...SYMBOLS, MEGA_WIN].filter(el => el !== randomWinSymbol);
-                                    const loseSymbol = filteredSymbols[getRandomNumber(0, filteredSymbols.length - 1)];
-                                    indexReels[`indexReel${randomReel}`] = SLOT_MAP[`REEL_${randomReel}_MAP`].indexOf(loseSymbol);
+                                    indexReels = getRandomFakeWin(indexReels, REELS_X_SLOT, symbolsWithoutJolly, SLOT_MAP, randomWinSymbol);
 
                                     randomWinSymbol = null;
                                 }
@@ -854,14 +940,14 @@
                             const animConfig = { duration: parseFloat((newAnimDuration + animDelay).toFixed(2)), revolutions: newAnimRevolutions, ease: 'power2.inOut' };
                             animConfig.onComplete = () => {
                                 mixerAudio.slotTickFX.play();
-                                if (i === 5) this.animateOnComplete();
+                                if (i === 5) this.onComplete();
                             }
 
                             slotAnimation[`reel${i}Animation`].toIndex(indexReels[`indexReel${i}`], animConfig);
                         }
                     }
 
-                    animateOnComplete() {
+                    onComplete() {
                         isGamePlaying.value = false;
 
                         if (this.freeSpinValue >= 100) {
@@ -948,7 +1034,7 @@
 
                             this.symbolsAnimations[i] = this.tweens.add({
                                 targets: symbolWinFX,
-                                duration: ANIMATION_DURATION / 2, // sync with sprite animation
+                                duration: ANIMATION_DURATION / 2, // Sync with sprite animation
                                 outerStrength: 10 * this.slotBody.scaleX,
                                 yoyo: true,
                                 loop: -1,
@@ -956,13 +1042,13 @@
                             });
                         }
 
-                        if (this.freeSpinValue === 100) this.slotBet = this.slotBetIncrement; // min bet x free spin
+                        if (this.freeSpinValue === 100) this.slotBet = this.slotBetIncrement; // Min bet x free spin
 
 
 
                         if (selectedCondition === 'mega-win') {
                             mixerAudio.slotMegaWinFX.play();
-                            this.slotWin = this.slotBet * 5;
+                            this.slotWin = this.slotBet * this.slotMegaWinMultiplier;
 
                             for (let i = 0; i < 3; i++) {
                                 this.input.enabled = false;
@@ -998,10 +1084,10 @@
                             }
                         } else if (jollyRandomReel) {
                             mixerAudio.slotWinJollyFX.play(); // Not playing with mega win
-                            this.slotWin = this.slotBet * 3;
+                            this.slotWin = this.slotBet * this.slotWinJollyMultiplier;
                         } else if (selectedCondition === 'win') {
                             mixerAudio.slotWinFX.play(); // Not playing with jolly
-                            this.slotWin = this.slotBet * 2;
+                            this.slotWin = this.slotBet * this.slotWinMultiplier;
                         }
 
                         if (this.slotWin) this.slotBalance += this.slotWin;
@@ -1010,6 +1096,11 @@
                         this.slotWinValue.setText(formatNumber(this.slotWin));
                     }
                 }
+
+
+
+                canvasRef.value.width = window.innerWidth;
+                canvasRef.value.height = window.innerHeight;
 
                 const config = {
                     type: Phaser.WEBGL,
@@ -1042,10 +1133,16 @@
                 isLoadingComplete,
                 isGameEntered,
                 canvasRef,
+                isMobile,
+                isFullScreenActive,
+                enterFullScreen,
+                exitFullScreen,
                 isSettingOpened,
                 isVolumeActive,
                 setVolume,
-                isGamePlaying
+                isGamePlaying,
+                SYMBOLS,
+                imageUrl
             };
         },
     };
@@ -1065,14 +1162,10 @@
         position: relative;
         overflow-y: hidden;
 
-        background-image: url("@/assets/projects/slotmachine/image/main/back.png");
+        background-image: url("@/assets/projects/slotmachine/image/main/back_COMPRESSED.jpg");
         background-repeat: no-repeat;
         background-position: right bottom;
         background-size: cover;
-    }
-    canvas {
-        width: 100%;
-        height: 100%;
     }
 
 
@@ -1084,7 +1177,7 @@
         left: 0;
         z-index: 9999;
 
-        background-image: url("@/assets/projects/slotmachine/image/main/back.png");
+        background-image: url("@/assets/projects/slotmachine/image/main/back_COMPRESSED.jpg");
         background-repeat: no-repeat;
         background-position: right bottom;
         background-size: cover;
@@ -1178,6 +1271,7 @@
     #setting-container {
         width: calc(100% - (25px * 2));
         height: calc(100% - (25px * 2));
+        overflow-y: auto;
         background-color: rgba(0, 0, 0, 0.8);
         border-radius: 25px;
         padding: 25px;
@@ -1198,10 +1292,44 @@
 
     #pay-table-title {
         font-size: 50px;
-        margin-bottom: 25px;
+        margin-bottom: 10px;
     }
     #pay-table-img {
         width: 50%;
+    }
+
+    #bet-container {
+        margin-top: 50px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 25px;
+    }
+    .symbol-container {
+        width: 25%;
+    }
+    .symbol-text {
+        font-size: 25px;
+    }
+    .symbol-icon {
+        width: 30%;
+    }
+    .symbol-container:first-child {
+        width: 50%;
+    }
+    .symbol-container:first-child .symbol-icon {
+        width: 15%;
+    }
+
+
+    #full-screen-handler {
+        position: absolute;
+        top: 25px;
+        right: 25px;
+        z-index: 999;
+    }
+    #full-screen-handler i {
+        color: #000000;
     }
 
 
@@ -1245,10 +1373,25 @@
         }
 
         #pay-table-title {
-            font-size: 20px;
+            font-size: 25px;
         }
         #pay-table-img {
             width: 100%;
+        }
+
+        #bet-container {
+            margin-top: 25px;
+            flex-direction: column;
+        }
+        .symbol-container,
+        .symbol-container:first-child {
+            width: 100%;
+        }
+        .symbol-text {
+            font-size: 20px;
+        }
+        .symbol-icon {
+            width: 15%;
         }
     }
 </style>

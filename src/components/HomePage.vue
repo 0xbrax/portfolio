@@ -1,6 +1,6 @@
 <template>
     <div id="home-page">
-        <div id="canvas" ref="canvasRef">
+        <div id="canvas" class="relative" ref="canvasRef">
             <div
                 id="ui-ux-control-container"
                 :class="[
@@ -107,7 +107,7 @@
         >
             <img
                 id="logo-img"
-                src="@/assets/image/LOGO-Brax_white-nobg.png"
+                src="@/assets/image/LOGO-Brax_white-nobg_COMPRESSED.png"
                 alt="Brax"
             />
 
@@ -160,6 +160,7 @@
 
     import PIKARIDEimage from "@/assets/projects/pikaride/pikaride.jpg";
     import STARWAYimage from "@/assets/projects/starway/starway.jpg";
+    import SLOTMACHINEimage from "@/assets/projects/slotmachine/slotmachine.jpg";
 
     export default {
         name: "HomePage",
@@ -425,6 +426,7 @@
             const goBackToPlane = (mode) => {
                 whatProject.value = null;
 
+                // Force camera and position reset, use it for target blank projects
                 if (mode === "force") {
                     camera.position.set(0.8, 0.2, 0);
                     controls.target.set(0, 0, 0);
@@ -539,6 +541,10 @@
                     case "STARWAY":
                         image = STARWAYimage;
                         text = "Starway";
+                        break;
+                    case "SLOTMACHINE":
+                        image = SLOTMACHINEimage;
+                        text = "Slot Machine";
                         break;
                 }
 
@@ -676,26 +682,27 @@
             };
 
             // PROJECTS
-            const projectsArray = ["pikaride", "starway"];
+            const projectsArray = ["pikaride", "starway", "slotmachine"];
             const switchProject = (mode) => {
                 const obj = {
                     cubeModel_1,
-                    cubeModel_2
+                    cubeModel_2,
+                    cubeModel_3
                 }
 
                 let index = projectsArray.indexOf(whatProject.value);
                 index += 1;
 
                 if (mode === "left") {
-                    if (index === projectsArray.length) index += -1;
+                    if (index === projectsArray.length) index = 1;
                     else index += 1;
 
                     obj[`cubeModel_${index}`]._listeners.click[0]();
                 }
 
                 if (mode === "right") {
-                    if (index === projectsArray.length) index += -1;
-                    else index += 1;
+                    if (index === 1) index = projectsArray.length;
+                    else index += -1;
 
                     obj[`cubeModel_${index}`]._listeners.click[0]();
                 }
@@ -718,6 +725,15 @@
             let project_2;
             let dragonMixer_2;
             let cubeModel_2;
+
+            // PROJECT MODEL 3
+            const PROJECT_NAME_3 = "SLOTMACHINE";
+            const PROJECT_COLOR_3 = 0xff8c00;
+            const projectGroup_3 = new THREE.Group();
+            const dragonClock_3 = new THREE.Clock();
+            let project_3;
+            let dragonMixer_3;
+            let cubeModel_3;
 
             // TRUCK GROUP
             const truckGroup = new THREE.Group();
@@ -944,6 +960,8 @@
                     const deltaTime = planeClock.getDelta();
                     planeMixer.update(deltaTime);
                 }
+
+                // projects
                 if (dragonMixer_1) {
                     const deltaTime = dragonClock_1.getDelta();
                     dragonMixer_1.update(deltaTime);
@@ -952,6 +970,11 @@
                     const deltaTime = dragonClock_2.getDelta();
                     dragonMixer_2.update(deltaTime);
                 }
+                if (dragonMixer_3) {
+                    const deltaTime = dragonClock_3.getDelta();
+                    dragonMixer_3.update(deltaTime);
+                }
+
                 if (flameMixer) {
                     const deltaTime = flameClock.getDelta();
                     flameMixer.update(deltaTime);
@@ -969,7 +992,7 @@
                 isEnterClicked.value = true;
                 video.play();
 
-                if (router.options.history.state.back !== null && !router.options.history.state.back.includes('projects')) {
+                if (router.options.history.state.back !== null && !router.options.history.state.back.includes('project')) {
                     return;
                 }
 
@@ -995,19 +1018,23 @@
                     return;
                 }
 
+                audioArray.forEach((el) => {
+                    audioObject[el].pause();
+                    audioObject[el].currentTime = 0;
+                });
+
                 switch (whatProject.value) {
                     case "pikaride":
-                        audioArray.forEach((el) => {
-                            audioObject[el].pause();
-                            audioObject[el].currentTime = 0;
-                        });
-
-                        router.push("/projects/pikaride");
+                        router.push("/project/pikaride");
                         document.title = "0xbrax | Pika Ride";
                         break;
                     case "starway":
-                        goBackToPlane("force");
-                        window.open("https://starway.page", "_blank");
+                        router.push("/project/starway");
+                        document.title = "0xbrax | Starway";
+                        break;
+                    case "slotmachine":
+                        router.push("/project/slotmachine");
+                        document.title = "0xbrax | Slot Machine";
                         break;
                 }
             };
@@ -1042,7 +1069,6 @@
             };
 
             // INIT
-            document.title = "0xbrax";
             animate();
 
             audioArray.forEach((el, i) => {
@@ -1061,6 +1087,7 @@
             onMounted(async () => {
                 canvasRef.value.appendChild(renderer.domElement);
 
+                // pika ride
                 project_1 = await createProjectContainer(
                     projectGroup_1,
                     PROJECT_COLOR_1,
@@ -1068,9 +1095,10 @@
                 );
                 dragonMixer_1 = project_1.dragonMixer;
                 cubeModel_1 = project_1.cubeModel;
-                projectGroup_1.position.set(1.5, 0.5, -0.1);
+                projectGroup_1.position.set(2.0, 0.5, -0.1);
                 scene.add(projectGroup_1);
 
+                // starway
                 project_2 = await createProjectContainer(
                     projectGroup_2,
                     PROJECT_COLOR_2,
@@ -1078,8 +1106,19 @@
                 );
                 dragonMixer_2 = project_2.dragonMixer;
                 cubeModel_2 = project_2.cubeModel;
-                projectGroup_2.position.set(0, 0.5, -0.1);
+                projectGroup_2.position.set(0.5, 0.5, -0.1);
                 scene.add(projectGroup_2);
+
+                // slot machine
+                project_3 = await createProjectContainer(
+                    projectGroup_3,
+                    PROJECT_COLOR_3,
+                    PROJECT_NAME_3
+                );
+                dragonMixer_3 = project_3.dragonMixer;
+                cubeModel_3 = project_3.cubeModel;
+                projectGroup_3.position.set(-1.0, 0.5, -0.1);
+                scene.add(projectGroup_3);
 
                 if (router.options.history.state.back !== null) {
                     doEnter();

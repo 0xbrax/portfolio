@@ -1,0 +1,354 @@
+#starway {
+    min-height: 100vh;
+    background-color: var(--main-purple-dark);
+}
+
+
+.inline-block {
+    display: inline-block;
+}
+.d-flex {
+    display: flex;
+}
+.column {
+    flex-direction: column;
+}
+.wrap {
+    flex-wrap: wrap;
+}
+.just-ctr {
+    justify-content: center;
+}
+.just-bt {
+    justify-content: space-between;
+}
+.just-start {
+    justify-content: flex-start;
+}
+.just-end {
+    justify-content: flex-end;
+}
+.align-ctr {
+    align-items: center;
+}
+.align-start {
+    align-items: flex-start;
+}
+.align-end {
+    align-items: flex-end;
+}
+.content-start {
+    align-content: flex-start;
+}
+.content-end {
+    align-content: flex-end;
+}
+
+.h-100 {
+    height: 100%;
+}
+.w-100 {
+    width: 100%;
+}
+
+.mt-5 {
+    margin-top: 5px;
+}
+.mt-10 {
+    margin-top: 10px;
+}
+.mt-20 {
+    margin-top: 20px;
+}
+.mt-40 {
+    margin-top: 40px;
+}
+.mx-20 {
+    margin-left: 20px;
+    margin-right: 20px;
+}
+.ml-10 {
+    margin-left: 10px;
+}
+
+.py-5 {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+.py-10 {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+.py-20 {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+.py-40 {
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+.px-10 {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+.px-15 {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+.px-20 {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.text-ctr {
+    text-align: center;
+}
+.text-r {
+    text-align: right;
+}
+.text-cap {
+    text-transform: capitalize;
+}
+
+.fs-22 {
+    font-size: 22px;
+}
+
+.rounded {
+    border-radius: 20px;
+}
+.rounded-top {
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+.rounded-bottom {
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+}
+
+.container {
+    width: 1140px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+.row {
+    display: flex;
+}
+.col-P1,
+.col-P2 {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+.col-P1 {
+    width: 70%;
+}
+.col-P2 {
+    width: 30%;
+}
+
+/********/
+
+header {
+    background-color: var(--main-purple-dark);
+    color: white;
+    height: 70px;
+    font-size: 40px;
+}
+nav {
+    height: 100%;
+}
+nav > div {
+    height: 100%;
+    line-height: 70px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+
+
+#hero {
+    background-color: var(--sec-blue-light);
+}
+#logo-starway {
+    width: 100%;
+}
+.download-btn {
+    padding: 15px 20px;
+    background-color: var(--main-purple-light);
+    color: black;
+
+    transition: background-color 0.5s ease, color 0.5s ease;
+}
+.download-btn:hover {
+    background-color: var(--main-purple-dark);
+    color: white;
+}
+#logo-google-play {
+    height: 30px;
+}
+
+
+
+#info {
+    background-color: var(--main-purple-light);
+    color: white;
+}
+#info img {
+    width: 50%;
+    margin-left: calc(-75px / 2);
+}
+
+
+
+#sign {
+    position: relative;
+    overflow: hidden;
+
+    height: calc(150px + 40px + 40px);
+    background-color: white;
+}
+.sign-card {
+    width: 150px;
+    aspect-ratio: 1 / 1;
+    background-color: var(--main-purple-light);
+    margin-left: 5px;
+    margin-right: 5px;
+    padding: 10px;
+
+    position: relative;
+    overflow: hidden;
+}
+.sign-img {
+    height: 50%;
+    position: relative;
+    z-index: 12;
+}
+.sign-img img {
+    max-height: 50px;
+    max-width: 50px;
+}
+.sign-card-txt {
+    background-color: var(--main-purple-light);
+    padding: 0 5px;
+    margin-top: 7px;
+
+    position: relative;
+    z-index: 11;
+}
+
+.sign-card-border-top {
+    height: 67%;
+    width: 90%;
+
+    position: absolute;
+    top: 38%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+
+    border-bottom: 2px solid white;
+    border-left: 2px solid white;
+    border-right: 2px solid white;
+}
+.sign-card-border-bottom {
+    height: 20%;
+    width: 90%;
+
+    position: absolute;
+    bottom: -6%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+
+    border-top: 2px solid white;
+    border-left: 2px solid white;
+    border-right: 2px solid white;
+}
+
+
+
+#bonus {
+    background-color: var(--sec-blue-light);
+}
+#bonus > .container div:nth-child(2) {
+    display: none;
+}
+
+footer {
+    height: 70px;
+    background-color: var(--main-purple-dark);
+    color: white;
+}
+footer a {
+    color: white;
+}
+
+
+
+/************************************************
+    MEDIA QUERY
+************************************************/
+
+@media screen and (max-width: 1140px) {
+    .container {
+        width: 100%;
+    }
+    #info img {
+        margin-left: calc(-75px / 2);
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .container {
+        width: 100%;
+    }
+    #info img {
+        width: 100%;
+        margin-left: calc(-75px / 1.5);
+    }
+    #sign {
+        height: calc(100px + 40px + 40px);
+    }
+    .sign-card {
+        width: 100px;
+    }
+    #bonus > .container div:nth-child(1) {
+        display: none;
+    }
+    #bonus > .container div:nth-child(2) {
+        display: block;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .container,
+    .col-P1,
+    .col-P2 {
+        width: 100%;
+    }
+    .row {
+        flex-wrap: wrap;
+    }
+    #hero .col-P2 {
+        margin-top: 40px;
+    }
+    #hero .col-P1 > div > div > div:first-child {
+        text-align: center;
+    }
+    #hero .col-P1 > div > div > div:last-child {
+        justify-content: center;
+    }
+    #info .col-P2 > div {
+        justify-content: center;
+    }
+    #info img {
+        width: calc(100% / 3);
+        margin-left: calc(-75px / 4);
+    }
+    #info .col-P1 {
+        margin-top: 20px;
+    }
+    #info .col-P1 > div {
+        text-align: center;
+    }
+}

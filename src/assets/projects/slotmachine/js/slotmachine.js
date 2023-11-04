@@ -238,11 +238,11 @@ export const getRandomWinMap = ({ indexReel1, indexReel2, indexReel3, indexReel4
     return maps[random];
 }
 
-export const getRandomLose = (indexReels, reelsXSlot, symbols, slotMap) => {
+export const getRandomLose = (indexReels, reelsXSlot, allSymbols, slotMap) => {
     const obj = Object.assign(indexReels);
 
     for (let i = 1; i <= reelsXSlot; i++) {
-        obj[`indexReel${i}`] = getRandomNumber(0, symbols.length - 1);
+        obj[`indexReel${i}`] = getRandomNumber(0, allSymbols.length - 1);
     }
 
     // Need to verify at least 2 random reels, starting from reel number 2
@@ -253,13 +253,16 @@ export const getRandomLose = (indexReels, reelsXSlot, symbols, slotMap) => {
 
     const getNewReelIndex = (id) => {
         const symbolReel1 = slotMap.REEL_1_MAP[obj.indexReel1];
-        let randomNumber = getRandomNumber(0, symbols.length - 1);
+        let randomNumber = getRandomNumber(0, allSymbols.length - 1);
+        while (allSymbols[randomNumber] === 'splash') {
+            randomNumber = getRandomNumber(0, allSymbols.length - 1);
+        }
         const whatSymbolIndexInReel = slotMap[`REEL_${id}_MAP`].indexOf(symbolReel1);
         let diffIndex = Math.abs(randomNumber - whatSymbolIndexInReel);
 
         // Get out of win map
         while (diffIndex <= 1) {
-            randomNumber = getRandomNumber(0, symbols.length - 1);
+            randomNumber = getRandomNumber(0, allSymbols.length - 1);
             diffIndex = Math.abs(randomNumber - whatSymbolIndexInReel);
         }
 
@@ -268,6 +271,27 @@ export const getRandomLose = (indexReels, reelsXSlot, symbols, slotMap) => {
 
     obj[`indexReel${checkReelIndex1}`] = getNewReelIndex(checkReelIndex1);
     obj[`indexReel${checkReelIndex2}`] = getNewReelIndex(checkReelIndex2);
+
+    return obj;
+}
+
+export const getRandomFakeWin = (indexReels, reelsXSlot, symbolsWithoutJolly, slotMap, randomWinSymbol) => {
+    const obj = Object.assign(indexReels);
+
+    const randomReel = getRandomNumber(1, reelsXSlot);
+    const filteredSymbols = symbolsWithoutJolly.filter(el => el !== randomWinSymbol);
+
+    let loseSymbol = filteredSymbols[getRandomNumber(0, filteredSymbols.length - 1)];
+    let randomLoseIndex = slotMap[`REEL_${randomReel}_MAP`].indexOf(loseSymbol);
+    let diffIndexSymbol = Math.abs(randomLoseIndex - obj[`indexReel${randomReel}`]);
+
+    while (diffIndexSymbol <= 1) {
+        loseSymbol = filteredSymbols[getRandomNumber(0, filteredSymbols.length - 1)];
+        randomLoseIndex = slotMap[`REEL_${randomReel}_MAP`].indexOf(loseSymbol);
+        diffIndexSymbol = Math.abs(randomLoseIndex - obj[`indexReel${randomReel}`]);
+    }
+
+    obj[`indexReel${randomReel}`] = slotMap[`REEL_${randomReel}_MAP`].indexOf(loseSymbol);
 
     return obj;
 }
