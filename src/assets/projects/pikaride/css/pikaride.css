@@ -44,6 +44,14 @@ header nav {
     height: 100%;
 }
 
+#go-back-btn {
+    color: white;
+    font-size: 25px;
+}
+#go-back-btn span {
+    display: none;
+}
+
 .visualizer-container {
     height: 50px;
 }
@@ -677,6 +685,12 @@ header nav {
 }
 
 /***** MEDIA QUERY *****/
+
+@media all and (min-width: 576px) {
+    #go-back-btn span {
+        display: inline;
+    }
+}
 
 @media all and (min-width: 768px) {
     /*.visualizer-container__bar {

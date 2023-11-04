@@ -2,8 +2,9 @@
     <div id="starway">
         <header>
             <nav class="container">
-                <div class="text-ctr text-cap">
-                    <router-link to="/">Go to HOME</router-link> starway
+                <div class="d-flex just-bt align-ctr">
+                    <router-link to="/"><i class="fas fa-house mr-10"></i><span>Go to HOME</span></router-link>
+                    <div class="text-cap">starway</div>
                 </div>
             </nav>
         </header>
@@ -80,18 +81,7 @@
 
 <script>
 import { onMounted } from 'vue';
-import ariesImage from '@/assets/projects/starway/img/1-aries.svg';
-import taurusImage from '@/assets/projects/starway/img/2-taurus.svg';
-import geminiImage from '@/assets/projects/starway/img/3-gemini.svg';
-import cancerImage from '@/assets/projects/starway/img/4-cancer.svg';
-import leoImage from '@/assets/projects/starway/img/5-leo.svg';
-import virgoImage from '@/assets/projects/starway/img/6-virgo.svg';
-import libraImage from '@/assets/projects/starway/img/7-libra.svg';
-import scorpioImage from '@/assets/projects/starway/img/8-scorpio.svg';
-import sagittariusImage from '@/assets/projects/starway/img/9-sagittarius.svg';
-import capricornImage from '@/assets/projects/starway/img/10-capricorn.svg';
-import aquariusImage from '@/assets/projects/starway/img/11-aquarius.svg';
-import piscesImage from '@/assets/projects/starway/img/12-pisces.svg';
+import { assetsUrl } from '@/assets/js/utils.js';
 
 export default {
     name: 'Starway',
@@ -153,25 +143,99 @@ export default {
 
                 const signCard = document.createElement('div');
                 signCard.classList.add('sign-card', 'd-flex', 'column', 'just-ctr', 'align-ctr', 'rounded', `SCROLL-EL_${scrollClassIndex}`);
+                const signCardStyle = {
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignContent: 'center',
+                    borderRadius: '20px',
+
+                    width: '150px',
+                    aspectRatio: '1 / 1',
+                    backgroundColor: 'var(--main-purple-light)',
+                    marginLeft: '5px',
+                    marginRight: '5px',
+                    padding: '10px',
+                    position: 'relative',
+                    overflow: 'hidden'
+                };
+                Object.assign(signCard.style, signCardStyle);
 
                 const signImg = document.createElement('div');
                 signImg.classList.add('sign-img', 'd-flex', 'align-ctr');
+                const signImgStyle = {
+                    display: 'flex',
+                    alignContent: 'center',
+
+                    height: '50%',
+                    position: 'relative',
+                    zIndex: '12',
+                };
+                Object.assign(signImg.style, signImgStyle);
+
                 const img = document.createElement('img');
-
-                img.src = img.src = `/src/assets/projects/starway/img/${index + 1}-${zodiacSign[index]}.svg`;
-
+                img.src = assetsUrl(`projects/starway/img/${index + 1}-${zodiacSign[index]}.svg`);
                 img.classList.add('sign-card-img');
+                const signImgImgStyle = {
+                    maxHeight: '50px',
+                    maxWidth: '50px',
+                };
+                Object.assign(img.style, signImgImgStyle);
                 signImg.append(img);
 
                 const signTxt = document.createElement('div');
                 signTxt.innerHTML = zodiacSign[index];
                 signTxt.classList.add('sign-card-txt', 'text-cap', 'rounded');
+                const signTxtStyle = {
+                    textTransform: 'capitalize',
+                    borderRadius: '20px',
+
+                    backgroundColor: 'var(--main-purple-light)',
+                    padding: '0 5px',
+                    marginTop: '7px',
+                    position: 'relative',
+                    zIndex: '11',
+                };
+                Object.assign(signTxt.style, signTxtStyle);
 
                 const borderTop = document.createElement('div');
                 borderTop.classList.add('sign-card-border-top', 'rounded-top');
+                const borderTopStyle = {
+                    borderTopLeftRadius: '20px',
+                    borderTopRightRadius: '20px',
+
+                    height: '67%',
+                    width: '90%',
+                    position: 'absolute',
+                    top: '38%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    zIndex: '10',
+                    borderBottom: '2px solid white',
+                    borderLeft: '2px solid white',
+                    borderRight: '2px solid white'
+                };
+                Object.assign(borderTop.style, borderTopStyle);
 
                 const borderBottom = document.createElement('div');
                 borderBottom.classList.add('sign-card-border-bottom', 'rounded-bottom');
+
+                const borderBottomStyle = {
+                    borderBottomLeftRadius: '20px',
+                    borderBottomRightRadius: '20px',
+
+                    height: '20%',
+                    width: '90%',
+                    position: 'absolute',
+                    bottom: '-6%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    zIndex: '10',
+                    borderTop: '2px solid white',
+                    borderLeft: '2px solid white',
+                    borderRight: '2px solid white'
+                };
+                Object.assign(borderBottom.style, borderBottomStyle);
 
                 signCard.append(signImg, signTxt, borderTop, borderBottom);
 

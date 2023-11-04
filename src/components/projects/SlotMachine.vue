@@ -40,7 +40,7 @@
                     <div id="bet-container">
                         <div class="symbol-container">
                             <div class="symbol-text mb-10">symbols = bet x 2</div>
-                            <img v-for="symbol in SYMBOLS" class="symbol-icon" :src="imageUrl(`projects/slotmachine/image/icon/${symbol}_COMPRESSED.png`)" :key="symbol" />
+                            <img v-for="symbol in SYMBOLS" class="symbol-icon" :src="assetsUrl(`projects/slotmachine/image/icon/${symbol}_COMPRESSED.png`)" :key="symbol" />
                         </div>
 
                         <div class="symbol-container">
@@ -67,7 +67,7 @@
 <script>
     import { ref, onMounted, watch, onUnmounted } from "vue";
     import Phaser from "phaser";
-    import { isDeviceMobile, getRandomNumber, formatNumber } from "@/assets/js/utils.js";
+    import { assetsUrl, isDeviceMobile, getRandomNumber, formatNumber } from "@/assets/js/utils.js";
     import { verticalLoop, getRandomWinMap, getRandomLose, getRandomFakeWin } from "@/assets/projects/slotmachine/js/slotmachine.js";
 
     import SlotBodyImage from "@/assets/projects/slotmachine/image/main/reel.png";
@@ -125,10 +125,6 @@
         name: 'SlotMachine',
 
         setup() {
-            const imageUrl = (path) => {
-                return new URL(`/src/assets/${path}`, import.meta.url).href;
-            }
-
             const isMobile = isDeviceMobile();
             let wakeLock; // Screen lock
             const isLoadingScreenActive = ref(true);
@@ -1142,7 +1138,7 @@
                 setVolume,
                 isGamePlaying,
                 SYMBOLS,
-                imageUrl
+                assetsUrl
             };
         },
     };
