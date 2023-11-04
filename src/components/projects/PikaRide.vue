@@ -4,7 +4,9 @@
             <nav
                 class="container-md d-flex justify-content-between align-items-center"
             >
-                <h3 id="go-back-btn" class="pointer">Go to HOME</h3>
+                <div id="go-back-btn" class="pointer">
+                    <i class="fas fa-house mr-10"></i><span>Go to HOME</span>
+                </div>
 
                 <div class="visualizer-container__bar"></div>
 

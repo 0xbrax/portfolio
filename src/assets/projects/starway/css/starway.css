@@ -154,6 +154,11 @@ header {
     height: 70px;
     font-size: 40px;
 }
+header a {
+    color: white;
+    font-size: 25px;
+}
+
 nav {
     height: 100%;
 }
@@ -207,7 +212,7 @@ nav > div {
     height: calc(150px + 40px + 40px);
     background-color: white;
 }
-.sign-card {
+/*.sign-card {
     width: 150px;
     aspect-ratio: 1 / 1;
     background-color: var(--main-purple-light);
@@ -217,26 +222,26 @@ nav > div {
 
     position: relative;
     overflow: hidden;
-}
-.sign-img {
+}*/
+/*.sign-img {
     height: 50%;
     position: relative;
     z-index: 12;
 }
-.sign-img img {
+.sign-card-img {
     max-height: 50px;
     max-width: 50px;
-}
-.sign-card-txt {
+}*/
+/*.sign-card-txt {
     background-color: var(--main-purple-light);
     padding: 0 5px;
     margin-top: 7px;
 
     position: relative;
     z-index: 11;
-}
+}*/
 
-.sign-card-border-top {
+/*.sign-card-border-top {
     height: 67%;
     width: 90%;
 
@@ -263,7 +268,7 @@ nav > div {
     border-top: 2px solid white;
     border-left: 2px solid white;
     border-right: 2px solid white;
-}
+}*/
 
 
 
@@ -320,7 +325,11 @@ footer a {
     }
 }
 
-@media screen and (max-width: 480px) {
+@media screen and (max-width: 576px) {
+    header a span {
+        display: none;
+    }
+
     .container,
     .col-P1,
     .col-P2 {
