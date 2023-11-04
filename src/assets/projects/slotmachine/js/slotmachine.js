@@ -1,6 +1,8 @@
 import { getRandomNumber } from "@/assets/js/utils.js";
 import { gsap } from "gsap";
 
+
+// GSAP Docs seamless vertical loop => adapted to Phaser
 export const verticalLoop = (items, reelContainer, elementsHeightWrap, config) => {
     items = gsap.utils.toArray(items);
     config = config || {};
@@ -166,8 +168,8 @@ export const verticalLoop = (items, reelContainer, elementsHeightWrap, config) =
     return tl;
 }
 
+// PAY TABLE => 9 Maps, index reel is always in the middle row before win map
 export const getRandomWinMap = ({ indexReel1, indexReel2, indexReel3, indexReel4, indexReel5 }) => {
-    // PAY TABLE => 9 Maps, index reel is always in the middle row before win map
     const maps = [
         {
             indexReel1: indexReel1 - 1,
@@ -238,6 +240,7 @@ export const getRandomWinMap = ({ indexReel1, indexReel2, indexReel3, indexReel4
     return maps[random];
 }
 
+// 2 symbols are different from win symbol. Need to verify at least 2 random reels, starting from reel number 2
 export const getRandomLose = (indexReels, reelsXSlot, allSymbols, slotMap) => {
     const obj = Object.assign(indexReels);
 
@@ -245,7 +248,6 @@ export const getRandomLose = (indexReels, reelsXSlot, allSymbols, slotMap) => {
         obj[`indexReel${i}`] = getRandomNumber(0, allSymbols.length - 1);
     }
 
-    // Need to verify at least 2 random reels, starting from reel number 2
     const checkReelIndex1 = getRandomNumber(2, reelsXSlot);
     let checkReelIndex2;
     do checkReelIndex2 = getRandomNumber(2, reelsXSlot);
@@ -275,6 +277,7 @@ export const getRandomLose = (indexReels, reelsXSlot, allSymbols, slotMap) => {
     return obj;
 }
 
+// 1 symbol only is different from win symbol
 export const getRandomFakeWin = (indexReels, reelsXSlot, symbolsWithoutJolly, slotMap, randomWinSymbol) => {
     const obj = Object.assign(indexReels);
 
@@ -285,6 +288,7 @@ export const getRandomFakeWin = (indexReels, reelsXSlot, symbolsWithoutJolly, sl
     let randomLoseIndex = slotMap[`REEL_${randomReel}_MAP`].indexOf(loseSymbol);
     let diffIndexSymbol = Math.abs(randomLoseIndex - obj[`indexReel${randomReel}`]);
 
+    // Get out of win map
     while (diffIndexSymbol <= 1) {
         loseSymbol = filteredSymbols[getRandomNumber(0, filteredSymbols.length - 1)];
         randomLoseIndex = slotMap[`REEL_${randomReel}_MAP`].indexOf(loseSymbol);
