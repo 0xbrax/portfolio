@@ -40,7 +40,7 @@
                     <div id="bet-container">
                         <div class="symbol-container">
                             <div class="symbol-text mb-10">symbols = bet x 2</div>
-                            <img v-for="symbol in SYMBOLS" class="symbol-icon" :src="`/src/assets/projects/slotmachine/image/icon/${symbol}_COMPRESSED.png`" :key="symbol" />
+                            <img v-for="symbol in SYMBOLS" class="symbol-icon" :src="imageUrl(`projects/slotmachine/image/icon/${symbol}_COMPRESSED.png`)" :key="symbol" />
                         </div>
 
                         <div class="symbol-container">
@@ -125,6 +125,10 @@
         name: 'SlotMachine',
 
         setup() {
+            const imageUrl = (path) => {
+                return new URL(`/src/assets/${path}`, import.meta.url).href;
+            }
+
             const isMobile = isDeviceMobile();
             let wakeLock; // Screen lock
             const isLoadingScreenActive = ref(true);
@@ -1137,7 +1141,8 @@
                 isVolumeActive,
                 setVolume,
                 isGamePlaying,
-                SYMBOLS
+                SYMBOLS,
+                imageUrl
             };
         },
     };
