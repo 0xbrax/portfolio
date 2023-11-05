@@ -728,7 +728,7 @@
 
             // PROJECT MODEL 3
             const PROJECT_NAME_3 = "SLOTMACHINE";
-            const PROJECT_COLOR_3 = 0xff8c00;
+            const PROJECT_COLOR_3 = 0xf36300;
             const projectGroup_3 = new THREE.Group();
             const dragonClock_3 = new THREE.Clock();
             let project_3;
