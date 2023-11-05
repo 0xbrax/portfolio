@@ -314,11 +314,14 @@ export default {
 
                     // free spin
                     this.freeSpinContainer;
+                    this.freeSpinShadow;
                     this.freeSpinLevel;
+                    this.freeSpinLevelAnimation;
                     this.freeSpinLabel;
+                    this.freeSpinLabelAnimation;
                     this.freeSpinValue = 0;
+                    this.lastBetBeforeFreeSpin;
                     this.freeSpinIncrement = 10;
-                    this.freeSpinAnimation;
 
                     // mega win
                     this.megaWinScreenOverlay;
@@ -562,19 +565,24 @@ export default {
                     const freeSpinHeight = 800 * this.slotBody.scaleX;
                     const freeSpinBorder = 10 * this.slotBody.scaleX;
                     const freeSpinRadius = freeSpinWidth / 2;
-                    const freeSpinHeightLevel = (freeSpinHeight / 100) * this.freeSpinValue;
 
-                    this.freeSpinContainer = this.add.graphics();
-                    this.freeSpinContainer.fillStyle(0x4bc8ff, 0.5);
-                    this.freeSpinContainer.fillRoundedRect(0, 0, freeSpinWidth, freeSpinHeight, freeSpinRadius);
-                    this.freeSpinContainer.lineStyle(freeSpinBorder, 0x86318c);
-                    this.freeSpinContainer.strokeRoundedRect(0, 0, freeSpinWidth, freeSpinHeight, freeSpinRadius);
-                    this.freeSpinContainer.setPosition(250 * this.slotBody.scaleX, (canvasRef.value.offsetHeight / 2) - (freeSpinHeight / 2));
+                    this.freeSpinShadow = this.add.graphics();
+                    this.freeSpinShadow.fillStyle(0x4bc8ff, 0.5);
+                    this.freeSpinShadow.fillRoundedRect(0, 0, freeSpinWidth, freeSpinHeight, freeSpinRadius);
+                    this.freeSpinShadow.setPosition(250 * this.slotBody.scaleX, (canvasRef.value.offsetHeight / 2) - (freeSpinHeight / 2));
 
                     this.freeSpinLevel = this.add.graphics();
-                    this.freeSpinLevel.fillStyle(0xf96000);
-                    this.freeSpinLevel.fillRoundedRect(0, 0, freeSpinWidth - (10 * this.slotBody.scaleX), 0, 0);
-                    this.freeSpinLevel.setPosition(this.freeSpinContainer.x + (5 * this.slotBody.scaleX), this.freeSpinContainer.y + freeSpinHeight - freeSpinHeightLevel + (5 * this.slotBody.scaleX));
+                    this.freeSpinLevel.fillStyle(0xf36300, 0.8);
+                    this.freeSpinLevel.fillRect(0, 0, freeSpinWidth, freeSpinHeight);
+                    this.freeSpinLevel.scaleY = 0;
+                    this.freeSpinLevel.setPosition(this.freeSpinShadow.x, this.freeSpinShadow.y + freeSpinHeight);
+
+                    this.freeSpinContainer = this.add.graphics();
+                    this.freeSpinContainer.lineStyle(freeSpinBorder, 0x3c0159);
+                    this.freeSpinContainer.strokeRoundedRect(0, 0, freeSpinWidth, freeSpinHeight, freeSpinRadius);
+                    this.freeSpinContainer.setPosition(250 * this.slotBody.scaleX, this.freeSpinShadow.y);
+
+                    this.freeSpinLevel.setMask(this.freeSpinShadow.createGeometryMask());
 
                     if (!isMobile) this.freeSpinLabel = this.add.text(this.freeSpinContainer.x + (20 * this.slotBody.scaleX), this.freeSpinContainer.y - (100 * this.slotBody.scaleX), 'free\nspin', { ...this.TEXT_STYLE, fontSize: 80 * this.slotBody.scaleX }).setOrigin(0.5, 0.5);
 
@@ -632,13 +640,19 @@ export default {
                         this.slotForward.setScale(0.25 * this.slotBody.scaleX, 0.25 * this.slotBody.scaleX);
                         this.slotForward.setPosition(this.slotForwardUI.x, this.slotForwardUI.y + (148 * this.slotBody.scaleX));
 
-                        this.freeSpinContainer.rotation = Phaser.Math.DegToRad(-90);
-                        this.freeSpinContainer.setScale(7 * this.slotBody.scaleX, 7 * this.slotBody.scaleX);
-                        this.freeSpinContainer.setPosition(this.slotSpinUI.x - ((freeSpinHeight * this.freeSpinContainer.scaleY) / 2), canvasRef.value.offsetHeight - (824 * this.slotBody.scaleX));
+
+                        this.freeSpinShadow.rotation = Phaser.Math.DegToRad(-90);
+                        this.freeSpinShadow.setScale(7 * this.slotBody.scaleX, 7 * this.slotBody.scaleX);
+                        this.freeSpinShadow.setPosition((canvasRef.value.offsetWidth / 2) - (freeSpinHeight / 4 * 3) - (freeSpinWidth / 2), canvasRef.value.offsetHeight - (824 * this.slotBody.scaleX));
 
                         this.freeSpinLevel.rotation = Phaser.Math.DegToRad(-90);
                         this.freeSpinLevel.setScale(7 * this.slotBody.scaleX, 7 * this.slotBody.scaleX);
-                        this.freeSpinLevel.setPosition(this.slotSpinUI.x - ((freeSpinHeight * this.freeSpinLevel.scaleY) / 2) + (7 * this.slotBody.scaleX), canvasRef.value.offsetHeight - (824 * this.slotBody.scaleX) - (7 * this.slotBody.scaleX));
+                        this.freeSpinLevel.scaleY = 0;
+                        this.freeSpinLevel.setPosition(this.freeSpinShadow.x, this.freeSpinShadow.y);
+
+                        this.freeSpinContainer.rotation = Phaser.Math.DegToRad(-90);
+                        this.freeSpinContainer.setScale(7 * this.slotBody.scaleX, 7 * this.slotBody.scaleX);
+                        this.freeSpinContainer.setPosition(this.freeSpinShadow.x, this.freeSpinShadow.y);
 
                         this.freeSpinLabel = this.add.text(this.slotSpinUI.x, this.slotSpinUI.y - (86 * this.slotBody.scaleX), 'free spin', { ...this.TEXT_STYLE, fontSize: 80 * this.slotBody.scaleX }).setOrigin(0.5, 0.5);
                     }
@@ -851,7 +865,7 @@ export default {
 
                     isGamePlaying.value = true;
                     mixerAudio.slotClickFX.play();
-                    if (this.freeSpinAnimation) this.freeSpinAnimation.destroy();
+                    if (this.freeSpinLabelAnimation) this.freeSpinLabelAnimation.destroy();
 
                     this.slotPlusUI.input.enabled = false;
                     this.slotPlusUI.setAlpha(0.5);
@@ -859,6 +873,7 @@ export default {
                     this.slotMinusUI.setAlpha(0.5);
 
                     if (this.freeSpinValue !== 100) this.slotBalance -= this.slotBet; // If free spin is active can't reduce the balance
+                    if (this.freeSpinValue === 100) this.lastBetBeforeFreeSpin = this.slotBet;
 
                     this.slotBalanceValue.setText(formatNumber(this.slotBalance));
                     this.slotWin = null;
@@ -939,19 +954,19 @@ export default {
                         let animDelay;
                         switch (i) {
                             case 1:
-                                animDelay = 0.10;
+                                animDelay = 0;
                                 break;
                             case 2:
-                                animDelay = 0.25;
+                                animDelay = !this.isFastForwardActive ? 0.10 : 0.05;
                                 break;
                             case 3:
-                                animDelay = 0.42;
+                                animDelay = !this.isFastForwardActive ? 0.20 : 0.10;
                                 break;
                             case 4:
-                                animDelay = 0.63;
+                                animDelay = !this.isFastForwardActive ? 0.40 : 0.20;
                                 break;
                             case 5:
-                                animDelay = 0.91;
+                                animDelay = !this.isFastForwardActive ? 0.80 : 0.40;
                         }
 
                         const animConfig = { duration: parseFloat((newAnimDuration + animDelay).toFixed(2)), revolutions: newAnimRevolutions, ease: 'power2.inOut' };
@@ -967,38 +982,49 @@ export default {
                 onComplete() {
                     isGamePlaying.value = false;
 
-                    if (this.freeSpinValue >= 100) {
+                    const freeSpinHeight = 800 * this.slotBody.scaleX;
+
+                    if (this.freeSpinValue === 100) {
                         this.freeSpinValue = 0;
                         this.freeSpinLabel.postPipelines = [];
-                        this.slotBetValue.setText(formatNumber(this.slotBet));
-                        this.freeSpinLevel.clear();
-                        this.freeSpinLevel.fillStyle(0xf96000);
 
                         this.characterDrink.visible = false;
                         this.characterDrink.anims.pause();
                         this.characterMain.visible = true;
                         this.characterMain.anims.play('character-main_animation');
+
+                        this.freeSpinLevelAnimation = this.tweens.add({
+                            targets: this.freeSpinLevel,
+                            y: !isMobile ? this.freeSpinLevel.y + freeSpinHeight : this.freeSpinLevel.y,
+                            x: this.freeSpinLevel.x,
+                            scaleY: 0,
+                            duration: 200,
+                            ease: 'sine.inout',
+                            onComplete: () => {
+                                this.freeSpinLevelAnimation.destroy();
+                            }
+                        });
                     } else {
                         this.freeSpinValue += this.freeSpinIncrement; // Every spin increase the free spin value when free spin is not active
+
+                        this.freeSpinLevelAnimation = this.tweens.add({
+                            targets: this.freeSpinLevel,
+                            y: !isMobile ? this.freeSpinLevel.y - (freeSpinHeight * (this.freeSpinIncrement / 100)) : this.freeSpinLevel.y,
+                            x: this.freeSpinLevel.x,
+                            scaleY: !isMobile ? this.freeSpinValue / 100 : (this.freeSpinValue / 100) * (7 * this.slotBody.scaleX),
+                            duration: 200,
+                            ease: 'sine.inout',
+                            onComplete: () => {
+                                this.freeSpinLevelAnimation.destroy();
+                            }
+                        });
                     }
 
-                    // Need to update free spin level
-                    const freeSpinWidth = 50 * this.slotBody.scaleX;
-                    const freeSpinHeight = 800 * this.slotBody.scaleX;
-                    const freeSpinRadius = freeSpinWidth / 2;
-                    const freeSpinHeightLevel = (freeSpinHeight / 100) * this.freeSpinValue;
 
-                    this.freeSpinLevel.fillRoundedRect(0, 0, freeSpinWidth - (10 * this.slotBody.scaleX), this.freeSpinValue !== 0 ? freeSpinHeightLevel - (10 * this.slotBody.scaleX) : 0, this.freeSpinValue !== 0 ? freeSpinRadius - (5 * this.slotBody.scaleX) : 0);
-                    if (isMobile) {
-                        this.freeSpinLevel.setPosition(this.slotSpinUI.x - ((freeSpinHeight * this.freeSpinLevel.scaleY) / 2) + (7 * this.slotBody.scaleX), canvasRef.value.offsetHeight - (824 * this.slotBody.scaleX) - (7 * this.slotBody.scaleX));
-                    } else {
-                        this.freeSpinLevel.setPosition(this.freeSpinContainer.x + (5 * this.slotBody.scaleX), this.freeSpinContainer.y + freeSpinHeight - freeSpinHeightLevel + (5 * this.slotBody.scaleX));
-                    }
-
-                    if (this.freeSpinValue >= 100) {
+                    if (this.freeSpinValue === 100) {
                         const freeSpinFX = this.freeSpinLabel.postFX.addGlow(0xbe0100, 0, 0);
 
-                        this.freeSpinAnimation = this.tweens.add({
+                        this.freeSpinLabelAnimation = this.tweens.add({
                             targets: freeSpinFX,
                             duration: ANIMATION_DURATION / 2, // Sync with sprite animation
                             outerStrength: 10 * this.slotBody.scaleX,
@@ -1037,7 +1063,16 @@ export default {
                         }
                     } 
 
-                    if (!randomWinSymbol) return;
+
+                    if (!randomWinSymbol) {
+                        if (this.freeSpinValue === 0) { // Free spin is used
+                            this.slotBet = this.lastBetBeforeFreeSpin;
+                            this.slotBetValue.setText(formatNumber(this.slotBet));
+                        }
+
+                        return;
+                    }
+
 
                     for (let i = 1; i <= REELS_X_SLOT; i++) {
                         let symbolWinFX;
@@ -1060,7 +1095,9 @@ export default {
                     }
 
 
-                    if (this.freeSpinValue === 100) this.slotBet = this.slotBetIncrement; // Min bet x free spin
+                    if (this.freeSpinValue === 0) {
+                        this.slotBet = this.slotBetIncrement; // Min bet x free spin
+                    }
 
 
                     if (selectedCondition === 'mega-win') {
@@ -1097,7 +1134,7 @@ export default {
 
                                 this.input.enabled = true;
                                 this.input.keyboard.enabled = true;
-                            }, ANIMATION_DURATION * 2);
+                            }, !this.isFastForwardActive ? ANIMATION_DURATION * 2 : ANIMATION_DURATION);
                         }
                     }
 
@@ -1116,6 +1153,12 @@ export default {
 
                     this.slotBalanceValue.setText(formatNumber(this.slotBalance));
                     this.slotWinValue.setText(formatNumber(this.slotWin));
+
+
+                    if (this.freeSpinValue === 0) { // Free spin is used
+                        this.slotBet = this.lastBetBeforeFreeSpin;
+                        this.slotBetValue.setText(formatNumber(this.slotBet));
+                    }
                 }
             }
 
