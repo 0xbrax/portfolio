@@ -125,6 +125,7 @@ import PlusUI from "@/assets/projects/slotmachine/image/main/ui_plus.png";
 import WinUI from "@/assets/projects/slotmachine/image/main/ui_win.png";
 import BalanceUI from "@/assets/projects/slotmachine/image/main/ui_balance.png";
 import CoinImage from"@/assets/projects/slotmachine/image/main/coin.png";
+import BubbleImage from"@/assets/projects/slotmachine/image/main/bubble_COMPRESSED.png";
 
 // other
 import MegaWinTextImage from"@/assets/projects/slotmachine/image/main/megawin_text.png";
@@ -316,6 +317,7 @@ export default {
                     this.freeSpinContainer;
                     this.freeSpinShadow;
                     this.freeSpinLevel;
+                    this.freeSpinParticles;
                     this.freeSpinLevelAnimation;
                     this.freeSpinLabel;
                     this.freeSpinLabelAnimation;
@@ -385,7 +387,6 @@ export default {
                     this.load.image('slot_logo', SlotLogoImage);
                     this.load.image('slot_splash-left', SlotSplashLeftImage);
                     this.load.image('slot_splash-right', SlotSplashRightImage);
-                    this.load.image('slot_coin', CoinImage);
 
                     // character
                     this.load.atlas('character-main_sprite', CharacterMainPng, CharacterMainJson);
@@ -422,6 +423,8 @@ export default {
 
                     this.load.image('mega-win_text', MegaWinTextImage);
                     this.load.image('mega-win_coin', MegaWinCoinImage);
+                    this.load.image('slot_coin', CoinImage);
+                    this.load.image('freespin_bubble', BubbleImage);
                 }
 
                 create() {
@@ -982,7 +985,9 @@ export default {
                 onComplete() {
                     isGamePlaying.value = false;
 
+                    const freeSpinWidth = 50 * this.slotBody.scaleX;
                     const freeSpinHeight = 800 * this.slotBody.scaleX;
+                    const freeSpinBorder = 10 * this.slotBody.scaleX;
 
                     if (this.freeSpinValue === 100) {
                         this.freeSpinValue = 0;
@@ -992,6 +997,8 @@ export default {
                         this.characterDrink.anims.pause();
                         this.characterMain.visible = true;
                         this.characterMain.anims.play('character-main_animation');
+
+                        if (!isMobile && this.freeSpinParticles) this.freeSpinParticles.destroy();
 
                         this.freeSpinLevelAnimation = this.tweens.add({
                             targets: this.freeSpinLevel,
@@ -1016,10 +1023,24 @@ export default {
                             ease: 'sine.inout',
                             onComplete: () => {
                                 this.freeSpinLevelAnimation.destroy();
+
+                                if (isMobile) return; // DESKTOP ONLY - particles vertical fx, in mobile devices free spin is rotated horizontal
+                                if (this.freeSpinParticles) this.freeSpinParticles.destroy();
+
+                                const particlesBounds = new Phaser.Geom.Rectangle(this.freeSpinContainer.x + freeSpinBorder, this.freeSpinContainer.y + freeSpinBorder + freeSpinHeight - (freeSpinHeight * (this.freeSpinValue / 100)), freeSpinWidth - (freeSpinBorder * 2), freeSpinHeight * (this.freeSpinValue / 100) - (freeSpinBorder * 2));
+                                this.freeSpinParticles = this.add.particles(this.freeSpinContainer.x + (freeSpinWidth / 2), this.freeSpinContainer.y + freeSpinHeight - (freeSpinBorder * 2), 'freespin_bubble', {
+                                    scale: { min: 0.1 * this.slotBody.scaleX, max: 0.25 * this.slotBody.scaleX },
+                                    speed: { min: 20, max: 40 },
+                                    alpha: { start: 0.5, end: 0 },
+                                    lifespan: ANIMATION_DURATION * 2,
+                                    frequency: ANIMATION_DURATION / 2,
+                                    gravityY: -90,
+                                    particleBringToTop: true,
+                                    bounds: particlesBounds
+                                });
                             }
                         });
                     }
-
 
                     if (this.freeSpinValue === 100) {
                         const freeSpinFX = this.freeSpinLabel.postFX.addGlow(0xbe0100, 0, 0);
