@@ -646,7 +646,7 @@ export default {
 
                         this.freeSpinShadow.rotation = Phaser.Math.DegToRad(-90);
                         this.freeSpinShadow.setScale(7 * this.slotBody.scaleX, 7 * this.slotBody.scaleX);
-                        this.freeSpinShadow.setPosition((canvasRef.value.offsetWidth / 2) - (freeSpinHeight / 4 * 3) - (freeSpinWidth / 2), canvasRef.value.offsetHeight - (824 * this.slotBody.scaleX));
+                        this.freeSpinShadow.setPosition((canvasRef.value.offsetWidth / 2) - ((freeSpinHeight / 4) * 3) + (freeSpinWidth / 2), canvasRef.value.offsetHeight - (824 * this.slotBody.scaleX));
 
                         this.freeSpinLevel.rotation = Phaser.Math.DegToRad(-90);
                         this.freeSpinLevel.setScale(7 * this.slotBody.scaleX, 7 * this.slotBody.scaleX);
@@ -1022,7 +1022,7 @@ export default {
                         this.characterMain.visible = true;
                         this.characterMain.anims.play('character-main_animation');
 
-                        if (!isMobile && this.freeSpinParticles) this.freeSpinParticles.destroy();
+                        if (this.freeSpinParticles) this.freeSpinParticles.destroy();
 
                         this.freeSpinLevelAnimation = this.tweens.add({
                             targets: this.freeSpinLevel,
@@ -1048,20 +1048,35 @@ export default {
                             onComplete: () => {
                                 this.freeSpinLevelAnimation.destroy();
 
-                                if (isMobile) return; // DESKTOP ONLY - particles vertical fx, in mobile devices free spin is rotated horizontal
                                 if (this.freeSpinParticles) this.freeSpinParticles.destroy();
 
-                                const particlesBounds = new Phaser.Geom.Rectangle(this.freeSpinContainer.x + (freeSpinBorder * 1.5), this.freeSpinContainer.y + (freeSpinBorder * 2) + freeSpinHeight - (freeSpinHeight * (this.freeSpinValue / 100)), freeSpinWidth - (freeSpinBorder * 3), freeSpinHeight * (this.freeSpinValue / 100) - (freeSpinBorder * 4));
-                                this.freeSpinParticles = this.add.particles(this.freeSpinContainer.x + (freeSpinWidth / 2), this.freeSpinContainer.y + freeSpinHeight - (freeSpinBorder * 2), 'freespin_bubble', {
-                                    scale: { min: 0.1 * this.slotBody.scaleX, max: 0.25 * this.slotBody.scaleX },
-                                    speed: { min: 5, max: 10 },
-                                    alpha: { start: 0.5, end: 0 },
-                                    lifespan: ANIMATION_DURATION * 3 * (this.freeSpinValue / 100),
-                                    frequency: ANIMATION_DURATION / 2,
-                                    gravityY: -100,
-                                    particleBringToTop: false,
-                                    bounds: particlesBounds
-                                });
+                                if (!isMobile) {
+                                    const particlesBounds = new Phaser.Geom.Rectangle(this.freeSpinContainer.x + (freeSpinBorder * 1.5), this.freeSpinContainer.y + (freeSpinBorder * 2) + freeSpinHeight - (freeSpinHeight * (this.freeSpinValue / 100)), freeSpinWidth - (freeSpinBorder * 3), freeSpinHeight * (this.freeSpinValue / 100) - (freeSpinBorder * 4));
+                                    this.freeSpinParticles = this.add.particles(this.freeSpinContainer.x + (freeSpinWidth / 2), this.freeSpinContainer.y + freeSpinHeight - (freeSpinBorder * 2), 'freespin_bubble', {
+                                        scale: { min: 0.1 * this.slotBody.scaleX, max: 0.25 * this.slotBody.scaleX },
+                                        speed: { min: 5, max: 10 },
+                                        alpha: { start: 0.5, end: 0 },
+                                        lifespan: ANIMATION_DURATION * 3 * (this.freeSpinValue / 100),
+                                        frequency: ANIMATION_DURATION / 2,
+                                        gravityY: -100,
+                                        particleBringToTop: false,
+                                        bounds: particlesBounds
+                                    });
+                                }
+                                if (isMobile) {
+                                    const particlesBounds = new Phaser.Geom.Rectangle((canvasRef.value.offsetWidth / 2) - ((freeSpinHeight / 4) * 3) + (freeSpinWidth / 2) + (freeSpinBorder * 2), canvasRef.value.offsetHeight - (824 * this.slotBody.scaleX) - freeSpinWidth + (freeSpinBorder * 1.5), freeSpinHeight * (7 * this.slotBody.scaleX) * (this.freeSpinValue / 100) - (freeSpinBorder * 4.5), freeSpinWidth - (freeSpinBorder * 3));
+                                    this.freeSpinParticles = this.add.particles((canvasRef.value.offsetWidth / 2) - ((freeSpinHeight / 4) * 3) + (freeSpinWidth / 2) + (freeSpinBorder * 2.5), canvasRef.value.offsetHeight - (824 * this.slotBody.scaleX) - (freeSpinWidth / 2) - freeSpinBorder, 'freespin_bubble', {
+                                        scale: { min: 0.1 * this.slotBody.scaleX, max: 0.25 * this.slotBody.scaleX },
+                                        speed: { min: 5, max: 10 },
+                                        alpha: { start: 0.5, end: 0 },
+                                        lifespan: ANIMATION_DURATION * 2.25 * (this.freeSpinValue / 100),
+                                        frequency: ANIMATION_DURATION / 2,
+                                        gravityX: 100,
+                                        gravityY: -15,
+                                        particleBringToTop: false,
+                                        bounds: particlesBounds
+                                    });
+                                }
                             }
                         });
                     }
