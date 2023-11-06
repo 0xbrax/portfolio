@@ -1,5 +1,5 @@
-import { getRandomNumber } from "@/assets/js/utils.js";
-import { gsap } from "gsap";
+import { getRandomNumber } from '@/assets/js/utils.js';
+import { gsap } from 'gsap';
 
 
 // GSAP Docs seamless vertical loop => adapted to Phaser
@@ -20,7 +20,7 @@ export const verticalLoop = (items, reelContainer, elementsHeightWrap, config) =
                     }
                 },
             paused: config.paused,
-            defaults: { ease: "none" },
+            defaults: { ease: 'none' },
             onReverseComplete: () =>
                 tl.totalTime(tl.rawTime() + tl.duration() * 100),
         }),
@@ -51,12 +51,12 @@ export const verticalLoop = (items, reelContainer, elementsHeightWrap, config) =
         populateOffsets = () => {
             timeOffset = center
                 ? (tl.duration() * (container.width / 2)) /
-                  totalHeight
+                    totalHeight
                 : 0;
             center &&
                 times.forEach((t, i) => {
                     times[i] = timeWrap(
-                        tl.labels["label" + i] +
+                        tl.labels['label' + i] +
                             (tl.duration() * heights[i]) /
                                 2 /
                                 totalHeight -
@@ -110,12 +110,12 @@ export const verticalLoop = (items, reelContainer, elementsHeightWrap, config) =
                     distanceToLoop
                 )
                 .add(
-                    "label" + i,
+                    'label' + i,
                     distanceToStart
                 );
                 timeWrap = gsap.utils.wrap(0, tl.duration());
                 times[i] = timeWrap(
-                        tl.labels["label" + i] +
+                        tl.labels['label' + i] +
                             (tl.duration() * heights[i]) /
                                 2 /
                                 totalHeight -

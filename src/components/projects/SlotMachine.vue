@@ -70,66 +70,66 @@
 
 <script>
 // utils
-import { ref, onMounted, watch, onUnmounted } from "vue";
-import Phaser from "phaser";
-import { assetsUrl, isDeviceMobile, getRandomNumber, formatNumber } from "@/assets/js/utils.js";
-import { verticalLoop, getRandomWinMap, getRandomLose, getRandomFakeWin } from "@/assets/projects/slotmachine/js/slotmachine.js";
+import { ref, onMounted, watch, onUnmounted } from 'vue';
+import Phaser from 'phaser';
+import { assetsUrl, isDeviceMobile, getRandomNumber, formatNumber } from '@/assets/js/utils.js';
+import { verticalLoop, getRandomWinMap, getRandomLose, getRandomFakeWin } from '@/assets/projects/slotmachine/js/slotmachine.js';
 
 // slot elements
-import SlotBodyImage from "@/assets/projects/slotmachine/image/main/reel.png";
-import SlotCanopyImage from "@/assets/projects/slotmachine/image/main/canopy.png";
-import SlotLogoImage from "@/assets/projects/slotmachine/image/main/logo.png";
-import SlotSplashLeftImage from "@/assets/projects/slotmachine/image/main/splash_left.png";
-import SlotSplashRightImage from "@/assets/projects/slotmachine/image/main/splash_right.png";
+import SlotBodyImage from '@/assets/projects/slotmachine/image/main/reel.png';
+import SlotCanopyImage from '@/assets/projects/slotmachine/image/main/canopy.png';
+import SlotLogoImage from '@/assets/projects/slotmachine/image/main/logo.png';
+import SlotSplashLeftImage from '@/assets/projects/slotmachine/image/main/splash_left.png';
+import SlotSplashRightImage from '@/assets/projects/slotmachine/image/main/splash_right.png';
 
 // character
-import CharacterMainPng from "@/assets/projects/slotmachine/image/sprite/character-main_spritesheet.png";
-import CharacterMainJson from "@/assets/projects/slotmachine/image/sprite/character-main_spritesheet.json";
-import CharacterDrinkPng from "@/assets/projects/slotmachine/image/sprite/character-drink_spritesheet.png";
-import CharacterDrinkJson from "@/assets/projects/slotmachine/image/sprite/character-drink_spritesheet.json";
+import CharacterMainPng from '@/assets/projects/slotmachine/image/sprite/character-main_spritesheet.png';
+import CharacterMainJson from '@/assets/projects/slotmachine/image/sprite/character-main_spritesheet.json';
+import CharacterDrinkPng from '@/assets/projects/slotmachine/image/sprite/character-drink_spritesheet.png';
+import CharacterDrinkJson from '@/assets/projects/slotmachine/image/sprite/character-drink_spritesheet.json';
 
 // symbols
-import AppleSpritePng from "@/assets/projects/slotmachine/image/sprite/apple_spritesheet.png";
-import AppleSpriteJson from "@/assets/projects/slotmachine/image/sprite/apple_spritesheet.json";
-import CherrySpritePng from "@/assets/projects/slotmachine/image/sprite/cherry_spritesheet.png";
-import CherrySpriteJson from "@/assets/projects/slotmachine/image/sprite/cherry_spritesheet.json";
-import CoconutSpritePng from "@/assets/projects/slotmachine/image/sprite/coconut_spritesheet.png";
-import CoconutSpriteJson from "@/assets/projects/slotmachine/image/sprite/coconut_spritesheet.json";
-import FruitcocktailSpritePng from "@/assets/projects/slotmachine/image/sprite/fruitcocktail_spritesheet.png";
-import FruitcocktailSpriteJson from "@/assets/projects/slotmachine/image/sprite/fruitcocktail_spritesheet.json";
-import GrapefruitSpritePng from "@/assets/projects/slotmachine/image/sprite/grapefruit_spritesheet.png";
-import GrapefruitSpriteJson from "@/assets/projects/slotmachine/image/sprite/grapefruit_spritesheet.json";
-import LemonSpritePng from "@/assets/projects/slotmachine/image/sprite/lemon_spritesheet.png";
-import LemonSpriteJson from "@/assets/projects/slotmachine/image/sprite/lemon_spritesheet.json";
-import SplashSpritePng from "@/assets/projects/slotmachine/image/sprite/splash_spritesheet.png";
-import SplashSpriteJson from "@/assets/projects/slotmachine/image/sprite/splash_spritesheet.json";
-import WatermelonSpritePng from "@/assets/projects/slotmachine/image/sprite/watermelon_spritesheet.png";
-import WatermelonSpriteJson from "@/assets/projects/slotmachine/image/sprite/watermelon_spritesheet.json";
+import AppleSpritePng from '@/assets/projects/slotmachine/image/sprite/apple_spritesheet.png';
+import AppleSpriteJson from '@/assets/projects/slotmachine/image/sprite/apple_spritesheet.json';
+import CherrySpritePng from '@/assets/projects/slotmachine/image/sprite/cherry_spritesheet.png';
+import CherrySpriteJson from '@/assets/projects/slotmachine/image/sprite/cherry_spritesheet.json';
+import CoconutSpritePng from '@/assets/projects/slotmachine/image/sprite/coconut_spritesheet.png';
+import CoconutSpriteJson from '@/assets/projects/slotmachine/image/sprite/coconut_spritesheet.json';
+import FruitcocktailSpritePng from '@/assets/projects/slotmachine/image/sprite/fruitcocktail_spritesheet.png';
+import FruitcocktailSpriteJson from '@/assets/projects/slotmachine/image/sprite/fruitcocktail_spritesheet.json';
+import GrapefruitSpritePng from '@/assets/projects/slotmachine/image/sprite/grapefruit_spritesheet.png';
+import GrapefruitSpriteJson from '@/assets/projects/slotmachine/image/sprite/grapefruit_spritesheet.json';
+import LemonSpritePng from '@/assets/projects/slotmachine/image/sprite/lemon_spritesheet.png';
+import LemonSpriteJson from '@/assets/projects/slotmachine/image/sprite/lemon_spritesheet.json';
+import SplashSpritePng from '@/assets/projects/slotmachine/image/sprite/splash_spritesheet.png';
+import SplashSpriteJson from '@/assets/projects/slotmachine/image/sprite/splash_spritesheet.json';
+import WatermelonSpritePng from '@/assets/projects/slotmachine/image/sprite/watermelon_spritesheet.png';
+import WatermelonSpriteJson from '@/assets/projects/slotmachine/image/sprite/watermelon_spritesheet.json';
 
 // audio
-import BackgroundMusicTrack from "@/assets/projects/slotmachine/audio/sunny-fruit_strawberry.mp3";
-import SlotClickSfx from "@/assets/projects/slotmachine/audio/slot_click.mp3";
-import SlotTickSfx from "@/assets/projects/slotmachine/audio/slot_tick.mp3";
-import SlotWinSfx from "@/assets/projects/slotmachine/audio/slot_win.mp3";
-import SlotMegaWinSfx from "@/assets/projects/slotmachine/audio/slot_mega-win.mp3";
-import SlotWinJollySfx from "@/assets/projects/slotmachine/audio/slot_win-jolly.mp3";
-import SlotFreeSpinSfx from "@/assets/projects/slotmachine/audio/slot_free-spin.mp3";
+import BackgroundMusicTrack from '@/assets/projects/slotmachine/audio/sunny-fruit_strawberry.mp3';
+import SlotClickSfx from '@/assets/projects/slotmachine/audio/slot_click.mp3';
+import SlotTickSfx from '@/assets/projects/slotmachine/audio/slot_tick.mp3';
+import SlotWinSfx from '@/assets/projects/slotmachine/audio/slot_win.mp3';
+import SlotMegaWinSfx from '@/assets/projects/slotmachine/audio/slot_mega-win.mp3';
+import SlotWinJollySfx from '@/assets/projects/slotmachine/audio/slot_win-jolly.mp3';
+import SlotFreeSpinSfx from '@/assets/projects/slotmachine/audio/slot_free-spin.mp3';
 
 // ui elements
-import SpinUI from "@/assets/projects/slotmachine/image/main/ui_spin.png";
-import AutoUI from "@/assets/projects/slotmachine/image/main/ui_auto.png";
-import ForwardIcon from "@/assets/projects/slotmachine/image/main/FA-icon-forward_white.png";
-import BetUI from "@/assets/projects/slotmachine/image/main/ui_bet.png";
-import MinusUI from "@/assets/projects/slotmachine/image/main/ui_minus.png";
-import PlusUI from "@/assets/projects/slotmachine/image/main/ui_plus.png";
-import WinUI from "@/assets/projects/slotmachine/image/main/ui_win.png";
-import BalanceUI from "@/assets/projects/slotmachine/image/main/ui_balance.png";
-import CoinImage from"@/assets/projects/slotmachine/image/main/coin.png";
-import BubbleImage from"@/assets/projects/slotmachine/image/main/bubble_COMPRESSED.png";
+import SpinUI from '@/assets/projects/slotmachine/image/main/ui_spin.png';
+import AutoUI from '@/assets/projects/slotmachine/image/main/ui_auto.png';
+import ForwardIcon from '@/assets/projects/slotmachine/image/main/FA-icon-forward_white.png';
+import BetUI from '@/assets/projects/slotmachine/image/main/ui_bet.png';
+import MinusUI from '@/assets/projects/slotmachine/image/main/ui_minus.png';
+import PlusUI from '@/assets/projects/slotmachine/image/main/ui_plus.png';
+import WinUI from '@/assets/projects/slotmachine/image/main/ui_win.png';
+import BalanceUI from '@/assets/projects/slotmachine/image/main/ui_balance.png';
+import CoinImage from '@/assets/projects/slotmachine/image/main/coin.png';
+import BubbleImage from '@/assets/projects/slotmachine/image/main/bubble_COMPRESSED.png';
 
 // other
-import MegaWinTextImage from"@/assets/projects/slotmachine/image/main/megawin_text.png";
-import MegaWinCoinImage from"@/assets/projects/slotmachine/image/main/megawin_coin.png";
+import MegaWinTextImage from '@/assets/projects/slotmachine/image/main/megawin_text.png';
+import MegaWinCoinImage from '@/assets/projects/slotmachine/image/main/megawin_coin.png';
 
 
 
@@ -251,7 +251,7 @@ export default {
 
 
         // INIT
-        document.title = "0xbrax | Slot Machine";
+        document.title = '0xbrax | Slot Machine';
 
         onMounted(async () => {
             try {
@@ -802,6 +802,30 @@ export default {
                     this.megaWinScreenCoin.setScale(1 * this.slotBody.scaleX, 1 * this.slotBody.scaleX);
                     this.megaWinScreenCoin.setPosition(canvasRef.value.offsetWidth / 2, canvasRef.value.offsetHeight / 2);
                     this.megaWinScreenCoin.setAlpha(0);
+
+                    for (let i = 0; i < 3; i++) {
+                        let megaWinKey;
+                        switch (i) {
+                            case 0:
+                                megaWinKey = 'megaWinScreenOverlay';
+                                break;
+                            case 1:
+                                megaWinKey = 'megaWinScreenText';
+                                break;
+                            case 2:
+                                megaWinKey = 'megaWinScreenCoin';
+                        }
+
+                        const megaWinTween = this.tweens.add({
+                            targets: this[megaWinKey],
+                            alpha: 1,
+                            duration: 200,
+                            ease: 'sine.inout',
+                            paused: true,
+                            persist: true
+                        });
+                        this.megaWinScreenAnimation[i] = megaWinTween;
+                    }
                 }
 
 
@@ -1027,15 +1051,15 @@ export default {
                                 if (isMobile) return; // DESKTOP ONLY - particles vertical fx, in mobile devices free spin is rotated horizontal
                                 if (this.freeSpinParticles) this.freeSpinParticles.destroy();
 
-                                const particlesBounds = new Phaser.Geom.Rectangle(this.freeSpinContainer.x + freeSpinBorder, this.freeSpinContainer.y + freeSpinBorder + freeSpinHeight - (freeSpinHeight * (this.freeSpinValue / 100)), freeSpinWidth - (freeSpinBorder * 2), freeSpinHeight * (this.freeSpinValue / 100) - (freeSpinBorder * 2));
+                                const particlesBounds = new Phaser.Geom.Rectangle(this.freeSpinContainer.x + (freeSpinBorder * 1.5), this.freeSpinContainer.y + (freeSpinBorder * 2) + freeSpinHeight - (freeSpinHeight * (this.freeSpinValue / 100)), freeSpinWidth - (freeSpinBorder * 3), freeSpinHeight * (this.freeSpinValue / 100) - (freeSpinBorder * 4));
                                 this.freeSpinParticles = this.add.particles(this.freeSpinContainer.x + (freeSpinWidth / 2), this.freeSpinContainer.y + freeSpinHeight - (freeSpinBorder * 2), 'freespin_bubble', {
                                     scale: { min: 0.1 * this.slotBody.scaleX, max: 0.25 * this.slotBody.scaleX },
-                                    speed: { min: 20, max: 40 },
+                                    speed: { min: 5, max: 10 },
                                     alpha: { start: 0.5, end: 0 },
-                                    lifespan: ANIMATION_DURATION * 2,
+                                    lifespan: ANIMATION_DURATION * 3 * (this.freeSpinValue / 100),
                                     frequency: ANIMATION_DURATION / 2,
-                                    gravityY: -90,
-                                    particleBringToTop: true,
+                                    gravityY: -100,
+                                    particleBringToTop: false,
                                     bounds: particlesBounds
                                 });
                             }
@@ -1141,17 +1165,10 @@ export default {
                                     megaWinKey = 'megaWinScreenCoin';
                             }
 
-                            const megaWinTween = this.tweens.add({
-                                targets: this[megaWinKey],
-                                alpha: 1,
-                                duration: 200,
-                                ease: 'sine.inout'
-                            });
-                            this.megaWinScreenAnimation[i] = megaWinTween;
+                            this.megaWinScreenAnimation[i].play();
 
                             setTimeout(() => {
                                 this[megaWinKey].setAlpha(0);
-                                this.megaWinScreenAnimation[i].destroy();
 
                                 this.input.enabled = true;
                                 this.input.keyboard.enabled = true;
