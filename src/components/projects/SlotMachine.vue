@@ -147,6 +147,8 @@ export default {
         const isSettingOpened = ref(false);
         const isVolumeActive = ref(true);
         const SLOT_FONT = 'Rimbo-Regular';
+        
+        const isIphone = /iPhone/i.test(navigator.userAgent); // Iphone bottom bar overlay fix
 
         const canvasRef = ref(null);
         const ANIMATION_FPS = 24;
@@ -349,6 +351,8 @@ export default {
                         loaderProgress.value = (value * 100).toFixed(2);
                     });
                     this.load.on('complete', () => {
+                        canvasRef.value.style.marginTop = 0;
+                        this.game.scale.refresh();
                         isLoadingComplete.value = true;
                     });
                     watch(
@@ -658,6 +662,8 @@ export default {
                         this.freeSpinContainer.setPosition(this.freeSpinShadow.x, this.freeSpinShadow.y);
 
                         this.freeSpinLabel = this.add.text(this.slotSpinUI.x, this.slotSpinUI.y - (86 * this.slotBody.scaleX), 'free spin', { ...this.TEXT_STYLE, fontSize: 80 * this.slotBody.scaleX }).setOrigin(0.5, 0.5);
+
+                        if (isIphone) this.freeSpinLabel.y -= (14 * this.slotBody.scaleX);
                     }
 
 
@@ -1216,24 +1222,23 @@ export default {
             }
 
 
-            // GAME CONFIG
-            canvasRef.value.width = window.innerWidth;
-            canvasRef.value.height = window.innerHeight;
 
+            // GAME CONFIG
             const config = {
                 type: Phaser.WEBGL,
-                width: canvasRef.value.offsetWidth,
-                height: canvasRef.value.offsetHeight,
+                width: window.innerWidth,
+                height: window.innerHeight,
                 canvas: canvasRef.value,
                 transparent: true,
                 antialias: true,
                 scale: {
                     mode: Phaser.Scale.FIT,
-                    autoCenter: Phaser.Scale.CENTER_BOTH,
+                    autoCenter: !isIphone ? Phaser.Scale.CENTER_BOTH : Phaser.Scale.CENTER_HORIZONTALLY,
                 }
             };
 
             const game = new Phaser.Game(config);
+
             game.scene.add('gameScene', GameScene);
             game.scene.start('gameScene');
         });
