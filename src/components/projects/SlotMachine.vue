@@ -4,7 +4,9 @@
 
         <!-- Loading screen -->
         <div v-if="isLoadingScreenActive" id="slot-machine_loader" class="d-flex column justify-ctr align-ctr">
-            <img id="logo-full" src="@/assets/projects/slotmachine/image/main/logo-full_COMPRESSED.png" alt="Fruit Cocktail" />
+            H {{ canvasRef?.offsetHeight }}
+            W {{ canvasRef?.offsetWidth }}
+            <!--<img id="logo-full" src="@/assets/projects/slotmachine/image/main/logo-full_COMPRESSED.png" alt="Fruit Cocktail" />
 
             <div 
                 id="loader-btn" 
@@ -16,7 +18,7 @@
 
             <div id="progress-bar-container">
                 <div id="progress-bar" :style="`width: ${loaderProgress}%`"></div>
-            </div>
+            </div>-->
         </div>
 
         <!-- Settings menu -->
@@ -349,6 +351,7 @@ export default {
                         loaderProgress.value = (value * 100).toFixed(2);
                     });
                     this.load.on('complete', () => {
+                        canvasRef.value.style.marginTop = 0;
                         this.game.scale.refresh();
                         isLoadingComplete.value = true;
                     });
@@ -1228,13 +1231,16 @@ export default {
                 antialias: true,
                 scale: {
                     mode: Phaser.Scale.FIT,
-                    autoCenter: Phaser.Scale.CENTER_BOTH,
+                    autoCenter: Phaser.Scale.CENTER_HORIZONTALLY,
                 }
             };
 
             const game = new Phaser.Game(config);
 
             window.addEventListener('resize', () => {
+                //canvasRef.value.style.marginTop = 0;
+                game.scale.pageAlignHorizontally = true;
+                game.scale.pageAlignVertically = true;
                 game.scale.refresh();
             })
 
