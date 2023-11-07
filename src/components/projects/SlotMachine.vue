@@ -4,9 +4,7 @@
 
         <!-- Loading screen -->
         <div v-if="isLoadingScreenActive" id="slot-machine_loader" class="d-flex column justify-ctr align-ctr">
-            H {{ canvasRef?.offsetHeight }}
-            W {{ canvasRef?.offsetWidth }}
-            <!--<img id="logo-full" src="@/assets/projects/slotmachine/image/main/logo-full_COMPRESSED.png" alt="Fruit Cocktail" />
+            <img id="logo-full" src="@/assets/projects/slotmachine/image/main/logo-full_COMPRESSED.png" alt="Fruit Cocktail" />
 
             <div 
                 id="loader-btn" 
@@ -18,7 +16,7 @@
 
             <div id="progress-bar-container">
                 <div id="progress-bar" :style="`width: ${loaderProgress}%`"></div>
-            </div>-->
+            </div>
         </div>
 
         <!-- Settings menu -->
@@ -149,6 +147,8 @@ export default {
         const isSettingOpened = ref(false);
         const isVolumeActive = ref(true);
         const SLOT_FONT = 'Rimbo-Regular';
+        
+        const isIphone = /iPhone/i.test(navigator.userAgent); // Iphone bottom bar overlay fix
 
         const canvasRef = ref(null);
         const ANIMATION_FPS = 24;
@@ -662,6 +662,8 @@ export default {
                         this.freeSpinContainer.setPosition(this.freeSpinShadow.x, this.freeSpinShadow.y);
 
                         this.freeSpinLabel = this.add.text(this.slotSpinUI.x, this.slotSpinUI.y - (86 * this.slotBody.scaleX), 'free spin', { ...this.TEXT_STYLE, fontSize: 80 * this.slotBody.scaleX }).setOrigin(0.5, 0.5);
+
+                        if (isIphone) this.freeSpinLabel.y -= (14 * this.slotBody.scaleX);
                     }
 
 
@@ -1231,18 +1233,11 @@ export default {
                 antialias: true,
                 scale: {
                     mode: Phaser.Scale.FIT,
-                    autoCenter: Phaser.Scale.CENTER_HORIZONTALLY,
+                    autoCenter: !isIphone ? Phaser.Scale.CENTER_BOTH : Phaser.Scale.CENTER_HORIZONTALLY,
                 }
             };
 
             const game = new Phaser.Game(config);
-
-            window.addEventListener('resize', () => {
-                //canvasRef.value.style.marginTop = 0;
-                game.scale.pageAlignHorizontally = true;
-                game.scale.pageAlignVertically = true;
-                game.scale.refresh();
-            })
 
             game.scene.add('gameScene', GameScene);
             game.scene.start('gameScene');
