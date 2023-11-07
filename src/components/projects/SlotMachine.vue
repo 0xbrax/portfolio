@@ -148,10 +148,6 @@ export default {
         const isVolumeActive = ref(true);
         const SLOT_FONT = 'Rimbo-Regular';
 
-        // Iphone bottom bar overlay fix - waiting for fullscreen support
-        const isIphone = /iPhone/i.test(navigator.userAgent);
-        const IPHONE_FIX = -125;
-
         const canvasRef = ref(null);
         const ANIMATION_FPS = 24;
         const ANIMATION_DURATION = 1250;
@@ -353,6 +349,7 @@ export default {
                         loaderProgress.value = (value * 100).toFixed(2);
                     });
                     this.load.on('complete', () => {
+                        this.game.scale.refresh();
                         isLoadingComplete.value = true;
                     });
                     watch(
@@ -607,7 +604,7 @@ export default {
 
                         // ui elements
                         this.slotBalanceUI.setScale(2 * this.slotBody.scaleX, 2 * this.slotBody.scaleX);
-                        this.slotBalanceUI.setPosition(this.slotBody.x + this.slotBody.displayWidth / 2, 50 * this.slotBody.scaleX + (isIphone ? IPHONE_FIX * this.slotBody.scaleX : 0));
+                        this.slotBalanceUI.setPosition(this.slotBody.x + this.slotBody.displayWidth / 2, 50 * this.slotBody.scaleX);
                         this.slotBalanceValue.setFontSize(100 * this.slotBody.scaleX);
                         this.slotBalanceValue.setPosition(this.slotBalanceUI.x + (354 * this.slotBody.scaleX), this.slotBalanceUI.y + (12 * this.slotBody.scaleX));
                         this.slotBalanceCoin.setScale(2.8 * this.slotBody.scaleX, 2.8 * this.slotBody.scaleX);
@@ -621,7 +618,7 @@ export default {
                         this.slotWinValue.setPosition(this.slotWinUI.x, this.slotWinUI.y + (140 * this.slotBody.scaleX));
 
                         this.slotBetUI.setScale(1.5 * this.slotBody.scaleX, 1.5 * this.slotBody.scaleX);
-                        this.slotBetUI.setPosition(this.slotBalanceUI.x, canvasRef.value.offsetHeight - this.slotBetUI.displayHeight - (50 * this.slotBody.scaleX) + (isIphone ? IPHONE_FIX * this.slotBody.scaleX : 0));
+                        this.slotBetUI.setPosition(this.slotBalanceUI.x, canvasRef.value.offsetHeight - this.slotBetUI.displayHeight - (50 * this.slotBody.scaleX));
                         this.slotBetLabel.setFontSize(80 * this.slotBody.scaleX);
                         this.slotBetLabel.setPosition(this.slotBetUI.x, this.slotBetUI.y + (-2 * this.slotBody.scaleX));
                         this.slotBetValue.setFontSize(120 * this.slotBody.scaleX);
@@ -1220,14 +1217,12 @@ export default {
             }
 
 
-            // GAME CONFIG
-            canvasRef.value.width = window.innerWidth;
-            canvasRef.value.height = window.innerHeight;
 
+            // GAME CONFIG
             const config = {
                 type: Phaser.WEBGL,
-                width: canvasRef.value.offsetWidth,
-                height: canvasRef.value.offsetHeight,
+                width: window.innerWidth,
+                height: window.innerHeight,
                 canvas: canvasRef.value,
                 transparent: true,
                 antialias: true,
@@ -1238,6 +1233,11 @@ export default {
             };
 
             const game = new Phaser.Game(config);
+
+            window.addEventListener('resize', () => {
+                game.scale.refresh();
+            })
+
             game.scene.add('gameScene', GameScene);
             game.scene.start('gameScene');
         });
