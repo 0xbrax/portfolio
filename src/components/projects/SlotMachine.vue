@@ -150,7 +150,7 @@ export default {
 
         // Iphone bottom bar overlay fix - waiting for fullscreen support
         const isIphone = /iPhone/i.test(navigator.userAgent);
-        const IPHONE_FIX = -225;
+        const IPHONE_FIX = -125;
 
         const canvasRef = ref(null);
         const ANIMATION_FPS = 24;
