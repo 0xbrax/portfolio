@@ -148,6 +148,10 @@ export default {
         const isVolumeActive = ref(true);
         const SLOT_FONT = 'Rimbo-Regular';
 
+        // Iphone bottom bar overlay fix - waiting for fullscreen support
+        const isIphone = /iPhone/i.test(navigator.userAgent);
+        const IPHONE_FIX = -225;
+
         const canvasRef = ref(null);
         const ANIMATION_FPS = 24;
         const ANIMATION_DURATION = 1250;
@@ -603,7 +607,7 @@ export default {
 
                         // ui elements
                         this.slotBalanceUI.setScale(2 * this.slotBody.scaleX, 2 * this.slotBody.scaleX);
-                        this.slotBalanceUI.setPosition(this.slotBody.x + this.slotBody.displayWidth / 2, 50 * this.slotBody.scaleX);
+                        this.slotBalanceUI.setPosition(this.slotBody.x + this.slotBody.displayWidth / 2, 50 * this.slotBody.scaleX + (isIphone ? IPHONE_FIX * this.slotBody.scaleX : 0));
                         this.slotBalanceValue.setFontSize(100 * this.slotBody.scaleX);
                         this.slotBalanceValue.setPosition(this.slotBalanceUI.x + (354 * this.slotBody.scaleX), this.slotBalanceUI.y + (12 * this.slotBody.scaleX));
                         this.slotBalanceCoin.setScale(2.8 * this.slotBody.scaleX, 2.8 * this.slotBody.scaleX);
@@ -617,7 +621,7 @@ export default {
                         this.slotWinValue.setPosition(this.slotWinUI.x, this.slotWinUI.y + (140 * this.slotBody.scaleX));
 
                         this.slotBetUI.setScale(1.5 * this.slotBody.scaleX, 1.5 * this.slotBody.scaleX);
-                        this.slotBetUI.setPosition(this.slotBalanceUI.x, canvasRef.value.offsetHeight - this.slotBetUI.displayHeight - (50 * this.slotBody.scaleX));
+                        this.slotBetUI.setPosition(this.slotBalanceUI.x, canvasRef.value.offsetHeight - this.slotBetUI.displayHeight - (50 * this.slotBody.scaleX) + (isIphone ? IPHONE_FIX * this.slotBody.scaleX : 0));
                         this.slotBetLabel.setFontSize(80 * this.slotBody.scaleX);
                         this.slotBetLabel.setPosition(this.slotBetUI.x, this.slotBetUI.y + (-2 * this.slotBody.scaleX));
                         this.slotBetValue.setFontSize(120 * this.slotBody.scaleX);
