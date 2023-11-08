@@ -802,7 +802,7 @@
 		}
 	},
 	"meta": {
-		"image": "character-drink_spritesheet.png",
+		"image": "character-drink_spritesheet_COMPRESSED.png",
 		"format": "RGBA8888",
 		"size": {
 			"w": 3577,

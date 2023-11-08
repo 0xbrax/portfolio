@@ -802,7 +802,7 @@
 		}
 	},
 	"meta": {
-		"image": "character-main_spritesheet.png",
+		"image": "character-main_spritesheet_COMPRESSED.png",
 		"format": "RGBA8888",
 		"size": {
 			"w": 3528,

@@ -69,41 +69,43 @@
 
 
 <script>
-// utils
+// UTILS
 import { ref, onMounted, watch, onUnmounted } from 'vue';
 import Phaser from 'phaser';
 import { assetsUrl, isDeviceMobile, getRandomNumber, formatNumber } from '@/assets/js/utils.js';
 import { verticalLoop, getRandomWinMap, getRandomLose, getRandomFakeWin } from '@/assets/projects/slotmachine/js/slotmachine.js';
 
+
+// ASSETS
 // slot elements
-import SlotBodyImage from '@/assets/projects/slotmachine/image/main/reel.png';
-import SlotCanopyImage from '@/assets/projects/slotmachine/image/main/canopy.png';
-import SlotLogoImage from '@/assets/projects/slotmachine/image/main/logo.png';
-import SlotSplashLeftImage from '@/assets/projects/slotmachine/image/main/splash_left.png';
-import SlotSplashRightImage from '@/assets/projects/slotmachine/image/main/splash_right.png';
+import SlotBodyImage from '@/assets/projects/slotmachine/image/main/reel_COMPRESSED.png';
+import SlotCanopyImage from '@/assets/projects/slotmachine/image/main/canopy_COMPRESSED.png';
+import SlotLogoImage from '@/assets/projects/slotmachine/image/main/logo_COMPRESSED.png';
+import SlotSplashLeftImage from '@/assets/projects/slotmachine/image/main/splash_left_COMPRESSED.png';
+import SlotSplashRightImage from '@/assets/projects/slotmachine/image/main/splash_right_COMPRESSED.png';
 
 // character
-import CharacterMainPng from '@/assets/projects/slotmachine/image/sprite/character-main_spritesheet.png';
+import CharacterMainPng from '@/assets/projects/slotmachine/image/sprite/character-main_spritesheet_COMPRESSED.png';
 import CharacterMainJson from '@/assets/projects/slotmachine/image/sprite/character-main_spritesheet.json';
-import CharacterDrinkPng from '@/assets/projects/slotmachine/image/sprite/character-drink_spritesheet.png';
+import CharacterDrinkPng from '@/assets/projects/slotmachine/image/sprite/character-drink_spritesheet_COMPRESSED.png';
 import CharacterDrinkJson from '@/assets/projects/slotmachine/image/sprite/character-drink_spritesheet.json';
 
 // symbols
-import AppleSpritePng from '@/assets/projects/slotmachine/image/sprite/apple_spritesheet.png';
+import AppleSpritePng from '@/assets/projects/slotmachine/image/sprite/apple_spritesheet_COMPRESSED.png';
 import AppleSpriteJson from '@/assets/projects/slotmachine/image/sprite/apple_spritesheet.json';
-import CherrySpritePng from '@/assets/projects/slotmachine/image/sprite/cherry_spritesheet.png';
+import CherrySpritePng from '@/assets/projects/slotmachine/image/sprite/cherry_spritesheet_COMPRESSED.png';
 import CherrySpriteJson from '@/assets/projects/slotmachine/image/sprite/cherry_spritesheet.json';
-import CoconutSpritePng from '@/assets/projects/slotmachine/image/sprite/coconut_spritesheet.png';
+import CoconutSpritePng from '@/assets/projects/slotmachine/image/sprite/coconut_spritesheet_COMPRESSED.png';
 import CoconutSpriteJson from '@/assets/projects/slotmachine/image/sprite/coconut_spritesheet.json';
-import FruitcocktailSpritePng from '@/assets/projects/slotmachine/image/sprite/fruitcocktail_spritesheet.png';
+import FruitcocktailSpritePng from '@/assets/projects/slotmachine/image/sprite/fruitcocktail_spritesheet_COMPRESSED.png';
 import FruitcocktailSpriteJson from '@/assets/projects/slotmachine/image/sprite/fruitcocktail_spritesheet.json';
-import GrapefruitSpritePng from '@/assets/projects/slotmachine/image/sprite/grapefruit_spritesheet.png';
+import GrapefruitSpritePng from '@/assets/projects/slotmachine/image/sprite/grapefruit_spritesheet_COMPRESSED.png';
 import GrapefruitSpriteJson from '@/assets/projects/slotmachine/image/sprite/grapefruit_spritesheet.json';
-import LemonSpritePng from '@/assets/projects/slotmachine/image/sprite/lemon_spritesheet.png';
+import LemonSpritePng from '@/assets/projects/slotmachine/image/sprite/lemon_spritesheet_COMPRESSED.png';
 import LemonSpriteJson from '@/assets/projects/slotmachine/image/sprite/lemon_spritesheet.json';
-import SplashSpritePng from '@/assets/projects/slotmachine/image/sprite/splash_spritesheet.png';
+import SplashSpritePng from '@/assets/projects/slotmachine/image/sprite/splash_spritesheet_COMPRESSED.png';
 import SplashSpriteJson from '@/assets/projects/slotmachine/image/sprite/splash_spritesheet.json';
-import WatermelonSpritePng from '@/assets/projects/slotmachine/image/sprite/watermelon_spritesheet.png';
+import WatermelonSpritePng from '@/assets/projects/slotmachine/image/sprite/watermelon_spritesheet_COMPRESSED.png';
 import WatermelonSpriteJson from '@/assets/projects/slotmachine/image/sprite/watermelon_spritesheet.json';
 
 // audio
@@ -116,20 +118,20 @@ import SlotWinJollySfx from '@/assets/projects/slotmachine/audio/slot_win-jolly.
 import SlotFreeSpinSfx from '@/assets/projects/slotmachine/audio/slot_free-spin.mp3';
 
 // ui elements
-import SpinUI from '@/assets/projects/slotmachine/image/main/ui_spin.png';
-import AutoUI from '@/assets/projects/slotmachine/image/main/ui_auto.png';
-import ForwardIcon from '@/assets/projects/slotmachine/image/main/FA-icon-forward_white.png';
-import BetUI from '@/assets/projects/slotmachine/image/main/ui_bet.png';
-import MinusUI from '@/assets/projects/slotmachine/image/main/ui_minus.png';
-import PlusUI from '@/assets/projects/slotmachine/image/main/ui_plus.png';
-import WinUI from '@/assets/projects/slotmachine/image/main/ui_win.png';
-import BalanceUI from '@/assets/projects/slotmachine/image/main/ui_balance.png';
-import CoinImage from '@/assets/projects/slotmachine/image/main/coin.png';
+import SpinUI from '@/assets/projects/slotmachine/image/main/ui_spin_COMPRESSED.png';
+import AutoUI from '@/assets/projects/slotmachine/image/main/ui_auto_COMPRESSED.png';
+import ForwardIcon from '@/assets/projects/slotmachine/image/main/FA-icon-forward_white_COMPRESSED.png';
+import BetUI from '@/assets/projects/slotmachine/image/main/ui_bet_COMPRESSED.png';
+import MinusUI from '@/assets/projects/slotmachine/image/main/ui_minus_COMPRESSED.png';
+import PlusUI from '@/assets/projects/slotmachine/image/main/ui_plus_COMPRESSED.png';
+import WinUI from '@/assets/projects/slotmachine/image/main/ui_win_COMPRESSED.png';
+import BalanceUI from '@/assets/projects/slotmachine/image/main/ui_balance_COMPRESSED.png';
+import CoinImage from '@/assets/projects/slotmachine/image/main/coin_COMPRESSED.png';
 import BubbleImage from '@/assets/projects/slotmachine/image/main/bubble_COMPRESSED.png';
 
 // other
-import MegaWinTextImage from '@/assets/projects/slotmachine/image/main/megawin_text.png';
-import MegaWinCoinImage from '@/assets/projects/slotmachine/image/main/megawin_coin.png';
+import MegaWinTextImage from '@/assets/projects/slotmachine/image/main/megawin_text_COMPRESSED.png';
+import MegaWinCoinImage from '@/assets/projects/slotmachine/image/main/megawin_coin_COMPRESSED.png';
 
 
 
