@@ -602,7 +602,7 @@
 		}
 	},
 	"meta": {
-		"image": "cherry_spritesheet.png",
+		"image": "cherry_spritesheet_COMPRESSED.png",
 		"format": "RGBA8888",
 		"size": {
 			"w": 2802,
