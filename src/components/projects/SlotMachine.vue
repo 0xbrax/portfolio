@@ -109,13 +109,13 @@ import WatermelonSpritePng from '@/assets/projects/slotmachine/image/sprite/wate
 import WatermelonSpriteJson from '@/assets/projects/slotmachine/image/sprite/watermelon_spritesheet.json';
 
 // audio
-import BackgroundMusicTrack from '@/assets/projects/slotmachine/audio/sunny-fruit_strawberry.mp3';
-import SlotClickSfx from '@/assets/projects/slotmachine/audio/slot_click.mp3';
-import SlotTickSfx from '@/assets/projects/slotmachine/audio/slot_tick.mp3';
-import SlotWinSfx from '@/assets/projects/slotmachine/audio/slot_win.mp3';
-import SlotMegaWinSfx from '@/assets/projects/slotmachine/audio/slot_mega-win.mp3';
-import SlotWinJollySfx from '@/assets/projects/slotmachine/audio/slot_win-jolly.mp3';
-import SlotFreeSpinSfx from '@/assets/projects/slotmachine/audio/slot_free-spin.mp3';
+import BackgroundMusicTrack from '@/assets/projects/slotmachine/audio/sunny-fruit_strawberry_COMPRESSED.mp3';
+import SlotClickSfx from '@/assets/projects/slotmachine/audio/slot_click_COMPRESSED.mp3';
+import SlotTickSfx from '@/assets/projects/slotmachine/audio/slot_tick_COMPRESSED.mp3';
+import SlotWinSfx from '@/assets/projects/slotmachine/audio/slot_win_COMPRESSED.mp3';
+import SlotMegaWinSfx from '@/assets/projects/slotmachine/audio/slot_mega-win_COMPRESSED.mp3';
+import SlotWinJollySfx from '@/assets/projects/slotmachine/audio/slot_win-jolly_COMPRESSED.mp3';
+import SlotFreeSpinSfx from '@/assets/projects/slotmachine/audio/slot_free-spin_COMPRESSED.mp3';
 
 // ui elements
 import SpinUI from '@/assets/projects/slotmachine/image/main/ui_spin_COMPRESSED.png';
