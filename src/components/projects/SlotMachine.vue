@@ -1246,6 +1246,7 @@ export default {
         onUnmounted(() => {
             if (wakeLock) wakeLock.release();
             if (mixerAudio.backgroundMusic) mixerAudio.backgroundMusic.pause();
+            if (isMobile) exitFullScreen();
         });
 
         return {
