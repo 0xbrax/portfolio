@@ -134,7 +134,7 @@
 </template>
 
 <script>
-    import { onMounted, ref, watch } from "vue";
+    import { onMounted, ref, watch, onBeforeUnmount } from "vue";
     import { useRouter } from "vue-router";
     import { useSettingsStore } from '@/store.js';
     import * as THREE from "three";
@@ -1125,6 +1125,17 @@
                 }
 
                 audioArray.forEach((el, i) => initRangeInput(audioObject.inputRef[i], audioObject[`${el}Level`]));
+            });
+
+            onBeforeUnmount(() => {
+                //THREE.BufferGeometry.dispose();
+                //THREE.Material.dispose();
+                //THREE.ImageBitmap.close();
+                //THREE.Texture.dispose();
+                //THREE.WebGLRenderTarget.dispose();
+
+                //renderer.renderLists.dispose();
+                //renderer.dispose();
             });
 
             return {
