@@ -1236,7 +1236,6 @@ export default {
                 height: window.innerHeight,
                 canvas: canvasRef.value,
                 transparent: true,
-                antialias: true,
                 scale: {
                     mode: Phaser.Scale.FIT,
                     autoCenter: !isIphone ? Phaser.Scale.CENTER_BOTH : Phaser.Scale.CENTER_HORIZONTALLY,
