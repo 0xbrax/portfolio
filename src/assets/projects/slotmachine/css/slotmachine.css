@@ -144,6 +144,10 @@ i:hover {
     line-height: 50px;
 }
 
+.action-container {
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
 .fas.fa-house {
     margin-right: 75px;
 }
@@ -156,8 +160,12 @@ i:hover {
     width: 50%;
 }
 
+.free-spin-text,
 #bet-container {
     margin-top: 50px;
+}
+
+#bet-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -166,7 +174,9 @@ i:hover {
 .symbol-container {
     width: 25%;
 }
-.symbol-text {
+.free-spin-text,
+.symbol-text,
+.bet-text {
     font-size: 25px;
 }
 .symbol-icon {
@@ -240,15 +250,21 @@ i:hover {
         width: 100%;
     }
 
+    .free-spin-text,
     #bet-container {
         margin-top: 25px;
+    }
+
+    #bet-container {
         flex-direction: column;
     }
     .symbol-container,
     .symbol-container:first-child {
         width: 100%;
     }
-    .symbol-text {
+    .free-spin-text,
+    .symbol-text,
+    .bet-text {
         font-size: 20px;
     }
     .symbol-icon {

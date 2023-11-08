@@ -28,7 +28,7 @@
 
                 <div id="setting-title">settings</div>
 
-                <div class="my-10">
+                <div class="action-container">
                     <router-link to="/"><i class="fas fa-house"></i></router-link>
 
                     <i @click="setVolume()" v-if="!isVolumeActive" class="fas fa-volume-high"></i>
@@ -38,6 +38,10 @@
                 <div class="w-100 text-ctr">
                     <div id="pay-table-title">pay table</div>
                     <img id="pay-table-img" src="@/assets/projects/slotmachine/image/main/paytable_COMPRESSED.png" />
+
+                    <div class="free-spin-text">free spin = min bet</div>
+                    <div class="bet-text mt-10">min bet = 100</div>
+                    <div class="bet-text mt-10">max bet = 1,000</div>
 
                     <div id="bet-container">
                         <div class="symbol-container">
