@@ -129,7 +129,7 @@ import BetUI from '@/assets/projects/slotmachine/image/main/ui_bet_COMPRESSED.pn
 import MinusUI from '@/assets/projects/slotmachine/image/main/ui_minus_COMPRESSED.png';
 import PlusUI from '@/assets/projects/slotmachine/image/main/ui_plus_COMPRESSED.png';
 import WinUI from '@/assets/projects/slotmachine/image/main/ui_win_COMPRESSED.png';
-import BalanceUI from '@/assets/projects/slotmachine/image/main/ui_balance_COMPRESSED_test.png';
+import BalanceUI from '@/assets/projects/slotmachine/image/main/ui_balance_COMPRESSED.png';
 import CoinImage from '@/assets/projects/slotmachine/image/main/coin_COMPRESSED.png';
 import BubbleImage from '@/assets/projects/slotmachine/image/main/bubble_COMPRESSED.png';
 
