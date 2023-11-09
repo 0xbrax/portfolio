@@ -74,7 +74,7 @@
 
 <script>
 // UTILS
-import { ref, onMounted, watch, onUnmounted } from 'vue';
+import { ref, onMounted, watch, onBeforeUnmount, onUnmounted } from 'vue';
 import Phaser from 'phaser';
 import { assetsUrl, isDeviceMobile, getRandomNumber, formatNumber } from '@/assets/js/utils.js';
 import { verticalLoop, getRandomWinMap, getRandomLose, getRandomFakeWin } from '@/assets/projects/slotmachine/js/slotmachine.js';
@@ -157,6 +157,7 @@ export default {
         const isIphone = /iPhone/i.test(navigator.userAgent); // Iphone bottom bar overlay fix
 
         const canvasRef = ref(null);
+        let game;
         const ANIMATION_FPS = 24;
         const ANIMATION_DURATION = 1250;
         const REELS_X_SLOT = 5;
@@ -1242,16 +1243,20 @@ export default {
                 }
             };
 
-            const game = new Phaser.Game(config);
+            game = new Phaser.Game(config);
 
             game.scene.add('gameScene', GameScene);
             game.scene.start('gameScene');
         });
 
+        onBeforeUnmount(() => {
+            game.destroy();
+        });
+
         onUnmounted(() => {
             if (wakeLock) wakeLock.release();
             if (mixerAudio.backgroundMusic) mixerAudio.backgroundMusic.pause();
-            if (isMobile) exitFullScreen();
+            if (isMobile && isFullScreenActive.value) exitFullScreen();
         });
 
         return {
