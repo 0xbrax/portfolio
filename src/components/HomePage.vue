@@ -119,11 +119,18 @@
                     :class="{ 'active': isLoadingComplete }"
                 ></div>
                 <div id="enter-text">
-                    <div v-if="!isLoadingComplete">
+                    <div v-if="router.options.history.state.back === null">
+                        <div v-if="!isLoadingComplete">
+                            <div>Loading</div>
+                            <div>{{ `${progress.toFixed(0)}%` }}</div>
+                        </div>
+                        <div v-else>Enter</div>
+                    </div>
+
+                    <div v-else>
                         <div>Loading</div>
                         <div>{{ `${progress.toFixed(0)}%` }}</div>
                     </div>
-                    <div v-else>Enter</div>
                 </div>
             </div>
         </div>
@@ -1122,8 +1129,6 @@
                 scene.add(projectGroup_3);
 
                 if (router.options.history.state.back !== null) {
-                    // progress.value === 100
-                    // isLoadingComplete
                     while (!isLoadingComplete) {
                         await new Promise(resolve => setTimeout(resolve, 100));
                     }
