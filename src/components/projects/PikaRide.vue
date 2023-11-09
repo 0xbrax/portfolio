@@ -2,7 +2,7 @@
     <div id="pika-ride">
         <header>
             <nav
-                class="container d-flex justify-content-between align-items-center"
+                class="container-md d-flex justify-content-between align-items-center"
             >
                 <div id="go-back-btn" class="pointer">
                     <i class="fas fa-house mr-10"></i><span>Go to HOME</span>

@@ -100,10 +100,7 @@
 
         <div
             id="loading-screen"
-            v-if="
-                !isEnterClicked &&
-                router.options.history.state.back === null
-            "
+            v-if="!isEnterClicked"
         >
             <img
                 id="logo-img"
@@ -113,16 +110,16 @@
 
             <div
                 id="enter-btn"
-                @click="progress === 100 ? doEnter() : undefined"
-                :class="{ active: progress === 100 }"
+                @click="isLoadingComplete ? doEnter() : undefined"
+                :class="{ 'active': isLoadingComplete }"
             >
                 <div
                     id="enter-btn-fx"
                     :style="{ height: progress + '%' }"
-                    :class="{ active: progress === 100 }"
+                    :class="{ 'active': isLoadingComplete }"
                 ></div>
                 <div id="enter-text">
-                    <div v-if="progress !== 100">
+                    <div v-if="!isLoadingComplete">
                         <div>Loading</div>
                         <div>{{ `${progress.toFixed(0)}%` }}</div>
                     </div>
@@ -176,24 +173,28 @@
             // LOADER
             const loadingManager = new THREE.LoadingManager();
             const progress = ref(0);
+            const isLoadingComplete = ref(false);
             const isEnterClicked = ref(false);
 
             loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
                 progress.value = (itemsLoaded / itemsTotal) * 100;
+                if (progress.value === 100) {
+                    isLoadingComplete.value = true;
+                }
             };
 
             // SCENE
             const canvasRef = ref(null);
             const modelLoader = new GLTFLoader(loadingManager);
             const textureLoader = new THREE.TextureLoader();
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(
+            let scene = new THREE.Scene();
+            let camera = new THREE.PerspectiveCamera(
                 75,
                 window.innerWidth / window.innerHeight,
                 0.1,
                 1000
             );
-            const renderer = new THREE.WebGLRenderer();
+            let renderer = new THREE.WebGLRenderer();
             renderer.setSize(window.innerWidth, window.innerHeight);
 
             const interactionManager = new InteractionManager(
@@ -613,8 +614,7 @@
             // project container
             const createProjectContainer = async (group, color, project) => {
                 const { cubeModel } = await createCube(color, project);
-                const { dragonModel, dragonMixer, dragonAction } =
-                    await createDragon(color, cubeModel);
+                const { dragonModel, dragonMixer, dragonAction } = await createDragon(color, cubeModel);
 
                 group.add(dragonModel);
                 group.add(cubeModel);
@@ -955,6 +955,7 @@
                 });
             });
 
+            let animationFrameId;
             const animate = () => {
                 if (planeMixer) {
                     const deltaTime = planeClock.getDelta();
@@ -984,7 +985,7 @@
                 interactionManager.update();
                 renderer.render(scene, camera);
 
-                requestAnimationFrame(animate);
+                animationFrameId = requestAnimationFrame(animate);
             };
 
             const doEnter = () => {
@@ -1069,7 +1070,7 @@
             };
 
             // INIT
-            animate();
+            animationFrameId = requestAnimationFrame(animate);
 
             audioArray.forEach((el, i) => {
                 watch(
@@ -1121,6 +1122,11 @@
                 scene.add(projectGroup_3);
 
                 if (router.options.history.state.back !== null) {
+                    // progress.value === 100
+                    // isLoadingComplete
+                    while (!isLoadingComplete) {
+                        await new Promise(resolve => setTimeout(resolve, 100));
+                    }
                     doEnter();
                 }
 
@@ -1128,20 +1134,47 @@
             });
 
             onBeforeUnmount(() => {
-                //THREE.BufferGeometry.dispose();
-                //THREE.Material.dispose();
-                //THREE.ImageBitmap.close();
-                //THREE.Texture.dispose();
-                //THREE.WebGLRenderTarget.dispose();
+                cancelAnimationFrame(animationFrameId);
 
-                //renderer.renderLists.dispose();
-                //renderer.dispose();
+                const disposeObject = (obj) => {
+                    if (obj.geometry) {
+                        obj.geometry.dispose();
+                    }
+                    if (obj.material) {
+                        if (obj.material.length) {
+                            for (let i = 0; i < obj.material.length; ++i) {
+                                obj.material[i].dispose()							
+                            }
+                        } else {
+                            obj.material.dispose();
+                        }
+                    }
+                    if (obj instanceof THREE.Light) {
+                        obj.dispose();
+                    }
+                    if (obj.children) {
+                        obj.children.forEach(child => {
+                            disposeObject(child);
+                        });
+                    }
+                }
+
+                scene.traverse(obj => {
+                    disposeObject(obj);
+                });
+
+                scene.clear();
+                renderer.dispose();
+                scene = null;
+                camera = null;
+                renderer = null;
             });
 
             return {
                 canvasRef,
                 isMobile,
                 progress,
+                isLoadingComplete,
                 isEnterClicked,
                 router,
                 doEnter,
