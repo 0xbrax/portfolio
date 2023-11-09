@@ -154,7 +154,7 @@ export default {
         const isVolumeActive = ref(true);
         const SLOT_FONT = 'Rimbo-Regular';
         
-        const isIphone = /iPhone/i.test(navigator.userAgent); // Iphone bottom bar overlay fix
+        const isIOS = /iPhone|iPad/.test(navigator.userAgent); // IOS bottom bar overlay fix
 
         const canvasRef = ref(null);
         let game;
@@ -670,7 +670,7 @@ export default {
 
                         this.freeSpinLabel = this.add.text(this.slotSpinUI.x, this.slotSpinUI.y - (86 * this.slotBody.scaleX), 'free spin', { ...this.TEXT_STYLE, fontSize: 80 * this.slotBody.scaleX }).setOrigin(0.5, 0.5);
 
-                        if (isIphone) this.freeSpinLabel.y -= (14 * this.slotBody.scaleX);
+                        if (isIOS) this.freeSpinLabel.y -= (14 * this.slotBody.scaleX);
                     }
 
 
@@ -1239,7 +1239,7 @@ export default {
                 transparent: true,
                 scale: {
                     mode: Phaser.Scale.FIT,
-                    autoCenter: !isIphone ? Phaser.Scale.CENTER_BOTH : Phaser.Scale.CENTER_HORIZONTALLY,
+                    autoCenter: !isIOS ? Phaser.Scale.CENTER_BOTH : Phaser.Scale.CENTER_HORIZONTALLY,
                 }
             };
 
