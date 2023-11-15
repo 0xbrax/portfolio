@@ -1,6 +1,6 @@
 <template>
-    <div id="home-page">
-        <div id="canvas" class="relative" ref="canvasRef">
+    <div id="home-page" @keydown.up="() => console.log('WEEEE')">
+        <div id="canvas" class="relative" ref="canvasRef" @keyup.up="isGoForwardActive = false">
             <div
                 id="ui-ux-control-container"
                 :class="[
@@ -988,6 +988,9 @@
                     flameMixer.update(deltaTime);
                 }
 
+                // plane game
+                if (isGoForwardActive) goForward();
+
                 controls.update();
                 interactionManager.update();
                 renderer.render(scene, camera);
@@ -1076,6 +1079,15 @@
                 audioObject[`${el}Level`] = percent.toFixed(0).toString();
             };
 
+
+            let isGoForwardActive = false;
+            const goForward = () => {
+                planeModel.position.x -= 0.1;
+                camera.position.x -= 0.1;
+                controls.target.x -= 0.1;
+            }
+
+
             // INIT
             animationFrameId = requestAnimationFrame(animate);
 
@@ -1127,6 +1139,21 @@
                 cubeModel_3 = project_3.cubeModel;
                 projectGroup_3.position.set(-1.0, 0.5, -0.1);
                 scene.add(projectGroup_3);
+
+                // plane game
+                document.addEventListener('keydown', event => {
+                    const keyCode = event.code;
+                    if (keyCode === 'ArrowUp') {
+                        isGoForwardActive = true;
+                    }
+                });
+                document.addEventListener('keyup', event => {
+                    const keyCode = event.code;
+                    if (keyCode === 'ArrowUp') {
+                        console.log('plane position', planeModel.position)
+                        isGoForwardActive = false;
+                    }
+                });
 
                 if (router.options.history.state.back !== null) {
                     while (!isLoadingComplete) {
@@ -1190,7 +1217,8 @@
                 audioObject,
                 onTouchMoveInputHandler,
                 isFPVActiveComplete,
-                switchProject
+                switchProject,
+                isGoForwardActive
             };
         },
     };
