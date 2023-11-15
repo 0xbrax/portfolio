@@ -1,6 +1,6 @@
 <template>
-    <div id="home-page" @keydown.up="() => console.log('WEEEE')">
-        <div id="canvas" class="relative" ref="canvasRef" @keyup.up="isGoForwardActive = false">
+    <div id="home-page">
+        <div id="canvas" class="relative" ref="canvasRef">
             <div
                 id="ui-ux-control-container"
                 :class="[
@@ -270,6 +270,12 @@
             let selectedChild;
             let isFPVActive = false;
             const isFPVActiveComplete = ref(false);
+            const planeLastPosition = {
+                plane: null,
+                camera: null,
+                controls: null,
+            }
+            console.log('INIT', camera.position, controls.target)
 
             modelLoader.load(Plane, (gltf) => {
                 const animations = gltf.animations;
@@ -277,6 +283,12 @@
 
                 planeModel.scale.set(0.5, 0.5, 0.5);
                 planeModel.position.set(0.35, -0.2, 0);
+
+                planeLastPosition.plane = planeModel.position.clone();
+                planeLastPosition.camera = camera.position.clone();
+                planeLastPosition.controls = controls.target.clone();
+
+                console.log('INIT', planeLastPosition.plane, planeLastPosition.camera, planeLastPosition.controls)
 
                 const rotationY = new THREE.Quaternion().setFromAxisAngle(
                     new THREE.Vector3(0, 1, 0),
@@ -376,14 +388,20 @@
                     isFPVActive = true;
                     selectedChild.material.transparent = true;
 
-                    controls.target.set(0, 0, 0);
                     controls.enabled = false;
                     controls.enableDamping = false;
 
                     gsap.to(camera.position, {
                         duration: 0.5,
-                        x: 0.36,
+                        x: planeLastPosition.camera.x - 0.44,
                         y: -0.14,
+                        z: 0,
+                        ease: "power2.inOut",
+                    }).play();
+                    gsap.to(controls.target, {
+                        duration: 0.5,
+                        x: planeLastPosition.controls.x,
+                        y: 0,
                         z: 0,
                         ease: "power2.inOut",
                     }).play();
@@ -402,24 +420,20 @@
                 sphere.addEventListener("click", (event) => {
                     event.stopPropagation();
 
-                    if (
-                        isFPVActive === false ||
-                        whatProject.value === "LOADING"
-                    ) {
+                    if (isFPVActive === false || whatProject.value === "LOADING") {
                         return;
                     }
 
                     gsap.to(camera.position, {
                         duration: 0.5,
-                        x: 0.8,
+                        x: planeLastPosition.camera.x,
                         y: 0.2,
                         z: 0,
                         ease: "power2.inOut",
                     }).play();
-
                     gsap.to(controls.target, {
                         duration: 0.5,
-                        x: 0,
+                        x: planeLastPosition.controls.x,
                         y: 0,
                         z: 0,
                         ease: "power2.inOut",
@@ -436,15 +450,15 @@
 
                 // Force camera and position reset, use it for target blank projects
                 if (mode === "force") {
-                    camera.position.set(0.8, 0.2, 0);
-                    controls.target.set(0, 0, 0);
+                    camera.position.set(planeLastPosition.camera);
+                    controls.target.set(planeLastPosition.controls);
 
                     return;
                 }
 
                 gsap.to(camera.position, {
                     duration: 0.7,
-                    x: 0.8,
+                    x: planeLastPosition.camera.x,
                     y: 0.2,
                     z: 0,
                     ease: "power2.inOut",
@@ -452,7 +466,7 @@
 
                 gsap.to(controls.target, {
                     duration: 0.7,
-                    x: 0,
+                    x: planeLastPosition.controls.x,
                     y: 0,
                     z: 0,
                     ease: "power2.inOut",
@@ -673,7 +687,7 @@
                         onComplete: () => {
                             controls.enabled = true;
                             whatProject.value = project.toLowerCase();
-                        },
+                        }
                     });
                     zoomAnimation.to(
                         {},
@@ -683,10 +697,40 @@
                         }
                     );
                     zoomAnimation.play();
+
+                    let planeModelNewPosition;
+                    switch (project) {
+                        case "PIKARIDE":
+                            planeModelNewPosition = 2;
+                            break;
+                        case "STARWAY":
+                            planeModelNewPosition = 0.5;
+                            break;
+                        case "SLOTMACHINE":
+                            planeModelNewPosition = -1;
+                            break;
+                    }
+                    gsap.to(planeModel.position, {
+                        duration: DURATION,
+                        x: planeModelNewPosition - 0.5, // cube gap
+                        y: 0,
+                        z: 0,
+                        ease: "power2.inOut",
+                        onComplete: () => {
+                            console.log('after cube click', planeModel.position, camera.position, controls.target)
+                            planeLastPosition.plane = planeModel.position.clone();
+                            planeLastPosition.camera.x = planeModel.position.x + 0.45;
+                            planeLastPosition.controls.x = planeModel.position.x - 0.35;
+
+                            console.log('ON COMPLETE', planeLastPosition.plane, planeLastPosition.camera, planeLastPosition.controls)
+                        }
+                    }).play();
                 });
 
                 return { dragonModel, dragonMixer, dragonAction, cubeModel };
             };
+
+
 
             // PROJECTS
             const projectsArray = ["pikaride", "starway", "slotmachine"];
@@ -962,41 +1006,7 @@
                 });
             });
 
-            let animationFrameId;
-            const animate = () => {
-                if (planeMixer) {
-                    const deltaTime = planeClock.getDelta();
-                    planeMixer.update(deltaTime);
-                }
 
-                // projects
-                if (dragonMixer_1) {
-                    const deltaTime = dragonClock_1.getDelta();
-                    dragonMixer_1.update(deltaTime);
-                }
-                if (dragonMixer_2) {
-                    const deltaTime = dragonClock_2.getDelta();
-                    dragonMixer_2.update(deltaTime);
-                }
-                if (dragonMixer_3) {
-                    const deltaTime = dragonClock_3.getDelta();
-                    dragonMixer_3.update(deltaTime);
-                }
-
-                if (flameMixer) {
-                    const deltaTime = flameClock.getDelta();
-                    flameMixer.update(deltaTime);
-                }
-
-                // plane game
-                if (isGoForwardActive) goForward();
-
-                controls.update();
-                interactionManager.update();
-                renderer.render(scene, camera);
-
-                animationFrameId = requestAnimationFrame(animate);
-            };
 
             const doEnter = () => {
                 document.title = "0xbrax | Home";
@@ -1079,13 +1089,69 @@
                 audioObject[`${el}Level`] = percent.toFixed(0).toString();
             };
 
-
+            // plane game
+            const PLANE_SPEED = 0.04;
             let isGoForwardActive = false;
             const goForward = () => {
-                planeModel.position.x -= 0.1;
-                camera.position.x -= 0.1;
-                controls.target.x -= 0.1;
+                video.playbackRate = 1.2;
+                planeModel.position.x -= PLANE_SPEED;
+                camera.position.x -= PLANE_SPEED;
+                controls.target.x -= PLANE_SPEED;
             }
+            let isGoBackActive = false;
+            const goBackward = () => {
+                video.playbackRate = 0.8;
+                planeModel.position.x += PLANE_SPEED;
+                camera.position.x += PLANE_SPEED;
+                controls.target.x += PLANE_SPEED;
+            }
+
+            let animationFrameId;
+            const animate = () => {
+                if (planeMixer) {
+                    const deltaTime = planeClock.getDelta();
+                    planeMixer.update(deltaTime);
+                }
+
+                // projects
+                if (dragonMixer_1) {
+                    const deltaTime = dragonClock_1.getDelta();
+                    dragonMixer_1.update(deltaTime);
+                }
+                if (dragonMixer_2) {
+                    const deltaTime = dragonClock_2.getDelta();
+                    dragonMixer_2.update(deltaTime);
+                }
+                if (dragonMixer_3) {
+                    const deltaTime = dragonClock_3.getDelta();
+                    dragonMixer_3.update(deltaTime);
+                }
+
+                if (flameMixer) {
+                    const deltaTime = flameClock.getDelta();
+                    flameMixer.update(deltaTime);
+                }
+
+                // plane game
+                if (isGoForwardActive) goForward();
+                if (planeModel?.position.x <= -5) {
+                    planeModel.position.set(0.35, -0.2, 0);
+                    camera.position.set(0.8, 0.2, 0);
+                    controls.target.set(0, 0, 0);
+                }
+                if (isGoBackActive) goBackward();
+                if (planeModel?.position.x >= 5) {
+                    planeModel.position.set(0.35, -0.2, 0);
+                    camera.position.set(0.8, 0.2, 0);
+                    controls.target.set(0, 0, 0);
+                }
+
+                controls.update();
+                interactionManager.update();
+                renderer.render(scene, camera);
+
+                animationFrameId = requestAnimationFrame(animate);
+            };
 
 
             // INIT
@@ -1150,8 +1216,30 @@
                 document.addEventListener('keyup', event => {
                     const keyCode = event.code;
                     if (keyCode === 'ArrowUp') {
-                        console.log('plane position', planeModel.position)
+                        console.log('plane position', planeModel.position.clone(), camera.position.clone(), controls.target.clone())
                         isGoForwardActive = false;
+                        video.playbackRate = 1;
+
+                        planeLastPosition.plane = planeModel.position.clone();
+                        planeLastPosition.camera = camera.position.clone();
+                        planeLastPosition.controls = controls.target.clone();
+                    }
+                });
+                document.addEventListener('keydown', event => {
+                    const keyCode = event.code;
+                    if (keyCode === 'ArrowDown') {
+                        isGoBackActive = true;
+                    }
+                });
+                document.addEventListener('keyup', event => {
+                    const keyCode = event.code;
+                    if (keyCode === 'ArrowDown') {
+                        isGoBackActive = false;
+                        video.playbackRate = 1;
+
+                        planeLastPosition.plane = planeModel.position.clone();
+                        planeLastPosition.camera = camera.position.clone();
+                        planeLastPosition.controls = controls.target.clone();
                     }
                 });
 
