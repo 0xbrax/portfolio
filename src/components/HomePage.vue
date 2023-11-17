@@ -69,6 +69,10 @@
                 </div>
             </div>
 
+            <div v-if="whatProject === null" id="plane-control">
+                <PlaneControl />
+            </div>
+
             <i 
                 v-show="isFPVActiveComplete"
                 id="random-wizard" 
@@ -166,8 +170,11 @@
     import STARWAYimage from "@/assets/projects/starway/starway.jpg";
     import SLOTMACHINEimage from "@/assets/projects/slotmachine/slotmachine.jpg";
 
+    import PlaneControl from "@/components/PlaneControl.vue"
+
     export default {
         name: "HomePage",
+        components: { PlaneControl },
 
         setup() {
             // UTILS
@@ -1345,6 +1352,7 @@
 <style scoped>
     #ui-ux-control-container {
         position: absolute;
+        z-index: 2;
         bottom: 25px;
         left: 25px;
     }
@@ -1413,8 +1421,17 @@
         transform-origin: 0 0;
     }
 
+    #plane-control {
+        position: absolute;
+        z-index: 1;
+        bottom: -25px;
+        left: 50%;
+        transform: translateX(-50%) scale(0.5);
+    }
+
     #random-wizard {
         position: absolute;
+        z-index: 2;
         bottom: 25px;
         right: 25px;
     }
@@ -1479,5 +1496,14 @@
     }
     .right-btn {
         right: -60%;
+    }
+
+
+
+    @media all and (min-width: 576px) {
+        #plane-control {
+            bottom: 25px;
+            transform: translateX(-50%) scale(1);
+        }
     }
 </style>
