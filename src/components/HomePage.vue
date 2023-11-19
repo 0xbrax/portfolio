@@ -69,6 +69,13 @@
                 </div>
             </div>
 
+            <PlaneControl 
+                v-if="whatProject === null" 
+                id="plane-control" 
+                :isPlaneKeyPressed="isPlaneKeyPressed" 
+                @onSetSpeedDefault="setPlaneLastPosition()"
+            />
+
             <i 
                 v-show="isFPVActiveComplete"
                 id="random-wizard" 
@@ -138,7 +145,7 @@
 </template>
 
 <script>
-    import { onMounted, ref, watch, onBeforeUnmount } from "vue";
+    import { onMounted, ref, watch, onBeforeUnmount, provide } from "vue";
     import { useRouter } from "vue-router";
     import { useSettingsStore } from '@/store.js';
     import * as THREE from "three";
@@ -166,8 +173,11 @@
     import STARWAYimage from "@/assets/projects/starway/starway.jpg";
     import SLOTMACHINEimage from "@/assets/projects/slotmachine/slotmachine.jpg";
 
+    import PlaneControl from "@/components/PlaneControl.vue"
+
     export default {
         name: "HomePage",
+        components: { PlaneControl },
 
         setup() {
             // UTILS
@@ -246,7 +256,7 @@
 
             // CAMERA & CONTROLS
             camera.position.set(0.8, 0.2, 0);
-            const controls = new OrbitControls(camera, renderer.domElement);
+            let controls = new OrbitControls(camera, renderer.domElement);
             controls.target.set(0, 0, 0);
             controls.enableZoom = false;
             controls.enablePan = false;
@@ -270,6 +280,12 @@
             let selectedChild;
             let isFPVActive = false;
             const isFPVActiveComplete = ref(false);
+            let isPlaneAnimationComplete = true;
+            const planeLastPosition = {
+                plane: null,
+                camera: null,
+                controls: null,
+            }
 
             modelLoader.load(Plane, (gltf) => {
                 const animations = gltf.animations;
@@ -277,6 +293,10 @@
 
                 planeModel.scale.set(0.5, 0.5, 0.5);
                 planeModel.position.set(0.35, -0.2, 0);
+
+                planeLastPosition.plane = planeModel.position.clone();
+                planeLastPosition.camera = camera.position.clone();
+                planeLastPosition.controls = controls.target.clone();
 
                 const rotationY = new THREE.Quaternion().setFromAxisAngle(
                     new THREE.Vector3(0, 1, 0),
@@ -372,18 +392,29 @@
                         return;
                     }
 
+                    if (isGoForwardActive.value || isGoBackwardActive.value) {
+                        return;
+                    }
+
                     interactionManager.remove(planeModel);
                     isFPVActive = true;
                     selectedChild.material.transparent = true;
+                    isPlaneAnimationComplete = false;
 
-                    controls.target.set(0, 0, 0);
                     controls.enabled = false;
                     controls.enableDamping = false;
 
                     gsap.to(camera.position, {
                         duration: 0.5,
-                        x: 0.36,
+                        x: planeLastPosition.plane.x + 0.45 - 0.44,
                         y: -0.14,
+                        z: 0,
+                        ease: "power2.inOut",
+                    }).play();
+                    gsap.to(controls.target, {
+                        duration: 0.5,
+                        x: planeLastPosition.plane.x -0.35,
+                        y: 0,
                         z: 0,
                         ease: "power2.inOut",
                     }).play();
@@ -395,6 +426,7 @@
                         onComplete: () => {
                             interactionManager.add(sphere);
                             isFPVActiveComplete.value = true;
+                            isPlaneAnimationComplete = true;
                         },
                     }).play();
                 });
@@ -402,27 +434,32 @@
                 sphere.addEventListener("click", (event) => {
                     event.stopPropagation();
 
-                    if (
-                        isFPVActive === false ||
-                        whatProject.value === "LOADING"
-                    ) {
+                    if (isFPVActive === false || whatProject.value === "LOADING") {
                         return;
                     }
 
+                    if (isGoForwardActive.value || isGoBackwardActive.value) {
+                        return;
+                    }
+
+                    isPlaneAnimationComplete = false;
+
                     gsap.to(camera.position, {
                         duration: 0.5,
-                        x: 0.8,
+                        x: planeLastPosition.plane.x + 0.45,
                         y: 0.2,
                         z: 0,
                         ease: "power2.inOut",
                     }).play();
-
                     gsap.to(controls.target, {
                         duration: 0.5,
-                        x: 0,
+                        x: planeLastPosition.plane.x - 0.35,
                         y: 0,
                         z: 0,
                         ease: "power2.inOut",
+                        onComplete: () => {
+                            isPlaneAnimationComplete = true;
+                        }
                     }).play();
 
                     planeWindowReset();
@@ -432,30 +469,34 @@
             });
 
             const goBackToPlane = (mode) => {
-                whatProject.value = null;
+                whatProject.value = "LOADING";
 
                 // Force camera and position reset, use it for target blank projects
                 if (mode === "force") {
-                    camera.position.set(0.8, 0.2, 0);
-                    controls.target.set(0, 0, 0);
+                    camera.position.set(planeLastPosition.camera);
+                    controls.target.set(planeLastPosition.controls);
 
                     return;
                 }
 
+                isPlaneAnimationComplete = false;
                 gsap.to(camera.position, {
                     duration: 0.7,
-                    x: 0.8,
+                    x: planeLastPosition.camera.x,
                     y: 0.2,
                     z: 0,
-                    ease: "power2.inOut",
+                    ease: "power2.inOut"
                 }).play();
-
                 gsap.to(controls.target, {
                     duration: 0.7,
-                    x: 0,
+                    x: planeLastPosition.controls.x,
                     y: 0,
                     z: 0,
                     ease: "power2.inOut",
+                    onComplete: () => {
+                        whatProject.value = null;
+                        isPlaneAnimationComplete = true;
+                    }
                 }).play();
             };
 
@@ -552,7 +593,7 @@
                         break;
                     case "SLOTMACHINE":
                         image = SLOTMACHINEimage;
-                        text = "Slot Machine";
+                        text = "Fruit Cocktail";
                         break;
                 }
 
@@ -657,6 +698,7 @@
                         .add(new THREE.Vector3(0, 0, DISTANCE));
 
                     const zoomAnimation = gsap.timeline({
+                        duration: DURATION,
                         onUpdate: () => {
                             const progress = zoomAnimation.progress();
                             controls.target.lerpVectors(
@@ -674,19 +716,40 @@
                             controls.enabled = true;
                             whatProject.value = project.toLowerCase();
                         },
+                        ease: "power4.in"
                     });
-                    zoomAnimation.to(
-                        {},
-                        {
-                            duration: DURATION,
-                            ease: "power2.inOut",
-                        }
-                    );
                     zoomAnimation.play();
+
+                    let planeModelNewPosition;
+                    switch (project) {
+                        case "PIKARIDE":
+                            planeModelNewPosition = 2;
+                            break;
+                        case "STARWAY":
+                            planeModelNewPosition = 0.5;
+                            break;
+                        case "SLOTMACHINE":
+                            planeModelNewPosition = -1;
+                            break;
+                    }
+                    gsap.to(planeModel.position, {
+                        duration: DURATION,
+                        x: planeModelNewPosition - 0.5, // cube gap
+                        y: -0.2,
+                        z: 0,
+                        ease: "power4.out",
+                        onComplete: () => {
+                            planeLastPosition.plane.x = planeModel.position.x;
+                            planeLastPosition.camera.x = planeModel.position.x + 0.45; // start gap
+                            planeLastPosition.controls.x = planeModel.position.x - 0.35; // start gap
+                        }
+                    }).play();
                 });
 
                 return { dragonModel, dragonMixer, dragonAction, cubeModel };
             };
+
+
 
             // PROJECTS
             const projectsArray = ["pikaride", "starway", "slotmachine"];
@@ -962,38 +1025,7 @@
                 });
             });
 
-            let animationFrameId;
-            const animate = () => {
-                if (planeMixer) {
-                    const deltaTime = planeClock.getDelta();
-                    planeMixer.update(deltaTime);
-                }
 
-                // projects
-                if (dragonMixer_1) {
-                    const deltaTime = dragonClock_1.getDelta();
-                    dragonMixer_1.update(deltaTime);
-                }
-                if (dragonMixer_2) {
-                    const deltaTime = dragonClock_2.getDelta();
-                    dragonMixer_2.update(deltaTime);
-                }
-                if (dragonMixer_3) {
-                    const deltaTime = dragonClock_3.getDelta();
-                    dragonMixer_3.update(deltaTime);
-                }
-
-                if (flameMixer) {
-                    const deltaTime = flameClock.getDelta();
-                    flameMixer.update(deltaTime);
-                }
-
-                controls.update();
-                interactionManager.update();
-                renderer.render(scene, camera);
-
-                animationFrameId = requestAnimationFrame(animate);
-            };
 
             const doEnter = () => {
                 document.title = "0xbrax | Home";
@@ -1042,7 +1074,7 @@
                         break;
                     case "slotmachine":
                         router.push("/project/slotmachine");
-                        document.title = "0xbrax | Slot Machine";
+                        document.title = "0xbrax | Fruit Cocktail";
                         break;
                 }
             };
@@ -1075,6 +1107,110 @@
                 }
                 audioObject[`${el}Level`] = percent.toFixed(0).toString();
             };
+
+            // plane game
+            const PLANE_SPEED = 0.02;
+            const isPlaneKeyPressed = ref(false);
+
+            const isGoForwardActive = ref(false);
+            provide('isGoForwardActive', isGoForwardActive);
+            const goForward = () => {
+                planeModel.position.x -= PLANE_SPEED;
+                camera.position.x -= PLANE_SPEED;
+                controls.target.x -= PLANE_SPEED;
+            }
+
+            const isGoBackwardActive = ref(false);
+            provide('isGoBackwardActive', isGoBackwardActive);
+            const goBackward = () => {
+                planeModel.position.x += PLANE_SPEED;
+                camera.position.x += PLANE_SPEED;
+                controls.target.x += PLANE_SPEED;
+            }
+
+            const setPlaneLastPosition = () => {
+                planeLastPosition.plane.x = planeModel.position.x;
+                planeLastPosition.camera.x = camera.position.x;
+                planeLastPosition.controls.x = controls.target.x;
+
+                if (isFPVActive === true) {
+                    planeLastPosition.camera.x = planeLastPosition.camera.x + 0.44;
+                    planeLastPosition.camera.y += 0.14;
+                }
+            }
+
+            watch(
+                () => isGoForwardActive.value,
+                (val) => {
+                    if (val) video.playbackRate = 1.5;
+                    else video.playbackRate = 1;
+                }
+            );
+            watch(
+                () => isGoBackwardActive.value,
+                (val) => {
+                    if (val) video.playbackRate = 0.75;
+                    else video.playbackRate = 1;
+                }
+            );
+
+
+
+            let animationFrameId;
+            const animate = () => {
+                if (planeMixer) {
+                    const deltaTime = planeClock.getDelta();
+                    planeMixer.update(deltaTime);
+                }
+
+                // projects
+                if (dragonMixer_1) {
+                    const deltaTime = dragonClock_1.getDelta();
+                    dragonMixer_1.update(deltaTime);
+                }
+                if (dragonMixer_2) {
+                    const deltaTime = dragonClock_2.getDelta();
+                    dragonMixer_2.update(deltaTime);
+                }
+                if (dragonMixer_3) {
+                    const deltaTime = dragonClock_3.getDelta();
+                    dragonMixer_3.update(deltaTime);
+                }
+
+                if (flameMixer) {
+                    const deltaTime = flameClock.getDelta();
+                    flameMixer.update(deltaTime);
+                }
+
+                // plane game
+                if (isGoForwardActive.value === true && whatProject.value === null) goForward();
+                if (planeModel?.position.x <= -5) {
+                    planeModel.position.set(0.35, -0.2, 0);
+                    controls.target.set(0, 0, 0);
+                    if (isFPVActive === true) {
+                        camera.position.set(0.8 - 0.44, -0.14, 0);
+                    } else {
+                        camera.position.set(0.8, 0.2, 0);
+                    }
+                }
+                if (isGoBackwardActive.value === true && whatProject.value === null) goBackward();
+                if (planeModel?.position.x >= 5) {
+                    planeModel.position.set(0.35, -0.2, 0);
+                    controls.target.set(0, 0, 0);
+                    if (isFPVActive === true) {
+                        camera.position.set(0.8 - 0.44, -0.14, 0);
+                    } else {
+                        camera.position.set(0.8, 0.2, 0);
+                    }
+                }
+
+                controls.update();
+                interactionManager.update();
+                renderer.render(scene, camera);
+
+                animationFrameId = requestAnimationFrame(animate);
+            };
+
 
             // INIT
             animationFrameId = requestAnimationFrame(animate);
@@ -1128,6 +1264,52 @@
                 projectGroup_3.position.set(-1.0, 0.5, -0.1);
                 scene.add(projectGroup_3);
 
+                // plane game
+                document.addEventListener('keydown', event => {
+                    if (whatProject.value !== null || isPlaneAnimationComplete === false || isGoBackwardActive.value === true || isEnterClicked.value === false) {
+                        return;
+                    }
+                    const keyCode = event.code;
+                    if (keyCode === 'ArrowUp') {
+                        isPlaneKeyPressed.value = true;
+                        isGoForwardActive.value = true;
+                    }
+                });
+                document.addEventListener('keyup', event => {
+                    if (whatProject.value !== null || isPlaneAnimationComplete === false || isGoBackwardActive.value === true || isEnterClicked.value === false) {
+                        return;
+                    }
+                    const keyCode = event.code;
+                    if (keyCode === 'ArrowUp') {
+                        isPlaneKeyPressed.value = false;
+                        isGoForwardActive.value = false;
+
+                        setPlaneLastPosition();
+                    }
+                });
+                document.addEventListener('keydown', event => {
+                    if (whatProject.value !== null || isPlaneAnimationComplete === false || isGoForwardActive.value === true || isEnterClicked.value === false) {
+                        return;
+                    }
+                    const keyCode = event.code;
+                    if (keyCode === 'ArrowDown') {
+                        isPlaneKeyPressed.value = true;
+                        isGoBackwardActive.value = true;
+                    }
+                });
+                document.addEventListener('keyup', event => {
+                    if (whatProject.value !== null || isPlaneAnimationComplete === false || isGoForwardActive.value === true || isEnterClicked.value === false) {
+                        return;
+                    }
+                    const keyCode = event.code;
+                    if (keyCode === 'ArrowDown') {
+                        isPlaneKeyPressed.value = false;
+                        isGoBackwardActive.value = false;
+
+                        setPlaneLastPosition();
+                    }
+                });
+
                 if (router.options.history.state.back !== null) {
                     while (!isLoadingComplete) {
                         await new Promise(resolve => setTimeout(resolve, 100));
@@ -1172,6 +1354,7 @@
                 renderer.dispose();
                 scene = null;
                 camera = null;
+                controls = null;
                 renderer = null;
             });
 
@@ -1190,7 +1373,9 @@
                 audioObject,
                 onTouchMoveInputHandler,
                 isFPVActiveComplete,
-                switchProject
+                switchProject,
+                isPlaneKeyPressed,
+                setPlaneLastPosition
             };
         },
     };
@@ -1199,6 +1384,7 @@
 <style scoped>
     #ui-ux-control-container {
         position: absolute;
+        z-index: 2;
         bottom: 25px;
         left: 25px;
     }
@@ -1267,8 +1453,18 @@
         transform-origin: 0 0;
     }
 
+    #plane-control {
+        position: absolute;
+        z-index: 1;
+        bottom: -25px;
+        left: 50%;
+        transform: translateX(-50%) scale(0.5);
+        pointer-events: none;
+    }
+
     #random-wizard {
         position: absolute;
+        z-index: 2;
         bottom: 25px;
         right: 25px;
     }
@@ -1333,5 +1529,14 @@
     }
     .right-btn {
         right: -60%;
+    }
+
+
+
+    @media all and (min-width: 576px) {
+        #plane-control {
+            bottom: 25px;
+            transform: translateX(-50%) scale(1);
+        }
     }
 </style>
