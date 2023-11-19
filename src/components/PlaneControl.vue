@@ -1,7 +1,7 @@
 <template>
-    <div class="d-flex">
+    <div class="d-flex align-ctr">
         <div id="tachometer-container">
-            <div class="mark-container">
+            <div class="rpm-mark-container">
                 <div class="circular-progress">
                     <div class="segment-mask"></div>
 
@@ -11,7 +11,7 @@
                     <div class="segment red" style="transform: rotate(10deg) skew(50deg)"></div>
                 </div>
                 
-                <div class="mark" v-for="el in new Array(29)" :key="el"></div>
+                <div class="rpm-mark" v-for="el in new Array(29)" :key="el"></div>
             </div>
             
             <div class="tachometer"></div>
@@ -41,13 +41,19 @@ import { inject, onMounted, ref, watch } from "vue";
 
 export default {
     name: 'PlaneControl',
+    props: { 
+        isPlaneKeyPressed: Boolean
+    },
+    emits: ['onSetSpeedDefault'],
 
-    setup() {
+    setup(props, ctx) {
         const isGoForwardActive = inject('isGoForwardActive');
         const isGoBackwardActive = inject('isGoBackwardActive');
         const rpmHandContainer = ref(null);
 
         const setSpeedLevel = (level) => {
+            if (props.isPlaneKeyPressed) return;
+
             switch (level) {
                 case 1:
                     isGoBackwardActive.value = false;
@@ -56,6 +62,8 @@ export default {
                 case 2:
                     isGoForwardActive.value = false;
                     isGoBackwardActive.value = false;
+
+                    ctx.emit('onSetSpeedDefault');
                     break;
                 case 3:
                     isGoForwardActive.value = false;
@@ -248,21 +256,19 @@ export default {
 /**** TACHOMETER ****/
 #tachometer-container {
     position: relative;
-    width: 200px;
+    width: 180px;
     aspect-ratio: 1 / 1;
     background: linear-gradient(#333333, #000000);
     border-radius: 50%;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
-
-    margin-right: 50px;
 }
 
-.mark-container {
+.rpm-mark-container {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 180px;
+    width: 160px;
     aspect-ratio: 1 / 1;
     background: linear-gradient(#444444, #111111);
     border-radius: 50%;
@@ -306,7 +312,7 @@ export default {
 }
 
 .tachometer {
-    width: 130px;
+    width: 120px;
     aspect-ratio: 1 / 1;
     background: linear-gradient(#555555, #222222);
     border-radius: 50%;
@@ -332,7 +338,7 @@ export default {
 }
 .rpm-hand {
     width: 10px;
-    height: 65px;
+    height: 55px;
     background-color: #000000;
     position: absolute;
     top: 0;
@@ -345,10 +351,10 @@ export default {
     border-top-width: 7px;
 }
 
-.mark {
+.rpm-mark {
     position: absolute;
     z-index: 1;
-    width: 5px;
+    width: 4px;
     height: 50%;
     background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 20%, rgba(255,255,255,0) 20%, rgba(255,255,255,0) 100%);
     top: 50%;
@@ -357,47 +363,49 @@ export default {
     transform-origin: 50% 100%;
 }
 
-.mark:nth-child(1) { transform: translate(-50%, -100%) rotate(0deg); }
-.mark:nth-child(2) { transform: translate(-50%, -100%) rotate(10deg); }
-.mark:nth-child(3) { transform: translate(-50%, -100%) rotate(20deg); background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 30%, rgba(255,255,255,0) 30%, rgba(255,255,255,0) 100%); }
-.mark:nth-child(4) { transform: translate(-50%, -100%) rotate(30deg); }
-.mark:nth-child(5) { transform: translate(-50%, -100%) rotate(40deg); }
-.mark:nth-child(6) { transform: translate(-50%, -100%) rotate(50deg); }
-.mark:nth-child(7) { transform: translate(-50%, -100%) rotate(60deg); background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 30%, rgba(255,255,255,0) 30%, rgba(255,255,255,0) 100%); }
-.mark:nth-child(8) { transform: translate(-50%, -100%) rotate(70deg); }
-.mark:nth-child(9) { transform: translate(-50%, -100%) rotate(80deg); }
-.mark:nth-child(10) { transform: translate(-50%, -100%) rotate(90deg); }
-.mark:nth-child(11) { transform: translate(-50%, -100%) rotate(100deg); background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 30%, rgba(255,255,255,0) 30%, rgba(255,255,255,0) 100%); }
-.mark:nth-child(12) { transform: translate(-50%, -100%) rotate(110deg); }
-.mark:nth-child(13) { transform: translate(-50%, -100%) rotate(120deg); }
-.mark:nth-child(14) { transform: translate(-50%, -100%) rotate(130deg); }
-.mark:nth-child(15) { transform: translate(-50%, -100%) rotate(140deg); background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 30%, rgba(255,255,255,0) 30%, rgba(255,255,255,0) 100%); }
+.rpm-mark:nth-child(1) { transform: translate(-50%, -100%) rotate(0deg); }
+.rpm-mark:nth-child(2) { transform: translate(-50%, -100%) rotate(10deg); }
+.rpm-mark:nth-child(3) { transform: translate(-50%, -100%) rotate(20deg); background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 30%, rgba(255,255,255,0) 30%, rgba(255,255,255,0) 100%); }
+.rpm-mark:nth-child(4) { transform: translate(-50%, -100%) rotate(30deg); }
+.rpm-mark:nth-child(5) { transform: translate(-50%, -100%) rotate(40deg); }
+.rpm-mark:nth-child(6) { transform: translate(-50%, -100%) rotate(50deg); }
+.rpm-mark:nth-child(7) { transform: translate(-50%, -100%) rotate(60deg); background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 30%, rgba(255,255,255,0) 30%, rgba(255,255,255,0) 100%); }
+.rpm-mark:nth-child(8) { transform: translate(-50%, -100%) rotate(70deg); }
+.rpm-mark:nth-child(9) { transform: translate(-50%, -100%) rotate(80deg); }
+.rpm-mark:nth-child(10) { transform: translate(-50%, -100%) rotate(90deg); }
+.rpm-mark:nth-child(11) { transform: translate(-50%, -100%) rotate(100deg); background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 30%, rgba(255,255,255,0) 30%, rgba(255,255,255,0) 100%); }
+.rpm-mark:nth-child(12) { transform: translate(-50%, -100%) rotate(110deg); }
+.rpm-mark:nth-child(13) { transform: translate(-50%, -100%) rotate(120deg); }
+.rpm-mark:nth-child(14) { transform: translate(-50%, -100%) rotate(130deg); }
+.rpm-mark:nth-child(15) { transform: translate(-50%, -100%) rotate(140deg); background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 30%, rgba(255,255,255,0) 30%, rgba(255,255,255,0) 100%); }
 
-.mark:nth-child(16) { transform: translate(-50%, -100%) rotate(220deg); background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 30%, rgba(255,255,255,0) 30%, rgba(255,255,255,0) 100%); }
-.mark:nth-child(17) { transform: translate(-50%, -100%) rotate(230deg); }
-.mark:nth-child(18) { transform: translate(-50%, -100%) rotate(240deg); }
-.mark:nth-child(19) { transform: translate(-50%, -100%) rotate(250deg); }
-.mark:nth-child(20) { transform: translate(-50%, -100%) rotate(260deg); background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 30%, rgba(255,255,255,0) 30%, rgba(255,255,255,0) 100%); }
-.mark:nth-child(21) { transform: translate(-50%, -100%) rotate(270deg); }
-.mark:nth-child(22) { transform: translate(-50%, -100%) rotate(280deg); }
-.mark:nth-child(23) { transform: translate(-50%, -100%) rotate(290deg); }
-.mark:nth-child(24) { transform: translate(-50%, -100%) rotate(300deg); background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 30%, rgba(255,255,255,0) 30%, rgba(255,255,255,0) 100%); }
-.mark:nth-child(25) { transform: translate(-50%, -100%) rotate(310deg); }
-.mark:nth-child(26) { transform: translate(-50%, -100%) rotate(320deg); }
-.mark:nth-child(27) { transform: translate(-50%, -100%) rotate(330deg); }
-.mark:nth-child(28) { transform: translate(-50%, -100%) rotate(340deg); background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 30%, rgba(255,255,255,0) 30%, rgba(255,255,255,0) 100%); }
-.mark:nth-child(29) { transform: translate(-50%, -100%) rotate(350deg); }
+.rpm-mark:nth-child(16) { transform: translate(-50%, -100%) rotate(220deg); background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 30%, rgba(255,255,255,0) 30%, rgba(255,255,255,0) 100%); }
+.rpm-mark:nth-child(17) { transform: translate(-50%, -100%) rotate(230deg); }
+.rpm-mark:nth-child(18) { transform: translate(-50%, -100%) rotate(240deg); }
+.rpm-mark:nth-child(19) { transform: translate(-50%, -100%) rotate(250deg); }
+.rpm-mark:nth-child(20) { transform: translate(-50%, -100%) rotate(260deg); background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 30%, rgba(255,255,255,0) 30%, rgba(255,255,255,0) 100%); }
+.rpm-mark:nth-child(21) { transform: translate(-50%, -100%) rotate(270deg); }
+.rpm-mark:nth-child(22) { transform: translate(-50%, -100%) rotate(280deg); }
+.rpm-mark:nth-child(23) { transform: translate(-50%, -100%) rotate(290deg); }
+.rpm-mark:nth-child(24) { transform: translate(-50%, -100%) rotate(300deg); background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 30%, rgba(255,255,255,0) 30%, rgba(255,255,255,0) 100%); }
+.rpm-mark:nth-child(25) { transform: translate(-50%, -100%) rotate(310deg); }
+.rpm-mark:nth-child(26) { transform: translate(-50%, -100%) rotate(320deg); }
+.rpm-mark:nth-child(27) { transform: translate(-50%, -100%) rotate(330deg); }
+.rpm-mark:nth-child(28) { transform: translate(-50%, -100%) rotate(340deg); background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 30%, rgba(255,255,255,0) 30%, rgba(255,255,255,0) 100%); }
+.rpm-mark:nth-child(29) { transform: translate(-50%, -100%) rotate(350deg); }
 
 
 
 /**** SPEED ****/
 .control-container {
     position: relative;
-    width: 120px;
-    height: 200px;
+    width: 80px;
+    height: 180px;
     background: linear-gradient(#555555, #222222);
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    margin: 0 50px;
+    pointer-events: visible;
 }
 
 .control {
@@ -406,23 +414,23 @@ export default {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 100px;
-    height: 60px;
+    width: 60px;
+    height: calc(160px / 3);
     background: linear-gradient(#ff0000, #990000);
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     transition: top 0.2s ease-in-out;
 }
 .forward {
-    top: 40px;
+    top: calc(40px - (10px / 3));
 }
 .backward {
-    top: 160px;
+    top: calc(140px + (10px / 3));
 }
 
 .level-container {
-    width: 100px;
-    height: 60px;
+    width: 60px;
+    height: calc(160px / 3);
     border-radius: 10px;
     box-shadow: inset 0px 0px 0px 2px #000000;
     position: absolute;
@@ -431,13 +439,13 @@ export default {
     transform: translate(-50%, -50%);
 }
 .level-container-1 {
-    top: 40px;
+    top: calc(40px - (10px / 3));
 }
 .level-container-2 {
     top: 50%;
 }
 .level-container-3 {
-    top: 160px;
+    top: calc(140px + (10px / 3));
 }
 
 .level {
@@ -445,21 +453,21 @@ export default {
     z-index: 3;
     left: 50%;
     transform: translate(-50%, -50%);
-    height: 10px;
+    height: 8px;
     background: linear-gradient(to right, #aaaaaa, #dddddd);
     border-radius: 5px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 }
-.level-1 { width: 60px; top: 40px; }
-.level-2 { width: 45px; top: 50%; }
-.level-3 { width: 30px; top: 160px; }
+.level-1 { width: calc(50% - 4px); top: calc(40px - (10px / 3)); }
+.level-2 { width: calc(37.5% - 4px); top: 50%; }
+.level-3 { width: calc(25% - 4px); top: calc(140px + (10px / 3)); }
 
 
 
 /**** MEDIA ****/
 @media all and (min-width: 576px) {
     #tachometer-container {
-        margin-right: 400px;
+        margin-right: 225px;
     }
 }
 </style>
