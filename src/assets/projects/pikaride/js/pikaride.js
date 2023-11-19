@@ -643,7 +643,7 @@ let isPikachuAlive = setInterval(function() {
 
         levelState = 1;
     }
-}, 10);
+}, 30); // => 33.33 = 30FPS, default of this interval = 10 (remember to multiply goRight & goLeft)
 
 getLeaderboard(leaderboardID);
 let getWorldRecord = setInterval(function() {
@@ -873,9 +873,9 @@ function goRight() {
 
     if (!pikachu.classList.contains('kill') && pikachuRight > 168) {
         if (isSuperCarActive === true) {
-            pikachuContainer.style.left = (pikachuLeft + 6) + 'px';
+            pikachuContainer.style.left = (pikachuLeft + 18) + 'px'; // sync with interval FPS (default = 6)
         } else {
-            pikachuContainer.style.left = (pikachuLeft + 4) + 'px';
+            pikachuContainer.style.left = (pikachuLeft + 12) + 'px'; // sync with interval FPS (default = 4)
         }
     }
 }
@@ -885,9 +885,9 @@ function goLeft() {
 
     if (!pikachu.classList.contains('kill') && pikachuLeft > 24) {
         if (isSuperCarActive === true) {
-            pikachuContainer.style.left = (pikachuLeft - 6) + 'px';
+            pikachuContainer.style.left = (pikachuLeft - 18) + 'px'; // sync with interval FPS (default = 6)
         } else {
-            pikachuContainer.style.left = (pikachuLeft - 4) + 'px';
+            pikachuContainer.style.left = (pikachuLeft - 12) + 'px'; // sync with interval FPS (default = 4)
         }
     }
 }
