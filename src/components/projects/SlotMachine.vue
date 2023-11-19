@@ -260,7 +260,7 @@ export default {
 
 
         // INIT
-        document.title = '0xbrax | Slot Machine';
+        document.title = '0xbrax | Fruit Cocktail';
 
         onMounted(async () => {
             try {
@@ -1015,7 +1015,7 @@ export default {
                             if (i === 5) this.onComplete();
                         }
 
-                        slotAnimation[`reel${i}Animation`].toIndex(indexReels[`indexReel${i}`], animConfig);
+                        slotAnimation[`reel${i}Animation`].toIndex(indexReels[`indexReel${i}`], animConfig); // auto clear
                     }
                 }
 

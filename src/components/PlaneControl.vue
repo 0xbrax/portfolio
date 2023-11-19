@@ -10,7 +10,7 @@
                     <div class="segment green" style="transform: rotate(270deg) skew(170deg)"></div>
                     <div class="segment red" style="transform: rotate(10deg) skew(50deg)"></div>
                 </div>
-                
+
                 <div class="rpm-mark" v-for="el in new Array(29)" :key="el"></div>
             </div>
             
@@ -24,14 +24,8 @@
         <div class="control-container">
             <div :class="['control pointer', { 'forward': isGoForwardActive, 'backward': isGoBackwardActive }]"></div>
 
-            <div class="level-container level-container-1 pointer" @click="setSpeedLevel(1)"></div>
-            <div class="level level-1 pointer" @click="setSpeedLevel(1)"></div>
-
-            <div class="level-container level-container-2 pointer" @click="setSpeedLevel(2)"></div>
-            <div class="level level-2 pointer" @click="setSpeedLevel(2)"></div>
-
-            <div class="level-container level-container-3 pointer" @click="setSpeedLevel(3)"></div>
-            <div class="level level-3 pointer" @click="setSpeedLevel(3)"></div>
+            <div v-for="(el, i) in new Array(3)" :key="el" :class="`level-container level-container-${i + 1} pointer`" @click="setSpeedLevel(i + 1)"></div>
+            <div v-for="(el, i) in new Array(3)" :key="el" :class="`level level-${i + 1} pointer`" @click="setSpeedLevel(i + 1)"></div>
         </div>
     </div>
 </template>
@@ -467,7 +461,7 @@ export default {
 /**** MEDIA ****/
 @media all and (min-width: 576px) {
     #tachometer-container {
-        margin-right: 225px;
+        margin-right: 300px;
     }
 }
 </style>

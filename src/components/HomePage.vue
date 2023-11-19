@@ -593,7 +593,7 @@
                         break;
                     case "SLOTMACHINE":
                         image = SLOTMACHINEimage;
-                        text = "Slot Machine";
+                        text = "Fruit Cocktail";
                         break;
                 }
 
@@ -1074,7 +1074,7 @@
                         break;
                     case "slotmachine":
                         router.push("/project/slotmachine");
-                        document.title = "0xbrax | Slot Machine";
+                        document.title = "0xbrax | Fruit Cocktail";
                         break;
                 }
             };
@@ -1109,10 +1109,9 @@
             };
 
             // plane game
-
-            // video.playbackRate = 1.5; 1 0.75..... con watch
             const PLANE_SPEED = 0.02;
             const isPlaneKeyPressed = ref(false);
+
             const isGoForwardActive = ref(false);
             provide('isGoForwardActive', isGoForwardActive);
             const goForward = () => {
@@ -1120,6 +1119,7 @@
                 camera.position.x -= PLANE_SPEED;
                 controls.target.x -= PLANE_SPEED;
             }
+
             const isGoBackwardActive = ref(false);
             provide('isGoBackwardActive', isGoBackwardActive);
             const goBackward = () => {
@@ -1138,6 +1138,21 @@
                     planeLastPosition.camera.y += 0.14;
                 }
             }
+
+            watch(
+                () => isGoForwardActive.value,
+                (val) => {
+                    if (val) video.playbackRate = 1.5;
+                    else video.playbackRate = 1;
+                }
+            );
+            watch(
+                () => isGoBackwardActive.value,
+                (val) => {
+                    if (val) video.playbackRate = 0.75;
+                    else video.playbackRate = 1;
+                }
+            );
 
 
 
