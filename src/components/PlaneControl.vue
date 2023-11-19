@@ -22,11 +22,16 @@
         </div>
 
         <div class="control-container">
-            <div :class="['control', { 'forward': isGoForwardActive, 'backward': isGoBackwardActive }]"></div>
+            <div :class="['control pointer', { 'forward': isGoForwardActive, 'backward': isGoBackwardActive }]"></div>
 
-            <div @click="setSpeedLevel(1)" class="level level-1 pointer"></div>
-            <div @click="setSpeedLevel(2)" class="level level-2 pointer"></div>
-            <div @click="setSpeedLevel(3)" class="level level-3 pointer"></div>
+            <div class="level-container level-container-1 pointer" @click="setSpeedLevel(1)"></div>
+            <div class="level level-1 pointer" @click="setSpeedLevel(1)"></div>
+
+            <div class="level-container level-container-2 pointer" @click="setSpeedLevel(2)"></div>
+            <div class="level level-2 pointer" @click="setSpeedLevel(2)"></div>
+
+            <div class="level-container level-container-3 pointer" @click="setSpeedLevel(3)"></div>
+            <div class="level level-3 pointer" @click="setSpeedLevel(3)"></div>
         </div>
     </div>
 </template>
@@ -45,6 +50,7 @@ export default {
         const setSpeedLevel = (level) => {
             switch (level) {
                 case 1:
+                    isGoBackwardActive.value = false;
                     isGoForwardActive.value = true;
                     break;
                 case 2:
@@ -52,6 +58,7 @@ export default {
                     isGoBackwardActive.value = false;
                     break;
                 case 3:
+                    isGoForwardActive.value = false;
                     isGoBackwardActive.value = true;
             }
         }
@@ -131,7 +138,7 @@ export default {
                                 const animProperties = {
                                     duration: animDuration,
                                     iterations: Infinity,
-                                    easing: 'ease-in-out'
+                                    easing: 'linear'
                                 };
                                 rpmHandContainer.value.animate(animKeyframes, animProperties);
                             }, 200);
@@ -214,7 +221,7 @@ export default {
                                 const animProperties = {
                                     duration: animDuration,
                                     iterations: Infinity,
-                                    easing: 'ease-in-out'
+                                    easing: 'linear'
                                 };
                                 rpmHandContainer.value.animate(animKeyframes, animProperties);
                             }, 200);
@@ -314,6 +321,7 @@ export default {
     top: 50%;
     left: 50%;
     z-index: 3;
+    transform: translate(-50%, -50%) rotate(11deg);
 }
 .rpm-center {
     width: 40px;
@@ -394,6 +402,7 @@ export default {
 
 .control {
     position: absolute;
+    z-index: 2;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -411,17 +420,39 @@ export default {
     top: 160px;
 }
 
+.level-container {
+    width: 100px;
+    height: 60px;
+    border-radius: 10px;
+    box-shadow: inset 0px 0px 0px 2px #000000;
+    position: absolute;
+    z-index: 1;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.level-container-1 {
+    top: 40px;
+}
+.level-container-2 {
+    top: 50%;
+}
+.level-container-3 {
+    top: 160px;
+}
+
 .level {
     position: absolute;
+    z-index: 3;
+    left: 50%;
+    transform: translate(-50%, -50%);
     height: 10px;
     background: linear-gradient(to right, #aaaaaa, #dddddd);
     border-radius: 5px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 }
-
-.level-1 { width: 60px; top: 40px; left: 50%; transform: translate(-50%, -50%); }
-.level-2 { width: 45px; top: 50%; left: 50%; transform: translate(-50%, -50%); }
-.level-3 { width: 30px; top: 160px; left: 50%; transform: translate(-50%, -50%); }
+.level-1 { width: 60px; top: 40px; }
+.level-2 { width: 45px; top: 50%; }
+.level-3 { width: 30px; top: 160px; }
 
 
 
