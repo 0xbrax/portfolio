@@ -15,27 +15,224 @@
             </div>
             
             <div class="tachometer"></div>
-            <div class="rpm-hand-container">
+            <div class="rpm-hand-container" ref="rpmHandContainer">
                 <div class="rpm-center"></div>
                 <div class="rpm-hand"></div>
             </div>
         </div>
 
         <div class="control-container">
-            <div class="control"></div>
-            <div class="level level-1"></div>
-            <div class="level level-2"></div>
-            <div class="level level-3"></div>
+            <div :class="['control', { 'forward': isGoForwardActive, 'backward': isGoBackwardActive }]"></div>
+
+            <div @click="setSpeedLevel(1)" class="level level-1 pointer"></div>
+            <div @click="setSpeedLevel(2)" class="level level-2 pointer"></div>
+            <div @click="setSpeedLevel(3)" class="level level-3 pointer"></div>
         </div>
     </div>
 </template>
 
 <script>
+import { inject, onMounted, ref, watch } from "vue";
+
 export default {
     name: 'PlaneControl',
 
     setup() {
+        const isGoForwardActive = inject('isGoForwardActive');
+        const isGoBackwardActive = inject('isGoBackwardActive');
+        const rpmHandContainer = ref(null);
 
+        const setSpeedLevel = (level) => {
+            switch (level) {
+                case 1:
+                    isGoForwardActive.value = true;
+                    break;
+                case 2:
+                    isGoForwardActive.value = false;
+                    isGoBackwardActive.value = false;
+                    break;
+                case 3:
+                    isGoBackwardActive.value = true;
+            }
+        }
+
+        onMounted(
+            () => {
+                watch(
+                    () => isGoForwardActive.value,
+                    (val) => {
+                        if (isGoBackwardActive.value) return;
+
+                        if (val) {
+                            const animDuration = 200;
+                            const animKeyframes = [
+                                {
+                                    transform: 'translate(-50%, -50%) rotate(76deg)'
+                                },
+                            ];
+                            const animProperties = {
+                                duration: animDuration,
+                                iterations: 1,
+                                easing: 'ease-out'
+                            };
+                            rpmHandContainer.value.animate(animKeyframes, animProperties);
+
+                            setTimeout(() => {
+                                if (!isGoForwardActive.value) return;
+                                const animDuration = 500;
+                                let animKeyframes = [
+                                    {
+                                        transform: 'translate(-50%, -50%) rotate(76deg)'
+                                    },
+                                    {
+                                        transform: 'translate(-50%, -50%) rotate(74deg)'
+                                    },
+                                    {
+                                        transform: 'translate(-50%, -50%) rotate(76deg)'
+                                    },
+                                ];
+                                const animProperties = {
+                                    duration: animDuration,
+                                    iterations: Infinity,
+                                    easing: 'ease-in-out'
+                                };
+                                rpmHandContainer.value.animate(animKeyframes, animProperties);
+                            }, 200);
+                        }
+
+                        if (!val) {
+                            const animDuration = 200;
+                            const animKeyframes = [
+                                {
+                                    transform: 'translate(-50%, -50%) rotate(11deg)'
+                                },
+                            ];
+                            const animProperties = {
+                                duration: animDuration,
+                                iterations: 1,
+                                easing: 'ease-out'
+                            };
+                            rpmHandContainer.value.animate(animKeyframes, animProperties);
+
+                            setTimeout(() => {
+                                if (isGoForwardActive.value) return;
+                                const animDuration = 1000;
+                                let animKeyframes = [
+                                    {
+                                        transform: 'translate(-50%, -50%) rotate(11deg)'
+                                    },
+                                    {
+                                        transform: 'translate(-50%, -50%) rotate(9deg)'
+                                    },
+                                    {
+                                        transform: 'translate(-50%, -50%) rotate(11deg)'
+                                    },
+                                ];
+                                const animProperties = {
+                                    duration: animDuration,
+                                    iterations: Infinity,
+                                    easing: 'ease-in-out'
+                                };
+                                rpmHandContainer.value.animate(animKeyframes, animProperties);
+                            }, 200);
+                        }
+                    },
+                    { 
+                        immediate: true
+                    }
+                );
+                watch(
+                    () => isGoBackwardActive.value,
+                    (val) => {
+                        if (isGoForwardActive.value) return;
+
+                        if (val) {
+                            const animDuration = 200;
+                            const animKeyframes = [
+                                {
+                                    transform: 'translate(-50%, -50%) rotate(-56deg)'
+                                },
+                            ];
+                            const animProperties = {
+                                duration: animDuration,
+                                iterations: 1,
+                                easing: 'ease-out'
+                            };
+                            rpmHandContainer.value.animate(animKeyframes, animProperties);
+
+                            setTimeout(() => {
+                                if (!isGoBackwardActive.value) return;
+                                const animDuration = 1500;
+                                let animKeyframes = [
+                                    {
+                                        transform: 'translate(-50%, -50%) rotate(-56deg)'
+                                    },
+                                    {
+                                        transform: 'translate(-50%, -50%) rotate(-54deg)'
+                                    },
+                                    {
+                                        transform: 'translate(-50%, -50%) rotate(-56deg)'
+                                    },
+                                ];
+                                const animProperties = {
+                                    duration: animDuration,
+                                    iterations: Infinity,
+                                    easing: 'ease-in-out'
+                                };
+                                rpmHandContainer.value.animate(animKeyframes, animProperties);
+                            }, 200);
+                        }
+
+                        if (!val) {
+                            const animDuration = 200;
+                            const animKeyframes = [
+                                {
+                                    transform: 'translate(-50%, -50%) rotate(11deg)'
+                                },
+                            ];
+                            const animProperties = {
+                                duration: animDuration,
+                                iterations: 1,
+                                easing: 'ease-out'
+                            };
+                            rpmHandContainer.value.animate(animKeyframes, animProperties);
+
+                            setTimeout(() => {
+                                if (isGoBackwardActive.value) return;
+                                const animDuration = 1000;
+                                let animKeyframes = [
+                                    {
+                                        transform: 'translate(-50%, -50%) rotate(11deg)'
+                                    },
+                                    {
+                                        transform: 'translate(-50%, -50%) rotate(9deg)'
+                                    },
+                                    {
+                                        transform: 'translate(-50%, -50%) rotate(11deg)'
+                                    },
+                                ];
+                                const animProperties = {
+                                    duration: animDuration,
+                                    iterations: Infinity,
+                                    easing: 'ease-in-out'
+                                };
+                                rpmHandContainer.value.animate(animKeyframes, animProperties);
+                            }, 200);
+                        }
+                    },
+                    { 
+                        immediate: true
+                    }
+                );
+            }
+        );
+
+        return {
+            rpmHandContainer,
+            setSpeedLevel,
+            isGoForwardActive,
+            isGoBackwardActive
+        }
     }
 }
 </script>
@@ -116,9 +313,7 @@ export default {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%) rotate(10deg);
     z-index: 3;
-    animation: rpm-hand-animation 1.2s infinite ease-in-out;
 }
 .rpm-center {
     width: 40px;
@@ -140,15 +335,6 @@ export default {
     border-bottom: 0;
     border-top-color: #ff0000;
     border-top-width: 7px;
-}
-
-@keyframes rpm-hand-animation {
-    from, to {
-        transform: translate(-50%, -50%) rotate(11deg);
-    }
-    50% {
-        transform: translate(-50%, -50%) rotate(9deg);
-    }
 }
 
 .mark {
@@ -201,7 +387,7 @@ export default {
     position: relative;
     width: 120px;
     height: 200px;
-    background: linear-gradient(#cccccc, #aaaaaa);
+    background: linear-gradient(#555555, #222222);
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
@@ -213,15 +399,22 @@ export default {
     transform: translate(-50%, -50%);
     width: 100px;
     height: 60px;
-    background: linear-gradient(#3498db, #2980b9);
+    background: linear-gradient(#ff0000, #990000);
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    transition: top 0.2s ease-in-out;
+}
+.forward {
+    top: 40px;
+}
+.backward {
+    top: 160px;
 }
 
 .level {
     position: absolute;
     height: 10px;
-    background: linear-gradient(to right, #333333, #555555);
+    background: linear-gradient(to right, #aaaaaa, #dddddd);
     border-radius: 5px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 }
@@ -229,4 +422,13 @@ export default {
 .level-1 { width: 60px; top: 40px; left: 50%; transform: translate(-50%, -50%); }
 .level-2 { width: 45px; top: 50%; left: 50%; transform: translate(-50%, -50%); }
 .level-3 { width: 30px; top: 160px; left: 50%; transform: translate(-50%, -50%); }
+
+
+
+/**** MEDIA ****/
+@media all and (min-width: 576px) {
+    #tachometer-container {
+        margin-right: 400px;
+    }
+}
 </style>

@@ -69,9 +69,7 @@
                 </div>
             </div>
 
-            <div v-if="whatProject === null" id="plane-control">
-                <PlaneControl />
-            </div>
+            <PlaneControl v-if="whatProject === null" id="plane-control" />
 
             <i 
                 v-show="isFPVActiveComplete"
@@ -142,7 +140,7 @@
 </template>
 
 <script>
-    import { onMounted, ref, watch, onBeforeUnmount } from "vue";
+    import { onMounted, ref, watch, onBeforeUnmount, provide } from "vue";
     import { useRouter } from "vue-router";
     import { useSettingsStore } from '@/store.js';
     import * as THREE from "three";
@@ -389,7 +387,7 @@
                         return;
                     }
 
-                    if (isGoForwardActive || isGoBackwardActive) {
+                    if (isGoForwardActive.value || isGoBackwardActive.value) {
                         return;
                     }
 
@@ -433,7 +431,7 @@
                         return;
                     }
 
-                    if (isGoForwardActive || isGoBackwardActive) {
+                    if (isGoForwardActive.value || isGoBackwardActive.value) {
                         return;
                     }
 
@@ -1100,14 +1098,16 @@
 
             // plane game
             const PLANE_SPEED = 0.04;
-            let isGoForwardActive = false;
+            const isGoForwardActive = ref(false);
+            provide('isGoForwardActive', isGoForwardActive);
             const goForward = () => {
                 video.playbackRate = 1.5;
                 planeModel.position.x -= PLANE_SPEED;
                 camera.position.x -= PLANE_SPEED;
                 controls.target.x -= PLANE_SPEED;
             }
-            let isGoBackwardActive = false;
+            const isGoBackwardActive = ref(false);
+            provide('isGoBackwardActive', isGoBackwardActive);
             const goBackward = () => {
                 video.playbackRate = 0.75;
                 planeModel.position.x += PLANE_SPEED;
@@ -1142,7 +1142,7 @@
                 }
 
                 // plane game
-                if (isGoForwardActive === true && whatProject.value === null) goForward();
+                if (isGoForwardActive.value === true && whatProject.value === null) goForward();
                 if (planeModel?.position.x <= -5) {
                     planeModel.position.set(0.35, -0.2, 0);
                     controls.target.set(0, 0, 0);
@@ -1152,7 +1152,7 @@
                         camera.position.set(0.8, 0.2, 0);
                     }
                 }
-                if (isGoBackwardActive === true && whatProject.value === null) goBackward();
+                if (isGoBackwardActive.value === true && whatProject.value === null) goBackward();
                 if (planeModel?.position.x >= 5) {
                     planeModel.position.set(0.35, -0.2, 0);
                     controls.target.set(0, 0, 0);
@@ -1225,21 +1225,21 @@
 
                 // plane game
                 document.addEventListener('keydown', event => {
-                    if (whatProject.value !== null || isPlaneAnimationComplete === false) {
+                    if (whatProject.value !== null || isPlaneAnimationComplete === false || isGoBackwardActive.value === true) {
                         return;
                     }
                     const keyCode = event.code;
                     if (keyCode === 'ArrowUp') {
-                        isGoForwardActive = true;
+                        isGoForwardActive.value = true;
                     }
                 });
                 document.addEventListener('keyup', event => {
-                    if (whatProject.value !== null || isPlaneAnimationComplete === false) {
+                    if (whatProject.value !== null || isPlaneAnimationComplete === false || isGoBackwardActive.value === true) {
                         return;
                     }
                     const keyCode = event.code;
                     if (keyCode === 'ArrowUp') {
-                        isGoForwardActive = false;
+                        isGoForwardActive.value = false;
 
                         planeLastPosition.plane = planeModel.position.clone();
                         planeLastPosition.camera = camera.position.clone();
@@ -1252,21 +1252,21 @@
                     }
                 });
                 document.addEventListener('keydown', event => {
-                    if (whatProject.value !== null || isPlaneAnimationComplete === false) {
+                    if (whatProject.value !== null || isPlaneAnimationComplete === false || isGoForwardActive.value === true) {
                         return;
                     }
                     const keyCode = event.code;
                     if (keyCode === 'ArrowDown') {
-                        isGoBackwardActive = true;
+                        isGoBackwardActive.value = true;
                     }
                 });
                 document.addEventListener('keyup', event => {
-                    if (whatProject.value !== null || isPlaneAnimationComplete === false) {
+                    if (whatProject.value !== null || isPlaneAnimationComplete === false || isGoForwardActive.value === true) {
                         return;
                     }
                     const keyCode = event.code;
                     if (keyCode === 'ArrowDown') {
-                        isGoBackwardActive = false;
+                        isGoBackwardActive.value = false;
                         video.playbackRate = 1;
 
                         planeLastPosition.plane = planeModel.position.clone();
@@ -1342,8 +1342,7 @@
                 audioObject,
                 onTouchMoveInputHandler,
                 isFPVActiveComplete,
-                switchProject,
-                isGoForwardActive
+                switchProject
             };
         },
     };
