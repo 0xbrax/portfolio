@@ -4,7 +4,7 @@ const routes = [
     { path: '/', component: () => import('./components/HomePage.vue') },
     { path: '/project/pikaride', component: () => import('./components/projects/PikaRide.vue') },
     { path: '/project/starway', component: () => import('./components/projects/Starway.vue') },
-    { path: '/project/slotmachine', component: () => import('./components/projects/SlotMachine.vue') },
+    { path: '/project/fruitcocktail', component: () => import('./components/projects/FruitCocktail.vue') },
 
     // 404 error
     { path: '/:catchAll(.*)', component: () => import('./components/NotFound.vue') },

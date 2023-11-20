@@ -1,10 +1,28 @@
+<!--
+
+    DISCLAIMER: 
+    This slot machine project is a purely demonstrative and educational exercise developed for showcasing JavaScript programming skills. 
+    The virtual currency used within the slot machine has no real-world value and is intended for entertainment purposes only. 
+    This project does not involve real money transactions, and its primary purpose is to highlight coding and design capabilities. 
+    Any resemblance to actual gambling activities is coincidental. 
+    By interacting with this project, users acknowledge that the in-game currency is entirely fictional, and no actual financial transactions are taking place. 
+    The developer assumes no responsibility for the misuse or misinterpretation of this project. 
+    Viewer discretion is advised.
+
+    AUTHOR: 0xbrax
+    URL: https://0xbrax.dev/project/fruitcocktail
+
+-->
+
+
+
 <template>
-    <div id="slot-machine">
+    <div id="fruit-cocktail">
         <canvas ref="canvasRef"></canvas>
 
         <!-- Loading screen -->
-        <div v-if="isLoadingScreenActive" id="slot-machine_loader" class="d-flex column justify-ctr align-ctr">
-            <img id="logo-full" src="@/assets/projects/slotmachine/image/main/logo-full_COMPRESSED.png" alt="Fruit Cocktail" />
+        <div v-if="isLoadingScreenActive" id="fruit-cocktail_loader" :class="['d-flex column align-ctr', isMobile? 'justify-start pt-60' : 'justify-ctr']">
+            <img id="logo-full" src="@/assets/projects/fruitcocktail/image/main/logo-full_COMPRESSED.png" alt="Fruit Cocktail" />
 
             <div 
                 id="loader-btn" 
@@ -17,10 +35,14 @@
             <div id="progress-bar-container">
                 <div id="progress-bar" :style="`width: ${loaderProgress}%`"></div>
             </div>
+
+            <div id="disclaimer-text">
+                <span class="text-bold">&#9888;&nbsp;DISCLAIMER:&nbsp;</span><span>{{ DISCLAIMER_TEXT }}</span>
+            </div>
         </div>
 
         <!-- Settings menu -->
-        <transition name="slot-machine-fade_setting">
+        <transition name="fruit-cocktail-fade_setting">
             <i v-if="!isSettingOpened" @click="isSettingOpened = !isSettingOpened" id="menu-open-btn" class="fas fa-bars"></i>
 
             <div v-else id="setting-container" class="d-flex column justify-btw align-ctr">
@@ -37,7 +59,7 @@
 
                 <div class="w-100 text-ctr">
                     <div id="pay-table-title">pay table</div>
-                    <img id="pay-table-img" src="@/assets/projects/slotmachine/image/main/paytable_COMPRESSED.png" />
+                    <img id="pay-table-img" src="@/assets/projects/fruitcocktail/image/main/paytable_COMPRESSED.png" />
 
                     <div class="free-spin-text">free spin = min bet</div>
                     <div class="bet-text mt-10">min bet = 100</div>
@@ -46,17 +68,17 @@
                     <div id="bet-container">
                         <div class="symbol-container">
                             <div class="symbol-text mb-10">symbols = bet x 2</div>
-                            <img v-for="symbol in SYMBOLS" class="symbol-icon" :src="assetsUrl(`projects/slotmachine/image/icon/${symbol}_COMPRESSED.png`)" :key="symbol" />
+                            <img v-for="symbol in SYMBOLS" class="symbol-icon" :src="assetsUrl(`projects/fruitcocktail/image/icon/${symbol}_COMPRESSED.png`)" :key="symbol" />
                         </div>
 
                         <div class="symbol-container">
                             <div class="symbol-text mb-10">jolly = bet x 3</div>
-                            <img class="symbol-icon" src="@/assets/projects/slotmachine/image/icon/splash_COMPRESSED.png" />
+                            <img class="symbol-icon" src="@/assets/projects/fruitcocktail/image/icon/splash_COMPRESSED.png" />
                         </div>
 
                         <div class="symbol-container">
                             <div class="symbol-text mb-10">mega win = bet x 5</div>
-                            <img class="symbol-icon" src="@/assets/projects/slotmachine/image/icon/fruitcocktail_COMPRESSED.png" />
+                            <img class="symbol-icon" src="@/assets/projects/fruitcocktail/image/icon/fruitcocktail_COMPRESSED.png" />
                         </div>
                     </div>
                 </div>
@@ -77,72 +99,91 @@
 import { ref, onMounted, watch, onBeforeUnmount, onUnmounted } from 'vue';
 import Phaser from 'phaser';
 import { assetsUrl, isDeviceMobile, getRandomNumber, formatNumber } from '@/assets/js/utils.js';
-import { verticalLoop, getRandomWinMap, getRandomLose, getRandomFakeWin } from '@/assets/projects/slotmachine/js/slotmachine.js';
+import { verticalLoop, getRandomWinMap, getRandomLose, getRandomFakeWin } from '@/assets/projects/fruitcocktail/js/fruitcocktail.js';
 
 
 // ASSETS
 // slot elements
-import SlotBodyImage from '@/assets/projects/slotmachine/image/main/reel_COMPRESSED.png';
-import SlotCanopyImage from '@/assets/projects/slotmachine/image/main/canopy_COMPRESSED.png';
-import SlotLogoImage from '@/assets/projects/slotmachine/image/main/logo_COMPRESSED.png';
-import SlotSplashLeftImage from '@/assets/projects/slotmachine/image/main/splash_left_COMPRESSED.png';
-import SlotSplashRightImage from '@/assets/projects/slotmachine/image/main/splash_right_COMPRESSED.png';
+import SlotBodyImage from '@/assets/projects/fruitcocktail/image/main/reel_COMPRESSED.png';
+import SlotCanopyImage from '@/assets/projects/fruitcocktail/image/main/canopy_COMPRESSED.png';
+import SlotLogoImage from '@/assets/projects/fruitcocktail/image/main/logo_COMPRESSED.png';
+import SlotSplashLeftImage from '@/assets/projects/fruitcocktail/image/main/splash_left_COMPRESSED.png';
+import SlotSplashRightImage from '@/assets/projects/fruitcocktail/image/main/splash_right_COMPRESSED.png';
 
 // character
-import CharacterMainPng from '@/assets/projects/slotmachine/image/sprite/character-main_spritesheet_COMPRESSED.png';
-import CharacterMainJson from '@/assets/projects/slotmachine/image/sprite/character-main_spritesheet.json';
-import CharacterDrinkPng from '@/assets/projects/slotmachine/image/sprite/character-drink_spritesheet_COMPRESSED.png';
-import CharacterDrinkJson from '@/assets/projects/slotmachine/image/sprite/character-drink_spritesheet.json';
+import CharacterMainPng from '@/assets/projects/fruitcocktail/image/sprite/character-main_spritesheet_COMPRESSED.png';
+import CharacterMainJson from '@/assets/projects/fruitcocktail/image/sprite/character-main_spritesheet.json';
+import CharacterDrinkPng from '@/assets/projects/fruitcocktail/image/sprite/character-drink_spritesheet_COMPRESSED.png';
+import CharacterDrinkJson from '@/assets/projects/fruitcocktail/image/sprite/character-drink_spritesheet.json';
 
 // symbols
-import AppleSpritePng from '@/assets/projects/slotmachine/image/sprite/apple_spritesheet_COMPRESSED.png';
-import AppleSpriteJson from '@/assets/projects/slotmachine/image/sprite/apple_spritesheet.json';
-import CherrySpritePng from '@/assets/projects/slotmachine/image/sprite/cherry_spritesheet_COMPRESSED.png';
-import CherrySpriteJson from '@/assets/projects/slotmachine/image/sprite/cherry_spritesheet.json';
-import CoconutSpritePng from '@/assets/projects/slotmachine/image/sprite/coconut_spritesheet_COMPRESSED.png';
-import CoconutSpriteJson from '@/assets/projects/slotmachine/image/sprite/coconut_spritesheet.json';
-import FruitcocktailSpritePng from '@/assets/projects/slotmachine/image/sprite/fruitcocktail_spritesheet_COMPRESSED.png';
-import FruitcocktailSpriteJson from '@/assets/projects/slotmachine/image/sprite/fruitcocktail_spritesheet.json';
-import GrapefruitSpritePng from '@/assets/projects/slotmachine/image/sprite/grapefruit_spritesheet_COMPRESSED.png';
-import GrapefruitSpriteJson from '@/assets/projects/slotmachine/image/sprite/grapefruit_spritesheet.json';
-import LemonSpritePng from '@/assets/projects/slotmachine/image/sprite/lemon_spritesheet_COMPRESSED.png';
-import LemonSpriteJson from '@/assets/projects/slotmachine/image/sprite/lemon_spritesheet.json';
-import SplashSpritePng from '@/assets/projects/slotmachine/image/sprite/splash_spritesheet_COMPRESSED.png';
-import SplashSpriteJson from '@/assets/projects/slotmachine/image/sprite/splash_spritesheet.json';
-import WatermelonSpritePng from '@/assets/projects/slotmachine/image/sprite/watermelon_spritesheet_COMPRESSED.png';
-import WatermelonSpriteJson from '@/assets/projects/slotmachine/image/sprite/watermelon_spritesheet.json';
+import AppleSpritePng from '@/assets/projects/fruitcocktail/image/sprite/apple_spritesheet_COMPRESSED.png';
+import AppleSpriteJson from '@/assets/projects/fruitcocktail/image/sprite/apple_spritesheet.json';
+import CherrySpritePng from '@/assets/projects/fruitcocktail/image/sprite/cherry_spritesheet_COMPRESSED.png';
+import CherrySpriteJson from '@/assets/projects/fruitcocktail/image/sprite/cherry_spritesheet.json';
+import CoconutSpritePng from '@/assets/projects/fruitcocktail/image/sprite/coconut_spritesheet_COMPRESSED.png';
+import CoconutSpriteJson from '@/assets/projects/fruitcocktail/image/sprite/coconut_spritesheet.json';
+import FruitcocktailSpritePng from '@/assets/projects/fruitcocktail/image/sprite/fruitcocktail_spritesheet_COMPRESSED.png';
+import FruitcocktailSpriteJson from '@/assets/projects/fruitcocktail/image/sprite/fruitcocktail_spritesheet.json';
+import GrapefruitSpritePng from '@/assets/projects/fruitcocktail/image/sprite/grapefruit_spritesheet_COMPRESSED.png';
+import GrapefruitSpriteJson from '@/assets/projects/fruitcocktail/image/sprite/grapefruit_spritesheet.json';
+import LemonSpritePng from '@/assets/projects/fruitcocktail/image/sprite/lemon_spritesheet_COMPRESSED.png';
+import LemonSpriteJson from '@/assets/projects/fruitcocktail/image/sprite/lemon_spritesheet.json';
+import SplashSpritePng from '@/assets/projects/fruitcocktail/image/sprite/splash_spritesheet_COMPRESSED.png';
+import SplashSpriteJson from '@/assets/projects/fruitcocktail/image/sprite/splash_spritesheet.json';
+import WatermelonSpritePng from '@/assets/projects/fruitcocktail/image/sprite/watermelon_spritesheet_COMPRESSED.png';
+import WatermelonSpriteJson from '@/assets/projects/fruitcocktail/image/sprite/watermelon_spritesheet.json';
 
 // audio
-import BackgroundMusicTrack from '@/assets/projects/slotmachine/audio/sunny-fruit_strawberry_COMPRESSED.mp3';
-import SlotClickSfx from '@/assets/projects/slotmachine/audio/slot_click_COMPRESSED.mp3';
-import SlotTickSfx from '@/assets/projects/slotmachine/audio/slot_tick_COMPRESSED.mp3';
-import SlotWinSfx from '@/assets/projects/slotmachine/audio/slot_win_COMPRESSED.mp3';
-import SlotMegaWinSfx from '@/assets/projects/slotmachine/audio/slot_mega-win_COMPRESSED.mp3';
-import SlotWinJollySfx from '@/assets/projects/slotmachine/audio/slot_win-jolly_COMPRESSED.mp3';
-import SlotFreeSpinSfx from '@/assets/projects/slotmachine/audio/slot_free-spin_COMPRESSED.mp3';
+import BackgroundMusicTrack from '@/assets/projects/fruitcocktail/audio/sunny-fruit_strawberry_COMPRESSED.mp3';
+import SlotClickSfx from '@/assets/projects/fruitcocktail/audio/slot_click_COMPRESSED.mp3';
+import SlotTickSfx from '@/assets/projects/fruitcocktail/audio/slot_tick_COMPRESSED.mp3';
+import SlotWinSfx from '@/assets/projects/fruitcocktail/audio/slot_win_COMPRESSED.mp3';
+import SlotMegaWinSfx from '@/assets/projects/fruitcocktail/audio/slot_mega-win_COMPRESSED.mp3';
+import SlotWinJollySfx from '@/assets/projects/fruitcocktail/audio/slot_win-jolly_COMPRESSED.mp3';
+import SlotFreeSpinSfx from '@/assets/projects/fruitcocktail/audio/slot_free-spin_COMPRESSED.mp3';
 
 // ui elements
-import SpinUI from '@/assets/projects/slotmachine/image/main/ui_spin_COMPRESSED.png';
-import AutoUI from '@/assets/projects/slotmachine/image/main/ui_auto_COMPRESSED.png';
-import ForwardIcon from '@/assets/projects/slotmachine/image/main/FA-icon-forward_white_COMPRESSED.png';
-import BetUI from '@/assets/projects/slotmachine/image/main/ui_bet_COMPRESSED.png';
-import MinusUI from '@/assets/projects/slotmachine/image/main/ui_minus_COMPRESSED.png';
-import PlusUI from '@/assets/projects/slotmachine/image/main/ui_plus_COMPRESSED.png';
-import WinUI from '@/assets/projects/slotmachine/image/main/ui_win_COMPRESSED.png';
-import BalanceUI from '@/assets/projects/slotmachine/image/main/ui_balance_COMPRESSED.png';
-import CoinImage from '@/assets/projects/slotmachine/image/main/coin_COMPRESSED.png';
-import BubbleImage from '@/assets/projects/slotmachine/image/main/bubble_COMPRESSED.png';
+import SpinUI from '@/assets/projects/fruitcocktail/image/main/ui_spin_COMPRESSED.png';
+import AutoUI from '@/assets/projects/fruitcocktail/image/main/ui_auto_COMPRESSED.png';
+import ForwardIcon from '@/assets/projects/fruitcocktail/image/main/FA-icon-forward_white_COMPRESSED.png';
+import BetUI from '@/assets/projects/fruitcocktail/image/main/ui_bet_COMPRESSED.png';
+import MinusUI from '@/assets/projects/fruitcocktail/image/main/ui_minus_COMPRESSED.png';
+import PlusUI from '@/assets/projects/fruitcocktail/image/main/ui_plus_COMPRESSED.png';
+import WinUI from '@/assets/projects/fruitcocktail/image/main/ui_win_COMPRESSED.png';
+import BalanceUI from '@/assets/projects/fruitcocktail/image/main/ui_balance_COMPRESSED.png';
+import CoinImage from '@/assets/projects/fruitcocktail/image/main/coin_COMPRESSED.png';
+import BubbleImage from '@/assets/projects/fruitcocktail/image/main/bubble_COMPRESSED.png';
 
 // other
-import MegaWinTextImage from '@/assets/projects/slotmachine/image/main/megawin_text_COMPRESSED.png';
-import MegaWinCoinImage from '@/assets/projects/slotmachine/image/main/megawin_coin_COMPRESSED.png';
+import MegaWinTextImage from '@/assets/projects/fruitcocktail/image/main/megawin_text_COMPRESSED.png';
+import MegaWinCoinImage from '@/assets/projects/fruitcocktail/image/main/megawin_coin_COMPRESSED.png';
 
 
 
 export default {
-    name: 'SlotMachine',
+    name: 'FruitCocktail',
 
     setup() {
+        // DISCLAIMER
+        const DISCLAIMER_TEXT = `
+        This slot machine project is a purely demonstrative and educational exercise developed for showcasing JavaScript programming skills. 
+        The virtual currency used within the slot machine has no real-world value and is intended for entertainment purposes only. 
+        This project does not involve real money transactions, and its primary purpose is to highlight coding and design capabilities. 
+        Any resemblance to actual gambling activities is coincidental. 
+        By interacting with this project, users acknowledge that the in-game currency is entirely fictional, and no actual financial transactions are taking place. 
+        The developer assumes no responsibility for the misuse or misinterpretation of this project. 
+        Viewer discretion is advised.
+        `;
+        console.log(
+            `%c\u26A0 %cDISCLAIMER: %c${DISCLAIMER_TEXT}`,
+            'font-size: 25px;',
+            'color: red; font-weight: bold;',
+            'font-style: italic;'
+        );
+
+
+
         // utils
         const isMobile = isDeviceMobile();
         let wakeLock; // Screen sleep lock
@@ -153,7 +194,7 @@ export default {
         const isSettingOpened = ref(false);
         const isVolumeActive = ref(true);
         const SLOT_FONT = 'Rimbo-Regular';
-        
+
         const isIOS = /iPhone|iPad/.test(navigator.userAgent); // IOS bottom bar overlay fix
 
         const canvasRef = ref(null);
@@ -1260,6 +1301,7 @@ export default {
         });
 
         return {
+            DISCLAIMER_TEXT,
             isLoadingScreenActive,
             loaderProgress,
             isLoadingComplete,
@@ -1282,5 +1324,5 @@ export default {
 
 
 <style scoped>
-@import url("@/assets/projects/slotmachine/css/slotmachine.css");
+@import url("@/assets/projects/fruitcocktail/css/fruitcocktail.css");
 </style>

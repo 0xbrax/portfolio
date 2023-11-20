@@ -171,7 +171,7 @@
 
     import PIKARIDEimage from "@/assets/projects/pikaride/pikaride.jpg";
     import STARWAYimage from "@/assets/projects/starway/starway.jpg";
-    import SLOTMACHINEimage from "@/assets/projects/slotmachine/slotmachine.jpg";
+    import FRUITCOCKTAILimage from "@/assets/projects/fruitcocktail/fruitcocktail.jpg";
 
     import PlaneControl from "@/components/PlaneControl.vue"
 
@@ -591,8 +591,8 @@
                         image = STARWAYimage;
                         text = "Starway";
                         break;
-                    case "SLOTMACHINE":
-                        image = SLOTMACHINEimage;
+                    case "FRUITCOCKTAIL":
+                        image = FRUITCOCKTAILimage;
                         text = "Fruit Cocktail";
                         break;
                 }
@@ -728,7 +728,7 @@
                         case "STARWAY":
                             planeModelNewPosition = 0.5;
                             break;
-                        case "SLOTMACHINE":
+                        case "FRUITCOCKTAIL":
                             planeModelNewPosition = -1;
                             break;
                     }
@@ -752,7 +752,7 @@
 
 
             // PROJECTS
-            const projectsArray = ["pikaride", "starway", "slotmachine"];
+            const projectsArray = ["pikaride", "starway", "fruitcocktail"];
             const switchProject = (mode) => {
                 const obj = {
                     cubeModel_1,
@@ -797,7 +797,7 @@
             let cubeModel_2;
 
             // PROJECT MODEL 3
-            const PROJECT_NAME_3 = "SLOTMACHINE";
+            const PROJECT_NAME_3 = "FRUITCOCKTAIL";
             const PROJECT_COLOR_3 = 0xf36300;
             const projectGroup_3 = new THREE.Group();
             const dragonClock_3 = new THREE.Clock();
@@ -1072,8 +1072,8 @@
                         router.push("/project/starway");
                         document.title = "0xbrax | Starway";
                         break;
-                    case "slotmachine":
-                        router.push("/project/slotmachine");
+                    case "fruitcocktail":
+                        router.push("/project/fruitcocktail");
                         document.title = "0xbrax | Fruit Cocktail";
                         break;
                 }
@@ -1253,7 +1253,7 @@
                 projectGroup_2.position.set(0.5, 0.5, -0.1);
                 scene.add(projectGroup_2);
 
-                // slot machine
+                // fruit cocktail
                 project_3 = await createProjectContainer(
                     projectGroup_3,
                     PROJECT_COLOR_3,
