@@ -51,6 +51,10 @@ ul {
     text-align: center;
 }
 
+.text-bold {
+    font-weight: bold;
+}
+
 .d-flex {
     display: flex;
 }
