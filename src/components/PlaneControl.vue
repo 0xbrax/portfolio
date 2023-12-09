@@ -21,8 +21,12 @@
             </div>
         </div>
 
-        <div class="control-container">
-            <div :class="['control pointer', { 'forward': isGoForwardActive, 'backward': isGoBackwardActive }]"></div>
+        <div class="control-container" ref="controlContainer">
+            <div 
+                class="control pointer" 
+                :style="[!isControlDragging && isGoForwardActive ? 'top: calc(40px - (10px / 3));' : !isGoBackwardActive ? 'top: 50%': '', !isControlDragging && isGoBackwardActive ? 'top: calc(140px + (10px / 3));' : !isGoForwardActive ? 'top: 50%': '']"
+                ref="control"
+            ></div>
 
             <div v-for="(el, i) in new Array(3)" :key="el" :class="`level-container level-container-${i + 1} pointer`" @click="setSpeedLevel(i + 1)"></div>
             <div v-for="(el, i) in new Array(3)" :key="el" :class="`level level-${i + 1} pointer`" @click="setSpeedLevel(i + 1)"></div>
@@ -31,7 +35,7 @@
 </template>
 
 <script>
-import { inject, onMounted, ref, watch } from "vue";
+import { inject, onMounted, ref, watch } from 'vue';
 
 export default {
     name: 'PlaneControl',
@@ -44,6 +48,9 @@ export default {
         const isGoForwardActive = inject('isGoForwardActive');
         const isGoBackwardActive = inject('isGoBackwardActive');
         const rpmHandContainer = ref(null);
+        const controlContainer = ref(null);
+        const control = ref(null);
+        const isControlDragging = ref(false);
 
         const setSpeedLevel = (level) => {
             if (props.isPlaneKeyPressed) return;
@@ -57,6 +64,7 @@ export default {
                     isGoForwardActive.value = false;
                     isGoBackwardActive.value = false;
 
+                    control.value.style.top = 50 + '%';
                     ctx.emit('onSetSpeedDefault');
                     break;
                 case 3:
@@ -65,179 +73,219 @@ export default {
             }
         }
 
-        onMounted(
-            () => {
-                watch(
-                    () => isGoForwardActive.value,
-                    (val) => {
-                        if (isGoBackwardActive.value) return;
+        // TODO Touch drag control
 
-                        if (val) {
-                            const animDuration = 200;
-                            const animKeyframes = [
+        // @touchstart="startDrag()"
+        // @touchmove.prevent="drag($event)"
+        // @touchend="stopDrag()"
+
+        /*const startDrag = () => isControlDragging.value = true;
+        const stopDrag = () => {
+            isControlDragging.value = false;
+            setSpeedLevel(2);
+        }
+        const drag = (event) => {
+            if (!isControlDragging.value) return;
+
+            const containerRect = controlContainer.value.getBoundingClientRect();
+            const controlRect = control.value.getBoundingClientRect();
+            const touchY = event.touches[0].clientY
+
+            if (controlRect.top <= containerRect.top + (controlRect.height / 2) + 10) setSpeedLevel(1); // forward
+            else if (controlRect.top >= containerRect.top + (containerRect.height / 2)) setSpeedLevel(3); // backward
+            else setSpeedLevel(2); // normal
+
+            console.log(touchY, containerRect.top, controlRect.top)
+
+            if (touchY <= containerRect.top || controlRect.top <= containerRect.top) {
+                control.value.style.top = (-controlRect.height / 2) + controlRect.height + 'px';
+                return;
+            }
+            if (touchY >= containerRect.top + containerRect.height || controlRect.top >= containerRect.top + containerRect.height) {
+                control.value.style.top = (-controlRect.height / 2) + containerRect.height + 'px';
+                return;
+            }
+
+            const newPosition = touchY - containerRect.top;
+            control.value.style.top = newPosition + 'px';
+        }*/
+
+        onMounted(() => {
+            control.value.style.top = 50 + '%';
+
+            watch(
+                () => isGoForwardActive.value,
+                (val) => {
+                    if (isGoBackwardActive.value) return;
+
+                    if (val) {
+                        const animDuration = 200;
+                        const animKeyframes = [
+                            {
+                                transform: 'translate(-50%, -50%) rotate(76deg)'
+                            },
+                        ];
+                        const animProperties = {
+                            duration: animDuration,
+                            iterations: 1,
+                            easing: 'ease-out'
+                        };
+                        rpmHandContainer.value.animate(animKeyframes, animProperties);
+
+                        setTimeout(() => {
+                            if (!isGoForwardActive.value) return;
+                            const animDuration = 500;
+                            let animKeyframes = [
+                                {
+                                    transform: 'translate(-50%, -50%) rotate(76deg)'
+                                },
+                                {
+                                    transform: 'translate(-50%, -50%) rotate(74deg)'
+                                },
                                 {
                                     transform: 'translate(-50%, -50%) rotate(76deg)'
                                 },
                             ];
                             const animProperties = {
                                 duration: animDuration,
-                                iterations: 1,
-                                easing: 'ease-out'
+                                iterations: Infinity,
+                                easing: 'ease-in-out'
                             };
                             rpmHandContainer.value.animate(animKeyframes, animProperties);
+                        }, 200);
+                    }
 
-                            setTimeout(() => {
-                                if (!isGoForwardActive.value) return;
-                                const animDuration = 500;
-                                let animKeyframes = [
-                                    {
-                                        transform: 'translate(-50%, -50%) rotate(76deg)'
-                                    },
-                                    {
-                                        transform: 'translate(-50%, -50%) rotate(74deg)'
-                                    },
-                                    {
-                                        transform: 'translate(-50%, -50%) rotate(76deg)'
-                                    },
-                                ];
-                                const animProperties = {
-                                    duration: animDuration,
-                                    iterations: Infinity,
-                                    easing: 'ease-in-out'
-                                };
-                                rpmHandContainer.value.animate(animKeyframes, animProperties);
-                            }, 200);
-                        }
+                    if (!val) {
+                        const animDuration = 200;
+                        const animKeyframes = [
+                            {
+                                transform: 'translate(-50%, -50%) rotate(11deg)'
+                            },
+                        ];
+                        const animProperties = {
+                            duration: animDuration,
+                            iterations: 1,
+                            easing: 'ease-out'
+                        };
+                        rpmHandContainer.value.animate(animKeyframes, animProperties);
 
-                        if (!val) {
-                            const animDuration = 200;
-                            const animKeyframes = [
+                        setTimeout(() => {
+                            if (isGoForwardActive.value) return;
+                            const animDuration = 1000;
+                            let animKeyframes = [
+                                {
+                                    transform: 'translate(-50%, -50%) rotate(11deg)'
+                                },
+                                {
+                                    transform: 'translate(-50%, -50%) rotate(9deg)'
+                                },
                                 {
                                     transform: 'translate(-50%, -50%) rotate(11deg)'
                                 },
                             ];
                             const animProperties = {
                                 duration: animDuration,
-                                iterations: 1,
-                                easing: 'ease-out'
+                                iterations: Infinity,
+                                easing: 'linear'
                             };
                             rpmHandContainer.value.animate(animKeyframes, animProperties);
-
-                            setTimeout(() => {
-                                if (isGoForwardActive.value) return;
-                                const animDuration = 1000;
-                                let animKeyframes = [
-                                    {
-                                        transform: 'translate(-50%, -50%) rotate(11deg)'
-                                    },
-                                    {
-                                        transform: 'translate(-50%, -50%) rotate(9deg)'
-                                    },
-                                    {
-                                        transform: 'translate(-50%, -50%) rotate(11deg)'
-                                    },
-                                ];
-                                const animProperties = {
-                                    duration: animDuration,
-                                    iterations: Infinity,
-                                    easing: 'linear'
-                                };
-                                rpmHandContainer.value.animate(animKeyframes, animProperties);
-                            }, 200);
-                        }
-                    },
-                    { 
-                        immediate: true
+                        }, 200);
                     }
-                );
-                watch(
-                    () => isGoBackwardActive.value,
-                    (val) => {
-                        if (isGoForwardActive.value) return;
+                },
+                { 
+                    immediate: true
+                }
+            );
+            watch(
+                () => isGoBackwardActive.value,
+                (val) => {
+                    if (isGoForwardActive.value) return;
 
-                        if (val) {
-                            const animDuration = 200;
-                            const animKeyframes = [
+                    if (val) {
+                        const animDuration = 200;
+                        const animKeyframes = [
+                            {
+                                transform: 'translate(-50%, -50%) rotate(-56deg)'
+                            },
+                        ];
+                        const animProperties = {
+                            duration: animDuration,
+                            iterations: 1,
+                            easing: 'ease-out'
+                        };
+                        rpmHandContainer.value.animate(animKeyframes, animProperties);
+
+                        setTimeout(() => {
+                            if (!isGoBackwardActive.value) return;
+                            const animDuration = 1500;
+                            let animKeyframes = [
+                                {
+                                    transform: 'translate(-50%, -50%) rotate(-56deg)'
+                                },
+                                {
+                                    transform: 'translate(-50%, -50%) rotate(-54deg)'
+                                },
                                 {
                                     transform: 'translate(-50%, -50%) rotate(-56deg)'
                                 },
                             ];
                             const animProperties = {
                                 duration: animDuration,
-                                iterations: 1,
-                                easing: 'ease-out'
+                                iterations: Infinity,
+                                easing: 'ease-in-out'
                             };
                             rpmHandContainer.value.animate(animKeyframes, animProperties);
+                        }, 200);
+                    }
 
-                            setTimeout(() => {
-                                if (!isGoBackwardActive.value) return;
-                                const animDuration = 1500;
-                                let animKeyframes = [
-                                    {
-                                        transform: 'translate(-50%, -50%) rotate(-56deg)'
-                                    },
-                                    {
-                                        transform: 'translate(-50%, -50%) rotate(-54deg)'
-                                    },
-                                    {
-                                        transform: 'translate(-50%, -50%) rotate(-56deg)'
-                                    },
-                                ];
-                                const animProperties = {
-                                    duration: animDuration,
-                                    iterations: Infinity,
-                                    easing: 'ease-in-out'
-                                };
-                                rpmHandContainer.value.animate(animKeyframes, animProperties);
-                            }, 200);
-                        }
+                    if (!val) {
+                        const animDuration = 200;
+                        const animKeyframes = [
+                            {
+                                transform: 'translate(-50%, -50%) rotate(11deg)'
+                            },
+                        ];
+                        const animProperties = {
+                            duration: animDuration,
+                            iterations: 1,
+                            easing: 'ease-out'
+                        };
+                        rpmHandContainer.value.animate(animKeyframes, animProperties);
 
-                        if (!val) {
-                            const animDuration = 200;
-                            const animKeyframes = [
+                        setTimeout(() => {
+                            if (isGoBackwardActive.value) return;
+                            const animDuration = 1000;
+                            let animKeyframes = [
+                                {
+                                    transform: 'translate(-50%, -50%) rotate(11deg)'
+                                },
+                                {
+                                    transform: 'translate(-50%, -50%) rotate(9deg)'
+                                },
                                 {
                                     transform: 'translate(-50%, -50%) rotate(11deg)'
                                 },
                             ];
                             const animProperties = {
                                 duration: animDuration,
-                                iterations: 1,
-                                easing: 'ease-out'
+                                iterations: Infinity,
+                                easing: 'linear'
                             };
                             rpmHandContainer.value.animate(animKeyframes, animProperties);
-
-                            setTimeout(() => {
-                                if (isGoBackwardActive.value) return;
-                                const animDuration = 1000;
-                                let animKeyframes = [
-                                    {
-                                        transform: 'translate(-50%, -50%) rotate(11deg)'
-                                    },
-                                    {
-                                        transform: 'translate(-50%, -50%) rotate(9deg)'
-                                    },
-                                    {
-                                        transform: 'translate(-50%, -50%) rotate(11deg)'
-                                    },
-                                ];
-                                const animProperties = {
-                                    duration: animDuration,
-                                    iterations: Infinity,
-                                    easing: 'linear'
-                                };
-                                rpmHandContainer.value.animate(animKeyframes, animProperties);
-                            }, 200);
-                        }
-                    },
-                    { 
-                        immediate: true
+                        }, 200);
                     }
-                );
-            }
-        );
+                },
+                { 
+                    immediate: true
+                }
+            );
+        });
 
         return {
             rpmHandContainer,
+            controlContainer,
+            control,
+            isControlDragging,
             setSpeedLevel,
             isGoForwardActive,
             isGoBackwardActive
@@ -405,7 +453,6 @@ export default {
 .control {
     position: absolute;
     z-index: 2;
-    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 60px;
@@ -414,12 +461,6 @@ export default {
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     transition: top 0.2s ease-in-out;
-}
-.forward {
-    top: calc(40px - (10px / 3));
-}
-.backward {
-    top: calc(140px + (10px / 3));
 }
 
 .level-container {
