@@ -105,42 +105,44 @@
             </div>
         </div>
 
-        <div
-            id="loading-screen"
-            v-if="!isEnterClicked"
-        >
-            <img
-                id="logo-img"
-                src="@/assets/image/LOGO-Brax_white-nobg_COMPRESSED.png"
-                alt="Brax"
-            />
-
+        <transition name="main-fade-loading">
             <div
-                id="enter-btn"
-                @click="isLoadingComplete ? doEnter() : undefined"
-                :class="{ 'active': isLoadingComplete }"
+                id="loading-screen"
+                v-if="!isEnterClicked"
             >
+                <img
+                    id="logo-img"
+                    src="@/assets/image/LOGO-Brax_white-nobg_COMPRESSED.png"
+                    alt="Brax"
+                />
+
                 <div
-                    id="enter-btn-fx"
-                    :style="{ height: progress + '%' }"
+                    id="enter-btn"
+                    @click="isLoadingComplete ? doEnter() : undefined"
                     :class="{ 'active': isLoadingComplete }"
-                ></div>
-                <div id="enter-text">
-                    <div v-if="router.options.history.state.back === null">
-                        <div v-if="!isLoadingComplete">
+                >
+                    <div
+                        id="enter-btn-fx"
+                        :style="{ height: progress + '%' }"
+                        :class="{ 'active': isLoadingComplete }"
+                    ></div>
+                    <div id="enter-text">
+                        <div v-if="router.options.history.state.back === null">
+                            <div v-if="!isLoadingComplete">
+                                <div>Loading</div>
+                                <div>{{ `${progress.toFixed(0)}%` }}</div>
+                            </div>
+                            <div v-else>Enter</div>
+                        </div>
+
+                        <div v-else>
                             <div>Loading</div>
                             <div>{{ `${progress.toFixed(0)}%` }}</div>
                         </div>
-                        <div v-else>Enter</div>
-                    </div>
-
-                    <div v-else>
-                        <div>Loading</div>
-                        <div>{{ `${progress.toFixed(0)}%` }}</div>
                     </div>
                 </div>
             </div>
-        </div>
+        </transition>
     </div>
 </template>
 
@@ -213,6 +215,7 @@
             );
             let renderer = new THREE.WebGLRenderer();
             renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.toneMapping = THREE.LinearToneMapping;
 
             const interactionManager = new InteractionManager(
                 renderer,
@@ -250,7 +253,7 @@
             // AMBIENT LIGHT
             const ambientLight = new THREE.AmbientLight(0xffffff, 1);
             const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-            directionalLight.position.set(1, 1, 1);
+            directionalLight.position.set(2, 1, 0); // x++ => back++, y++ => top++, z++ => left++
             scene.add(ambientLight);
             scene.add(directionalLight);
 

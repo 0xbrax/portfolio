@@ -119,6 +119,7 @@
     #not-found {
         width: 100%;
         height: 100dvh;
+        height: 100vh;
         overflow: hidden;
 
         background: linear-gradient(

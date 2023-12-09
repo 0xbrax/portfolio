@@ -39,6 +39,8 @@ export const pikarideModule = () => {
 
 
 
+const FPS = 30;
+
 const nicknameContainer = document.getElementById('nickname-container');
 let nickname = document.getElementById('nickname');
 const nameSender = document.getElementById('nickname-sender');
@@ -643,7 +645,7 @@ let isPikachuAlive = setInterval(function() {
 
         levelState = 1;
     }
-}, 30); // => 33.33 = 30FPS, default of this interval = 10 (remember to multiply goRight & goLeft)
+}, FPS); // => 33.33 = 30FPS, default of this interval = 10 (remember to multiply goRight & goLeft and check buttons)
 
 getLeaderboard(leaderboardID);
 let getWorldRecord = setInterval(function() {
@@ -1136,7 +1138,7 @@ mobileRight.addEventListener('touchstart', event => {
         mobileRightMove = setInterval(function() {
             goRight();
             isCarGoingRight = true;
-        }, 10);
+        }, FPS);
     }
 });
 mobileRight.addEventListener('touchend', event => {
@@ -1151,7 +1153,7 @@ mobileRight.addEventListener('mousedown', event => {
         mobileRightMove = setInterval(function() {
             goRight();
             isCarGoingRight = true;
-        }, 10);
+        }, FPS);
     }
 });
 mobileRight.addEventListener('mouseup', event => {
@@ -1167,7 +1169,7 @@ mobileLeft.addEventListener('touchstart', event => {
         mobileLeftMove = setInterval(function() {
             goLeft();
             isCarGoingLeft = true;
-        }, 10);
+        }, FPS);
     }
 });
 mobileLeft.addEventListener('touchend', event => {
@@ -1182,7 +1184,7 @@ mobileLeft.addEventListener('mousedown', event => {
         mobileLeftMove = setInterval(function() {
             goLeft();
             isCarGoingLeft = true;
-        }, 10);
+        }, FPS);
     }
 });
 mobileLeft.addEventListener('mouseup', event => {
