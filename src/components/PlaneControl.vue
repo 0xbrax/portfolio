@@ -135,7 +135,7 @@ export default {
                         setTimeout(() => {
                             if (!isGoForwardActive.value) return;
                             const animDuration = 500;
-                            let animKeyframes = [
+                            const animKeyframes = [
                                 {
                                     transform: 'translate(-50%, -50%) rotate(76deg)'
                                 },
@@ -172,7 +172,7 @@ export default {
                         setTimeout(() => {
                             if (isGoForwardActive.value) return;
                             const animDuration = 1000;
-                            let animKeyframes = [
+                            const animKeyframes = [
                                 {
                                     transform: 'translate(-50%, -50%) rotate(11deg)'
                                 },
