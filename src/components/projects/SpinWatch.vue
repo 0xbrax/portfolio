@@ -31,32 +31,29 @@ export default {
         let isLoaded = false;
 
         const spin = () => {
+            // TODO Reset degree if position is === start position
             if (!isLoaded) return;
 
-            let animDuration = getRandomNumber(12, 24);
-            animDuration = animDuration * 100;
+            let animDuration = getRandomNumber(10, 15);
+            animDuration = animDuration * 1000;
 
-            let multiplier = getRandomNumber(0, 11);
+            const iteration = 12 * getRandomNumber(1, 3);
+            let multiplier = getRandomNumber(0 + iteration, 11 + iteration);
             multiplier = multiplier * DEG_GAP;
 
             reelAnimation(animDuration, multiplier);
         }
 
         const reelAnimation = (duration, multiplier) => {
-            let degStartContainer = 0;
-            let degEndContainer = 330 + multiplier;
+            const lastDeg = getRotationDegrees(getComputedStyle(refSymbolContainers.value[0]).transform);
 
-            let degStartSymbol = 0;
-            let degEndSymbol = -330 - multiplier;
+            let degStartContainer = lastDeg;
+            let degEndContainer = lastDeg + 330 + multiplier;
+
+            let degStartSymbol = -lastDeg;
+            let degEndSymbol = -lastDeg - 330 - multiplier;
 
             for (let i = 0; i < REEL_LENGTH; i++) {
-                const lastDeg = getRotationDegrees(getComputedStyle(refSymbolContainers.value[i]).transform);
-
-                /*degStartContainer = lastDeg + multiplier;
-                degEndContainer = lastDeg + 330 + multiplier;
-
-                degStartSymbol -= lastDeg;
-                degEndSymbol -= lastDeg - 330 - multiplier;*/
 
                 if (i !== 0) {
                     degStartContainer += DEG_GAP;
@@ -67,7 +64,7 @@ export default {
                     degEndSymbol -= DEG_GAP;
                 }
 
-                const animKeyframesContainer = [
+                const animKeyContainerFrames = [
                     {
                         transform: `translate(-50%, -100%) rotate(${degStartContainer + 'deg'})`
                     },
@@ -75,12 +72,17 @@ export default {
                         transform: `translate(-50%, -100%) rotate(${degEndContainer + 'deg'})`
                     }
                 ];
-                const animKeyframesSymbol = [
+                const animKeySymbolFrames = [
                     {
-                        transform: `translate(-50%) rotate(${degStartSymbol + 'deg'})`
+                        transform: `translate(-50%, -50%) rotate(${degStartSymbol + 'deg'})`,
+                        top: '100%'
                     },
                     {
-                        transform: `translate(-50%) rotate(${degEndSymbol + 'deg'})`
+                        top: '30px' // 60px (symbol size) / 2
+                    },
+                    {
+                        transform: `translate(-50%, -50%) rotate(${degEndSymbol + 'deg'})`,
+                        top: '100%'
                     }
                 ];
 
@@ -91,13 +93,13 @@ export default {
                     fill: 'forwards'
                 };
 
-                refSymbolContainers.value[i].animate(animKeyframesContainer, animProperties);
-                refSymbols.value[i].animate(animKeyframesSymbol, animProperties);
+                refSymbolContainers.value[i].animate(animKeyContainerFrames, animProperties);
+                refSymbols.value[i].animate(animKeySymbolFrames, animProperties);
             }
         }
 
         // TODO remove
-        function getRandomColor() {
+        const getRandomColor = () => {
             const letters = '0123456789ABCDEF';
             let color = '#';
             for (let i = 0; i < 6; i++) {
@@ -140,7 +142,9 @@ export default {
                 }
 
                 refSymbolContainers.value[i].style.transform = `translate(-50%, -100%) rotate(${degStartContainer + 'deg'})`;
-                refSymbols.value[i].style.transform = `translate(-50%) rotate(${degStartSymbol + 'deg'})`;
+                refSymbols.value[i].style.transform = `translate(-50%, -50%) rotate(${degStartSymbol + 'deg'})`;
+                refSymbols.value[i].style.top = '100%';
+
                 refSymbols.value[i].style.backgroundColor = getRandomColor();
             }
         });
@@ -194,7 +198,6 @@ export default {
     aspect-ratio: 1;
 
     position: absolute;
-    top: 0;
     left: 50%;
 
     border-top: 10px solid black;
