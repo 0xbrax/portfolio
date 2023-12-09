@@ -36,26 +36,35 @@ export default {
             let animDuration = getRandomNumber(12, 24);
             animDuration = animDuration * 100;
 
-            const multiplier = 1//getRandomNumber(1, 12);
+            let multiplier = getRandomNumber(0, 11);
+            multiplier = multiplier * DEG_GAP;
 
             reelAnimation(animDuration, multiplier);
         }
 
         const reelAnimation = (duration, multiplier) => {
             let degStartContainer = 0;
-            let degEndContainer = 360;
+            let degEndContainer = 330 + multiplier;
 
             let degStartSymbol = 0;
-            let degEndSymbol = -360;
+            let degEndSymbol = -330 - multiplier;
 
             for (let i = 0; i < REEL_LENGTH; i++) {
+                const lastDeg = getRotationDegrees(getComputedStyle(refSymbolContainers.value[i]).transform);
+
+                /*degStartContainer = lastDeg + multiplier;
+                degEndContainer = lastDeg + 330 + multiplier;
+
+                degStartSymbol -= lastDeg;
+                degEndSymbol -= lastDeg - 330 - multiplier;*/
+
                 if (i !== 0) {
-                    degStartContainer += (DEG_GAP * multiplier);
-                    degStartSymbol -= (DEG_GAP * multiplier);
+                    degStartContainer += DEG_GAP;
+                    degStartSymbol -= DEG_GAP;
                 }
                 if (i !== 0) {
-                    degEndContainer += (DEG_GAP * multiplier);
-                    degEndSymbol -= (DEG_GAP * multiplier);
+                    degEndContainer += DEG_GAP;
+                    degEndSymbol -= DEG_GAP;
                 }
 
                 const animKeyframesContainer = [
@@ -78,7 +87,8 @@ export default {
                 const animProperties = {
                     duration: duration,
                     iterations: 1,
-                    easing: 'ease-in-out'
+                    easing: 'ease-in-out',
+                    fill: 'forwards'
                 };
 
                 refSymbolContainers.value[i].animate(animKeyframesContainer, animProperties);
@@ -86,6 +96,7 @@ export default {
             }
         }
 
+        // TODO remove
         function getRandomColor() {
             const letters = '0123456789ABCDEF';
             let color = '#';
@@ -95,14 +106,28 @@ export default {
             return color;
         }
 
+        const getRotationDegrees = (matrix) => {
+            const values = matrix.match(/matrix\(([^)]+)\)/)[1].split(',').map(parseFloat);
+
+            const a = values[0];
+            const b = values[1];
+
+            const radians = Math.atan2(b, a);
+            let degrees = radians * (180 / Math.PI);
+            degrees = (degrees + 360) % 360;
+            degrees = parseInt(Math.round(degrees));
+
+            return degrees;
+        }
+
         onMounted(() => {
             isLoaded = true;
 
             let degStartContainer = 0;
-            let degEndContainer = 360;
+            let degEndContainer = 330;
 
             let degStartSymbol = 0;
-            let degEndSymbol = -360;
+            let degEndSymbol = -330;
 
             for (let i = 0; i < REEL_LENGTH; i++) {
                 if (i !== 0) {
