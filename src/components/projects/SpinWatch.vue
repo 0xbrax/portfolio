@@ -1,7 +1,9 @@
 <template>
-    <div id="spin-watch" class="d-flex justify-ctr align-ctr">
-        <div id="spin-watch-container" class="d-flex justify-ctr align-ctr">
-            <div @click="spin()" ref="refGame" id="game" class="d-flex justify-ctr align-ctr relative">
+    <div id="spin-watch" :class="['d-flex justify-ctr align-ctr relative', { 'dimension no-watch': !isWatch }]">
+        <div id="spin-watch-container" :class="['d-flex justify-ctr align-ctr', { 'dimension': isWatch, 'no-watch': !isWatch }]">
+            <div @click="spin()" ref="refGame" id="game" :class="['d-flex justify-ctr align-ctr relative', { 'no-watch': !isWatch }]">
+                <i v-if="isFirstPlay" class="far fa-circle-play"></i>
+                
                 <div 
                     class="symbol-container"
                     v-for="(el, i) in new Array(REEL_LENGTH)"
@@ -15,7 +17,13 @@
 
                 <svg>
                     <circle 
-                        ref="refProgress"
+                        ref="refProgressLeft"
+                        :cx="progressDimension" 
+                        :cy="progressDimension" 
+                        :r="progressDimension && progressDimension - 10" 
+                    />
+                    <circle 
+                        ref="refProgressRight"
                         :cx="progressDimension" 
                         :cy="progressDimension" 
                         :r="progressDimension && progressDimension - 10" 
@@ -33,46 +41,65 @@ import { assetsUrl, getRandomNumber } from '@/assets/js/utils.js';
 export default {
     name: 'SpinWatch',
     setup() {
+        const isWatch = ref(window.screen.width <= 550 && window.screen.height <= 550);
+
         const refGame = ref(null);
         const refSymbolContainers = ref([]);
         const refSymbols = ref([]);
-        const refProgress = ref(null);
+        const refProgressLeft = ref(null);
+        const refProgressRight = ref(null);
         const progressDimension = ref();
 
         const REEL_LENGTH = 12;
         const DEG_GAP = 30;
 
         const SYMBOLS = ['o', 'bar-1', 'x-w', 'bar-3', 'x-b', 'bar-2', 'o', 'bar-3', 'x-w', 'bar-1', 'x-b', 'bar-2'];
-        let winIndex;
-        let winSymbol;
+        let randomIndex;
+        let randomSymbol;
 
-        let isFirstPlay = true;
+        const isFirstPlay = ref(true);
         let isLoaded = false;
         let isPlaying = false;
 
+        let progressCounter = 0;
+        const PROGRESS_INCREMENT = 60;
+
         const spin = () => {
             // TODO Reset degree if position is === start position => JS MAX NUMBER (degree > max when play hard)...
+            // TODO a volte bug sulla rotazione del singolo simbolo su se stesso, ha un -30deg in piu
+
+
             if (!isLoaded || isPlaying) return;
 
-            if (winIndex != null) refSymbols.value[winIndex].classList.remove('spin-end');
-
+            if (randomIndex != null) refSymbols.value[randomIndex].classList.remove('spin-end');
             isPlaying = true;
             let animDuration = getRandomNumber(15, 20);
             animDuration = animDuration * 100;
 
             const iteration = 12 * getRandomNumber(1, 2);
             let multiplier = getRandomNumber(0 + iteration, 11 + iteration);
-            winIndex = multiplier - iteration;
-            winSymbol = SYMBOLS[winIndex];
+            randomIndex = multiplier - iteration;
+            randomSymbol = SYMBOLS[randomIndex];
             multiplier = multiplier * DEG_GAP;
 
-            console.log('LOG.................', winIndex, winSymbol)
+            //console.log('LOG.................', randomIndex, randomSymbol) // TODO => WIN CONDITION ... Same symbol in row
 
             reelAnimation(animDuration, multiplier);
 
+            if (isFirstPlay.value) {
+                setProgress(progressCounter);
+                isFirstPlay.value = false;
+            }
+            if (progressCounter >= 180) {
+                progressCounter = 0;
+                setProgress(progressCounter);
+            }
+
             setTimeout(() => {
+                progressCounter += PROGRESS_INCREMENT;
                 isPlaying = false;
-                refSymbols.value[winIndex].classList.add('spin-end');
+                refSymbols.value[randomIndex].classList.add('spin-end');
+                setProgress(progressCounter);
             }, animDuration);
         }
 
@@ -89,10 +116,9 @@ export default {
 
                 if (i !== 0) {
                     degStartContainer += DEG_GAP;
-                    degStartSymbol -= DEG_GAP;
-                }
-                if (i !== 0) {
                     degEndContainer += DEG_GAP;
+
+                    degStartSymbol -= DEG_GAP;
                     degEndSymbol -= DEG_GAP;
                 }
 
@@ -107,8 +133,8 @@ export default {
                 const animSymbolKeyframes = [
                     {
                         transform: `translate(-50%, -50%) rotate(${degStartSymbol + 'deg'})`,
-                        top: isFirstPlay ? 'calc(15% + 20px)' : '100%',
-                        height: isFirstPlay ? '30%' : '80%'
+                        top: isFirstPlay.value ? 'calc(15% + 20px)' : '100%',
+                        height: isFirstPlay.value ? '30%' : '80%'
                     },
                     {
                         top: 'calc(15% + 20px)',
@@ -136,12 +162,10 @@ export default {
                 refSymbols.value[i].animate(animSymbolKeyframes, animProperties);
 
                 setTimeout(() => {
-                    if (i === winIndex) refSymbolContainers.value[i].style.zIndex = '2';
+                    if (i === randomIndex) refSymbolContainers.value[i].style.zIndex = '2';
                     else refSymbolContainers.value[i].style.zIndex = '1';
                 }, duration / 2);
             }
-
-            isFirstPlay = false;
         }
 
 
@@ -162,12 +186,26 @@ export default {
             return degrees;
         }
 
+        const setProgress = (progress) => {
+            const circleDimension = 2 * (progressDimension.value - 10) * Math.PI;
+            const circleDegree = (progress / 360) * circleDimension;
+
+            refProgressLeft.value.style.strokeDasharray = `${circleDegree}, ${circleDimension - circleDegree}`;
+            refProgressLeft.value.style.strokeDashoffset = (circleDegree / 2) + (circleDimension / 2);
+            refProgressLeft.value.style.strokeLinecap = progress < 180 ? 'round' : 'butt';
+
+            refProgressRight.value.style.strokeDasharray = `${circleDegree}, ${circleDimension - circleDegree}`;
+            refProgressRight.value.style.strokeDashoffset = circleDegree / 2;
+            refProgressRight.value.style.strokeLinecap = progress < 180 ? 'round' : 'butt';
+        }
+
 
 
         // INIT
 
         onMounted(() => {
             progressDimension.value = refSymbolContainers.value[0].getBoundingClientRect().height;
+            window.addEventListener('resize', () => progressDimension.value = refSymbolContainers.value[0].getBoundingClientRect().height);
 
             let degStartContainer = 0;
             let degEndContainer = 330;
@@ -191,29 +229,24 @@ export default {
                 refSymbols.value[i].style.height = '30%';
             }
 
-
-
-            /////////////////// TODO
-            let progress = 120;
-
-            const circleDimension = 2 * (progressDimension.value - 10) * Math.PI;
-            const circleDegree = (progress / 360) * circleDimension;
-            refProgress.value.style.strokeDasharray = `${circleDegree}, ${circleDimension - circleDegree}`;
-            refProgress.value.style.strokeDashoffset = circleDegree / 2;
+            setProgress(180);
 
             isLoaded = true;
         });
 
         return {
+            isWatch,
             assetsUrl,
             SYMBOLS,
             refGame,
             refSymbolContainers,
             refSymbols,
-            refProgress,
+            refProgressLeft,
+            refProgressRight,
             progressDimension,
             REEL_LENGTH,
-            spin
+            spin,
+            isFirstPlay
         }
     }
 }
@@ -221,24 +254,50 @@ export default {
 
 <style scoped>
 #spin-watch {
+    color: var(--spinwatch-secondary);
+}
+.dimension {
     width: 100%;
     height: 100dvh;
     height: 100vh;
+}
 
-    background-color: bisque;
+#spin-watch.no-watch::after {
+    content: "";
+    background-color: var(--spinwatch-secondary);
+    box-shadow: 0px 0px 5px 5px rgba(var(--spinwatch-secondary-rgb), 0.5);
+    height: 100%;
+    width: 120px;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: -1;
 }
 #spin-watch-container {
-    width: 400px;
-    height: 500px;
-
-    background-color: aqua;
+    background-color: var(--spinwatch--silver);
+}
+#spin-watch-container.no-watch {
+    border-radius: 50%;
+    background-color: transparent;
 }
 
 #game {
     width: 100%;
     aspect-ratio: 1;
-
-    background-color: rgb(255, 187, 0);
+    background-color: var(--spinwatch--silver);
+    border-radius: 50%;
+}
+#game.no-watch {
+    box-shadow: 0px 0px 5px 5px rgba(var(--spinwatch-secondary-rgb), 0.5);
+}
+i.fa-circle-play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 7rem;
+    box-shadow: inset 0px 0px 1rem 1rem var(--spinwatch-main);
     border-radius: 50%;
 }
 
@@ -255,11 +314,12 @@ export default {
     aspect-ratio: 1;
     position: absolute;
     left: 50%;
+    border-radius: 5px;
     transition: 0.3s ease-in-out;
 }
 .symbol.spin-end {
-    background-color: rgba(255, 255, 255, 0.8);
-    box-shadow: 0px 0px 5px 5px rgba(255, 255, 255, 0.8);
+    background-color: var(--spinwatch-gold);
+    box-shadow: 0px 0px 5px 5px rgba(var(--spinwatch-gold-rgb), 0.8);
 }
 
 svg {
@@ -269,8 +329,16 @@ svg {
 circle {
     fill: none;
     stroke-width: 20px;
-    stroke: rgb(4, 0, 255);
-
-    transition: stroke-dasharray 0.3s ease-in-out;
+    transition: stroke-dasharray 0.3s ease-in-out, stroke-dashoffset 0.3s ease-in-out, stroke-linecap 0.3s ease-in-out;
+    animation: circleAnimation 2s infinite ease-in-out;
+}
+@keyframes circleAnimation {
+    from,
+    to {
+        stroke: rgba(var(--spinwatch-main-rgb), 1);
+    }
+    50% {
+        stroke: rgba(var(--spinwatch-main-rgb), 0.5);
+    }
 }
 </style>

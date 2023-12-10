@@ -17,6 +17,16 @@
     --main-purple-dark: #3d135f;
     --sec-blue-light: #53cef7;
     --sec-blue-dark: #0d0918;
+
+    /* spinwatch */
+    --spinwatch-main: #8B0000;
+    --spinwatch-main-rgb: 139, 0, 0;
+    --spinwatch-secondary: #080808;
+    --spinwatch-secondary-rgb: 8, 8, 8;
+    --spinwatch-gold: #ffd700;
+    --spinwatch-gold-rgb: 255, 215, 0;
+    --spinwatch--silver: #c0c0c0;
+    --spinwatch--silver-rgb: 192, 192, 192;
 }
 body {
     font-family: 'Ubuntu', sans-serif;
