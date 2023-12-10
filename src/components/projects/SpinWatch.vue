@@ -1,7 +1,7 @@
 <template>
-    <div id="spin-watch" class="d-flex justify-ctr align-ctr" @click="spin()">
+    <div id="spin-watch" class="d-flex justify-ctr align-ctr">
         <div id="spin-watch-container" class="d-flex justify-ctr align-ctr">
-            <div id="game" class="d-flex justify-ctr align-ctr relative">
+            <div @click="spin()" ref="refGame" id="game" class="d-flex justify-ctr align-ctr relative">
                 <div 
                     class="symbol-container"
                     v-for="el in new Array(REEL_LENGTH)" 
@@ -10,6 +10,15 @@
                 >
                     <div class="symbol" :ref="(symbol) => refSymbols.push(symbol)"></div>
                 </div>
+
+                <svg>
+                    <circle 
+                        ref="refProgress"
+                        :cx="progressDimension" 
+                        :cy="progressDimension" 
+                        :r="progressDimension" 
+                    />
+                </svg>
             </div>
         </div>
     </div>
@@ -22,8 +31,11 @@ import { getRandomNumber } from '@/assets/js/utils.js';
 export default {
     name: 'SpinWatch',
     setup() {
+        const refGame = ref(null);
         const refSymbolContainers = ref([]);
         const refSymbols = ref([]);
+        const refProgress = ref(null);
+        const progressDimension = ref();
 
         const REEL_LENGTH = 12;
         const DEG_GAP = 30;
@@ -75,14 +87,21 @@ export default {
                 const animKeySymbolFrames = [
                     {
                         transform: `translate(-50%, -50%) rotate(${degStartSymbol + 'deg'})`,
-                        top: '100%'
+                        top: '100%',
+                        height: '80%'
                     },
                     {
-                        top: '30px' // 60px (symbol size) / 2
+                        top: 'calc(15% + 20px)',
+                        height: '30%'
+                    },
+                    {
+                        top: 'calc(15% + 20px)',
+                        height: '30%'
                     },
                     {
                         transform: `translate(-50%, -50%) rotate(${degEndSymbol + 'deg'})`,
-                        top: '100%'
+                        top: '100%',
+                        height: '80%'
                     }
                 ];
 
@@ -97,6 +116,8 @@ export default {
                 refSymbols.value[i].animate(animKeySymbolFrames, animProperties);
             }
         }
+
+
 
         // TODO remove
         const getRandomColor = () => {
@@ -122,8 +143,12 @@ export default {
             return degrees;
         }
 
+
+
+        // INIT
+
         onMounted(() => {
-            isLoaded = true;
+            progressDimension.value = refSymbolContainers.value[0].getBoundingClientRect().height;
 
             let degStartContainer = 0;
             let degEndContainer = 330;
@@ -144,20 +169,46 @@ export default {
                 refSymbolContainers.value[i].style.transform = `translate(-50%, -100%) rotate(${degStartContainer + 'deg'})`;
                 refSymbols.value[i].style.transform = `translate(-50%, -50%) rotate(${degStartSymbol + 'deg'})`;
                 refSymbols.value[i].style.top = '100%';
+                refSymbols.value[i].style.height = '80%';
 
                 refSymbols.value[i].style.backgroundColor = getRandomColor();
             }
+
+
+
+
+            let progress = 145;
+
+            const circleDimension = 2 * progressDimension.value * Math.PI;
+            const circleDegree = (progress / 360) * circleDimension;
+            refProgress.value.style.strokeDasharray = `${circleDegree}, ${circleDimension - circleDegree}`;
+            refProgress.value.style.strokeDashoffset = circleDegree / 2;
+
+            console.log(circleDimension, circleDegree)
+
+
+            /*console.log(refSymbolContainers.value[0])
+
+            refSymbolContainers.value[0].addEventListener('animationend', () => {
+                console.log('WEEE')
+            });*/
+
+            isLoaded = true;
         });
 
         return {
+            refGame,
             refSymbolContainers,
             refSymbols,
+            refProgress,
+            progressDimension,
             REEL_LENGTH,
             spin
         }
     }
 }
 </script>
+
 <style scoped>
 #spin-watch {
     width: 100%;
@@ -194,12 +245,25 @@ export default {
     transform-origin: 50% 100%;
 }
 .symbol {
-    width: 50px;
     aspect-ratio: 1;
 
     position: absolute;
     left: 50%;
 
-    border-top: 10px solid black;
+    box-shadow: inset 0px 20px 0px 0px black;
+}
+
+
+
+svg {
+    width: 100%;
+    height: 100%;
+}
+circle {
+    fill: none;
+    stroke-width: 20px;
+    stroke: rgb(4, 0, 255);
+
+    transition: stroke-dasharray 0.3s ease-in-out;
 }
 </style>
