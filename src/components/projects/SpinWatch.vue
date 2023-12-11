@@ -258,8 +258,8 @@ export default {
 }
 .dimension {
     width: 100%;
-    height: 100dvh;
     height: 100vh;
+    height: 100dvh;
 }
 
 #spin-watch.no-watch::after {
@@ -319,8 +319,8 @@ i.fa-circle-play {
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 3;
-    font-size: 12rem;
-    box-shadow: inset 0px 0px 2rem 1rem var(--spinwatch-main);
+    font-size: 10rem;
+    box-shadow: inset 0px 0px 1.5rem 0.5rem var(--spinwatch-main);
     border-radius: 50%;
 }
 
