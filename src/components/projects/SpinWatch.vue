@@ -205,7 +205,7 @@ export default {
 
         onMounted(() => {
             progressDimension.value = refSymbolContainers.value[0].getBoundingClientRect().height;
-            window.addEventListener('resize', () => progressDimension.value = refSymbolContainers.value[0].getBoundingClientRect().height);
+            if (isWatch.value) window.addEventListener('resize', () => progressDimension.value = refSymbolContainers.value[0].getBoundingClientRect().height);
 
             let degStartContainer = 0;
             let degEndContainer = 330;
@@ -291,13 +291,36 @@ export default {
 #game.no-watch {
     box-shadow: 0px 0px 5px 5px rgba(var(--spinwatch-secondary-rgb), 0.5);
 }
+#game::after {
+    content: "";
+    width: calc(100% - (20px * 2));
+    aspect-ratio: 1;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    border-radius: 50%;
+    animation: circleShadowAnimation 2s infinite ease-in-out;
+}
+@keyframes circleShadowAnimation {
+    from,
+    to {
+        box-shadow: inset 0px 0px 1rem 0 rgba(var(--spinwatch-main-rgb), 1);
+    }
+    50% {
+        box-shadow: inset 0px 0px 1rem 0 rgba(var(--spinwatch-main-rgb), 0.5);
+    }
+}
+
 i.fa-circle-play {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 7rem;
-    box-shadow: inset 0px 0px 1rem 1rem var(--spinwatch-main);
+    z-index: 3;
+    font-size: 12rem;
+    box-shadow: inset 0px 0px 2rem 1rem var(--spinwatch-main);
     border-radius: 50%;
 }
 
@@ -309,6 +332,7 @@ i.fa-circle-play {
     top: 50%;
     left: 50%;
     transform-origin: 50% 100%;
+    z-index: 2;
 }
 .symbol {
     aspect-ratio: 1;
