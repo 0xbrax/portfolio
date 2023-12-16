@@ -52,7 +52,7 @@ export default {
         // TODO a volte bug sulla rotazione del singolo simbolo su se stesso, ha un -30deg in piu
         // TODO bug grafico iniziale anello progress
 
-        
+
         
         const isWatch = ref(window.screen.width <= 550 && window.screen.height <= 550);
 
@@ -114,7 +114,7 @@ export default {
             }
 
             conditionObj.prevCondition = conditionObj.selectedCondition;
-            conditionObj.selectedCondition = 'win'//CONDITIONS[getRandomNumber(0 , CONDITIONS.length -1)];   
+            conditionObj.selectedCondition = CONDITIONS[getRandomNumber(0 , CONDITIONS.length -1)];
             
             do {
                 randomIndex = getRandomNumber(0, 11);
