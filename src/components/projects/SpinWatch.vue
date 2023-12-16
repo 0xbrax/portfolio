@@ -205,7 +205,11 @@ export default {
 
         onMounted(() => {
             progressDimension.value = refSymbolContainers.value[0].getBoundingClientRect().height;
-            if (isWatch.value) window.addEventListener('resize', () => progressDimension.value = refSymbolContainers.value[0].getBoundingClientRect().height);
+            
+            window.addEventListener('resize', () => {
+                isWatch.value = window.screen.width <= 550 && window.screen.height <= 550;
+                progressDimension.value = refSymbolContainers.value[0].getBoundingClientRect().height
+            });
 
             let degStartContainer = 0;
             let degEndContainer = 330;
@@ -301,15 +305,15 @@ export default {
     transform: translate(-50%, -50%);
     z-index: 1;
     border-radius: 50%;
-    animation: circleShadowAnimation 2s infinite ease-in-out;
+    animation: circleShadowAnimation 3s infinite ease-in-out;
 }
 @keyframes circleShadowAnimation {
     from,
     to {
-        box-shadow: inset 0px 0px 1rem 0 rgba(var(--spinwatch-main-rgb), 1);
+        box-shadow: inset 0px 0px 10px 0 rgba(var(--spinwatch-main-rgb), 1);
     }
     50% {
-        box-shadow: inset 0px 0px 1rem 0 rgba(var(--spinwatch-main-rgb), 0.5);
+        box-shadow: inset 0px 0px 0px 0 rgba(var(--spinwatch-main-rgb), 0.5);
     }
 }
 
@@ -319,8 +323,8 @@ i.fa-circle-play {
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 3;
-    font-size: 10rem;
-    box-shadow: inset 0px 0px 1.5rem 0.5rem var(--spinwatch-main);
+    font-size: 150px;
+    box-shadow: inset 0px 0px 20px 10px var(--spinwatch-main);
     border-radius: 50%;
 }
 
@@ -354,7 +358,7 @@ circle {
     fill: none;
     stroke-width: 20px;
     transition: stroke-dasharray 0.3s ease-in-out, stroke-dashoffset 0.3s ease-in-out, stroke-linecap 0.3s ease-in-out;
-    animation: circleAnimation 2s infinite ease-in-out;
+    animation: circleAnimation 3s infinite ease-in-out;
 }
 @keyframes circleAnimation {
     from,
