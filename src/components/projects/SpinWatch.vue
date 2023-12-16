@@ -35,12 +35,17 @@
 </template>
 
 <script>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, nextTick } from 'vue';
 import { assetsUrl, getRandomNumber } from '@/assets/js/utils.js';
 
 export default {
     name: 'SpinWatch',
     setup() {
+        // TODO Reset degree if position is === start position => JS MAX NUMBER (degree > max when play hard)...
+        // TODO a volte bug sulla rotazione del singolo simbolo su se stesso, ha un -30deg in piu
+        // TODO bug grafico iniziale anello progress
+
+        
         const isWatch = ref(window.screen.width <= 550 && window.screen.height <= 550);
 
         const refGame = ref(null);
@@ -52,6 +57,14 @@ export default {
 
         const REEL_LENGTH = 12;
         const DEG_GAP = 30;
+
+        const CONDITIONS = [...Array(4).fill('lose'), ...Array(6).fill('fake-win'), ...Array(11).fill('win')];
+        const conditionObj = {
+            selectedCondition: null,
+            prevCondition: null,
+            conditionCounter: 0,
+            prevIndex: null,
+        };
 
         const SYMBOLS = ['o', 'bar-1', 'x-w', 'bar-3', 'x-b', 'bar-2', 'o', 'bar-3', 'x-w', 'bar-1', 'x-b', 'bar-2'];
         let randomIndex;
@@ -65,10 +78,6 @@ export default {
         const PROGRESS_INCREMENT = 60;
 
         const spin = () => {
-            // TODO Reset degree if position is === start position => JS MAX NUMBER (degree > max when play hard)...
-            // TODO a volte bug sulla rotazione del singolo simbolo su se stesso, ha un -30deg in piu
-
-
             if (!isLoaded || isPlaying) return;
 
             if (randomIndex != null) refSymbols.value[randomIndex].classList.remove('spin-end');
@@ -76,13 +85,50 @@ export default {
             let animDuration = getRandomNumber(15, 20);
             animDuration = animDuration * 100;
 
-            const iteration = 12 * getRandomNumber(1, 2);
-            let multiplier = getRandomNumber(0 + iteration, 11 + iteration);
-            randomIndex = multiplier - iteration;
-            randomSymbol = SYMBOLS[randomIndex];
-            multiplier = multiplier * DEG_GAP;
 
-            //console.log('LOG.................', randomIndex, randomSymbol) // TODO => WIN CONDITION ... Same symbol in row
+
+
+
+
+            if (conditionObj.prevCondition === 'fake-win' && conditionObj.conditionCounter === 1 || conditionObj.prevCondition === 'win' && conditionObj.conditionCounter === 2) {
+                conditionObj.selectedCondition = null;
+                conditionObj.conditionCounter = 0;
+            }
+
+            conditionObj.prevCondition = conditionObj.selectedCondition;
+            conditionObj.selectedCondition = CONDITIONS[getRandomNumber(0 , CONDITIONS.length -1)];   
+            
+            do {
+                randomIndex = getRandomNumber(0, 11);
+                randomSymbol = SYMBOLS[randomIndex];
+            } while (conditionObj.prevIndex != null && SYMBOLS[randomIndex] === SYMBOLS[conditionObj.prevIndex]);
+
+            if (conditionObj.prevCondition === 'fake-win' || (conditionObj.prevCondition === 'win' && conditionObj.conditionCounter === 0)) {
+                conditionObj.selectedCondition = conditionObj.prevCondition;
+                randomIndex = conditionObj.prevIndex;
+                randomSymbol = SYMBOLS[randomIndex];
+                conditionObj.conditionCounter = 1;
+            } else if (conditionObj.prevCondition === 'win' && conditionObj.conditionCounter === 1) {
+                conditionObj.selectedCondition = conditionObj.prevCondition;
+                randomIndex = conditionObj.prevIndex;
+                randomSymbol = SYMBOLS[randomIndex];
+                conditionObj.conditionCounter = 2;
+            } else {
+                conditionObj.prevIndex = randomIndex;
+            }
+           
+
+
+            console.log('LOG.........', randomIndex, randomSymbol, conditionObj)
+
+
+
+
+
+
+            const iteration = 12 * getRandomNumber(1, 2);
+            let multiplier = getRandomNumber(randomIndex + iteration, randomIndex + iteration);
+            multiplier = multiplier * DEG_GAP;
 
             reelAnimation(animDuration, multiplier);
 
@@ -90,16 +136,22 @@ export default {
                 setProgress(progressCounter);
                 isFirstPlay.value = false;
             }
-            if (progressCounter >= 180) {
+
+
+            if (conditionObj.conditionCounter === 0) {
                 progressCounter = 0;
-                setProgress(progressCounter);
             }
 
             setTimeout(() => {
-                progressCounter += PROGRESS_INCREMENT;
+                if (conditionObj.conditionCounter === 1 || conditionObj.conditionCounter === 2) {
+                    progressCounter += PROGRESS_INCREMENT;
+                } else {
+                    progressCounter = PROGRESS_INCREMENT;
+                }
+                
+                setProgress(progressCounter);
                 isPlaying = false;
                 refSymbols.value[randomIndex].classList.add('spin-end');
-                setProgress(progressCounter);
             }, animDuration);
         }
 
@@ -204,11 +256,16 @@ export default {
         // INIT
 
         onMounted(() => {
-            progressDimension.value = refSymbolContainers.value[0].getBoundingClientRect().height;
-            
+            nextTick(() => {
+                progressDimension.value = refSymbolContainers.value[0].getBoundingClientRect().height;
+            });
+
             window.addEventListener('resize', () => {
                 isWatch.value = window.screen.width <= 550 && window.screen.height <= 550;
-                progressDimension.value = refSymbolContainers.value[0].getBoundingClientRect().height
+
+                nextTick(() => {
+                    progressDimension.value = refSymbolContainers.value[0].getBoundingClientRect().height;
+                });
             });
 
             let degStartContainer = 0;
@@ -258,6 +315,7 @@ export default {
 
 <style scoped>
 #spin-watch {
+    overflow: hidden;
     color: var(--spinwatch-secondary);
 }
 .dimension {
