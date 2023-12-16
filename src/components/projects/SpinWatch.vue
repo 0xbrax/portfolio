@@ -1,8 +1,15 @@
 <template>
     <div id="spin-watch" :class="['d-flex justify-ctr align-ctr relative', { 'dimension no-watch': !isWatch }]">
-        <div id="spin-watch-container" :class="['d-flex justify-ctr align-ctr', { 'dimension': isWatch, 'no-watch': !isWatch }]">
+        <div id="spin-watch-container" :class="['d-flex justify-ctr align-ctr', { 'dimension': isWatch, 'no-watch': !isWatch }]">            
             <div @click="spin()" ref="refGame" id="game" :class="['d-flex justify-ctr align-ctr relative', { 'no-watch': !isWatch }]">
                 <i v-if="isFirstPlay" class="far fa-circle-play"></i>
+
+                <transition name="win-fade">
+                    <div v-if="isWinActive" id="win-screen" :class="['d-flex justify-ctr align-ctr text-ctr', { 'win-animation': isWinActive }]">
+                        You<br/>
+                        rock!
+                    </div>
+                </transition>
                 
                 <div 
                     class="symbol-container"
@@ -20,13 +27,13 @@
                         ref="refProgressLeft"
                         :cx="progressDimension" 
                         :cy="progressDimension" 
-                        :r="progressDimension && progressDimension - 10" 
+                        :r="progressDimension && progressDimension - 10"
                     />
                     <circle 
                         ref="refProgressRight"
                         :cx="progressDimension" 
                         :cy="progressDimension" 
-                        :r="progressDimension && progressDimension - 10" 
+                        :r="progressDimension && progressDimension - 10"
                     />
                 </svg>
             </div>
@@ -35,12 +42,18 @@
 </template>
 
 <script>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, nextTick } from 'vue';
 import { assetsUrl, getRandomNumber } from '@/assets/js/utils.js';
 
 export default {
     name: 'SpinWatch',
     setup() {
+        // TODO Reset degree if position is === start position => JS MAX NUMBER (degree > max when play hard)...
+        // TODO a volte bug sulla rotazione del singolo simbolo su se stesso, ha un -30deg in piu
+        // TODO bug grafico iniziale anello progress
+
+
+        
         const isWatch = ref(window.screen.width <= 550 && window.screen.height <= 550);
 
         const refGame = ref(null);
@@ -49,9 +62,18 @@ export default {
         const refProgressLeft = ref(null);
         const refProgressRight = ref(null);
         const progressDimension = ref();
+        const isWinActive = ref(false);
 
         const REEL_LENGTH = 12;
         const DEG_GAP = 30;
+
+        const CONDITIONS = [...Array(4).fill('lose'), ...Array(6).fill('fake-win'), ...Array(11).fill('win')];
+        const conditionObj = {
+            selectedCondition: null,
+            prevCondition: null,
+            conditionCounter: 0,
+            prevIndex: null,
+        };
 
         const SYMBOLS = ['o', 'bar-1', 'x-w', 'bar-3', 'x-b', 'bar-2', 'o', 'bar-3', 'x-w', 'bar-1', 'x-b', 'bar-2'];
         let randomIndex;
@@ -65,9 +87,14 @@ export default {
         const PROGRESS_INCREMENT = 60;
 
         const spin = () => {
-            // TODO Reset degree if position is === start position => JS MAX NUMBER (degree > max when play hard)...
-            // TODO a volte bug sulla rotazione del singolo simbolo su se stesso, ha un -30deg in piu
-
+            if (isWinActive.value) {
+                progressCounter = 0;
+                setProgress(progressCounter);
+                isWinActive.value = false;
+                isFirstPlay.value = true;
+                winInitSymbols();
+                return;
+            }
 
             if (!isLoaded || isPlaying) return;
 
@@ -76,13 +103,43 @@ export default {
             let animDuration = getRandomNumber(15, 20);
             animDuration = animDuration * 100;
 
-            const iteration = 12 * getRandomNumber(1, 2);
-            let multiplier = getRandomNumber(0 + iteration, 11 + iteration);
-            randomIndex = multiplier - iteration;
-            randomSymbol = SYMBOLS[randomIndex];
-            multiplier = multiplier * DEG_GAP;
 
-            //console.log('LOG.................', randomIndex, randomSymbol) // TODO => WIN CONDITION ... Same symbol in row
+
+            if (conditionObj.prevCondition === 'fake-win' && conditionObj.conditionCounter === 1 || conditionObj.prevCondition === 'win' && conditionObj.conditionCounter === 2) {
+                conditionObj.selectedCondition = null;
+                conditionObj.conditionCounter = 0;
+            }
+
+            conditionObj.prevCondition = conditionObj.selectedCondition;
+            conditionObj.selectedCondition = CONDITIONS[getRandomNumber(0 , CONDITIONS.length -1)];
+            
+            do {
+                randomIndex = getRandomNumber(0, 11);
+                randomSymbol = SYMBOLS[randomIndex];
+            } while (conditionObj.prevIndex != null && SYMBOLS[randomIndex] === SYMBOLS[conditionObj.prevIndex]);
+
+            if (conditionObj.prevCondition === 'fake-win' || (conditionObj.prevCondition === 'win' && conditionObj.conditionCounter === 0)) {
+                conditionObj.selectedCondition = conditionObj.prevCondition;
+                randomIndex = conditionObj.prevIndex;
+                randomSymbol = SYMBOLS[randomIndex];
+                conditionObj.conditionCounter = 1;
+            } else if (conditionObj.prevCondition === 'win' && conditionObj.conditionCounter === 1) {
+                conditionObj.selectedCondition = conditionObj.prevCondition;
+                randomIndex = conditionObj.prevIndex;
+                randomSymbol = SYMBOLS[randomIndex];
+                conditionObj.conditionCounter = 2;
+            } else {
+                conditionObj.prevIndex = randomIndex;
+            }
+            
+            //////////////////////////////////////////////////////////////////
+            console.log('LOG........', randomIndex, randomSymbol, conditionObj)
+
+
+
+            const iteration = 12 * getRandomNumber(1, 2);
+            let multiplier = getRandomNumber(randomIndex + iteration, randomIndex + iteration);
+            multiplier = multiplier * DEG_GAP;
 
             reelAnimation(animDuration, multiplier);
 
@@ -90,16 +147,27 @@ export default {
                 setProgress(progressCounter);
                 isFirstPlay.value = false;
             }
-            if (progressCounter >= 180) {
+
+
+            if (conditionObj.conditionCounter === 0) {
                 progressCounter = 0;
-                setProgress(progressCounter);
             }
 
             setTimeout(() => {
-                progressCounter += PROGRESS_INCREMENT;
-                isPlaying = false;
-                refSymbols.value[randomIndex].classList.add('spin-end');
+                if (conditionObj.conditionCounter === 1 || conditionObj.conditionCounter === 2) {
+                    progressCounter += PROGRESS_INCREMENT;
+                } else {
+                    progressCounter = PROGRESS_INCREMENT;
+                }
+                
                 setProgress(progressCounter);
+                isPlaying = false;
+
+                if (conditionObj.selectedCondition === 'win' && conditionObj.conditionCounter === 2) {
+                    isWinActive.value = true;
+                } else {
+                    refSymbols.value[randomIndex].classList.add('spin-end');
+                }
             }, animDuration);
         }
 
@@ -113,7 +181,6 @@ export default {
             let degEndSymbol = -lastDeg - 330 - multiplier;
 
             for (let i = 0; i < REEL_LENGTH; i++) {
-
                 if (i !== 0) {
                     degStartContainer += DEG_GAP;
                     degEndContainer += DEG_GAP;
@@ -199,14 +266,7 @@ export default {
             refProgressRight.value.style.strokeLinecap = progress < 180 ? 'round' : 'butt';
         }
 
-
-
-        // INIT
-
-        onMounted(() => {
-            progressDimension.value = refSymbolContainers.value[0].getBoundingClientRect().height;
-            if (isWatch.value) window.addEventListener('resize', () => progressDimension.value = refSymbolContainers.value[0].getBoundingClientRect().height);
-
+        const firstPlayInitSymbols = () => {
             let degStartContainer = 0;
             let degEndContainer = 330;
 
@@ -228,7 +288,78 @@ export default {
                 refSymbols.value[i].style.top = 'calc(15% + 20px)';
                 refSymbols.value[i].style.height = '30%';
             }
+        }
 
+        const winInitSymbols = () => {
+            const lastDeg = getRotationDegrees(getComputedStyle(refSymbolContainers.value[0]).transform);
+
+            let degStartContainer = lastDeg;
+            let degEndContainer = lastDeg + 330;
+
+            let degStartSymbol = -lastDeg;
+            let degEndSymbol = -lastDeg - 330;
+
+            for (let i = 0; i < REEL_LENGTH; i++) {
+                if (i !== 0) {
+                    degStartContainer += DEG_GAP;
+                    degStartSymbol -= DEG_GAP;
+                }
+                if (i !== 0) {
+                    degEndContainer += DEG_GAP;
+                    degEndSymbol -= DEG_GAP;
+                }
+
+                const animContainerKeyframes = [
+                    {
+                        transform: `translate(-50%, -100%) rotate(${degStartContainer + 'deg'})`
+                    },
+                    {
+                        transform: `translate(-50%, -100%) rotate(${degEndContainer + 'deg'})`
+                    }
+                ];
+                const animSymbolKeyframes = [
+                    {
+                        transform: `translate(-50%, -50%) rotate(${degStartSymbol + 'deg'})`,
+                        top: '100%',
+                        height: '80%'
+                    },
+                    {
+                        transform: `translate(-50%, -50%) rotate(${degEndSymbol + 'deg'})`,
+                        top: 'calc(15% + 20px)',
+                        height: '30%'
+                    }
+                ];
+
+                const animProperties = {
+                    duration: 300,
+                    iterations: 1,
+                    easing: 'ease-in-out',
+                    fill: 'forwards'
+                };
+
+                refSymbolContainers.value[i].animate(animContainerKeyframes, animProperties);
+                refSymbols.value[i].animate(animSymbolKeyframes, animProperties);
+            }
+        }
+
+
+
+        // INIT
+
+        onMounted(() => {
+            nextTick(() => {
+                progressDimension.value = refSymbolContainers.value[0].getBoundingClientRect().height;
+            });
+
+            window.addEventListener('resize', () => {
+                isWatch.value = window.screen.width <= 550 && window.screen.height <= 550;
+
+                nextTick(() => {
+                    progressDimension.value = refSymbolContainers.value[0].getBoundingClientRect().height;
+                });
+            });
+
+            firstPlayInitSymbols();
             setProgress(180);
 
             isLoaded = true;
@@ -246,7 +377,8 @@ export default {
             progressDimension,
             REEL_LENGTH,
             spin,
-            isFirstPlay
+            isFirstPlay,
+            isWinActive
         }
     }
 }
@@ -254,6 +386,7 @@ export default {
 
 <style scoped>
 #spin-watch {
+    overflow: hidden;
     color: var(--spinwatch-secondary);
 }
 .dimension {
@@ -301,15 +434,15 @@ export default {
     transform: translate(-50%, -50%);
     z-index: 1;
     border-radius: 50%;
-    animation: circleShadowAnimation 2s infinite ease-in-out;
+    animation: circleShadowAnimation 3s infinite ease-in-out;
 }
 @keyframes circleShadowAnimation {
     from,
     to {
-        box-shadow: inset 0px 0px 1rem 0 rgba(var(--spinwatch-main-rgb), 1);
+        box-shadow: inset 0px 0px 10px 0 rgba(var(--spinwatch-main-rgb), 1);
     }
     50% {
-        box-shadow: inset 0px 0px 1rem 0 rgba(var(--spinwatch-main-rgb), 0.5);
+        box-shadow: inset 0px 0px 0px 0 rgba(var(--spinwatch-main-rgb), 0.5);
     }
 }
 
@@ -319,9 +452,61 @@ i.fa-circle-play {
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 3;
-    font-size: 10rem;
-    box-shadow: inset 0px 0px 1.5rem 0.5rem var(--spinwatch-main);
+    font-size: 150px;
+    box-shadow: inset 0px 0px 20px 10px var(--spinwatch-main);
     border-radius: 50%;
+}
+
+#win-screen {
+    width: calc(100% - 40px);
+    aspect-ratio: 1;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(0deg);
+    z-index: 9; 
+    border-radius: 50%;
+    
+    font-size: 50px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.win-fade-enter-active,
+.win-fade-leave-active {
+    transition: opacity 0.3s ease-in-out;
+}
+.win-fade-enter-from,
+.win-fade-leave-to {
+    opacity: 0;
+}
+.win-fade-enter-to,
+.win-fade-leave-from {
+    opacity: 1;
+}
+#win-screen.win-animation {
+    animation: winAnimation 3s infinite ease-in-out, winRotateAnimation 6s infinite linear;
+}
+@keyframes winAnimation {
+    from,
+    to {
+        background-color: rgba(var(--spinwatch-gold-rgb), 0.8);
+        outline: 20px solid var(--spinwatch--silver);
+        outline-offset: -40px;
+    }
+    50% {
+        background-color: rgba(var(--spinwatch-gold-rgb), 0.5);
+        outline: 10px solid var(--spinwatch--silver);
+        outline-offset: 5px;
+    }
+}
+@keyframes winRotateAnimation {
+    from {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+    to {
+        transform: translate(-50%, -50%) rotate(-360deg);
+    }
 }
 
 
@@ -354,7 +539,7 @@ circle {
     fill: none;
     stroke-width: 20px;
     transition: stroke-dasharray 0.3s ease-in-out, stroke-dashoffset 0.3s ease-in-out, stroke-linecap 0.3s ease-in-out;
-    animation: circleAnimation 2s infinite ease-in-out;
+    animation: circleAnimation 3s infinite ease-in-out;
 }
 @keyframes circleAnimation {
     from,
