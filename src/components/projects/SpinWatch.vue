@@ -105,9 +105,6 @@ export default {
 
 
 
-
-
-
             if (conditionObj.prevCondition === 'fake-win' && conditionObj.conditionCounter === 1 || conditionObj.prevCondition === 'win' && conditionObj.conditionCounter === 2) {
                 conditionObj.selectedCondition = null;
                 conditionObj.conditionCounter = 0;
@@ -134,13 +131,9 @@ export default {
             } else {
                 conditionObj.prevIndex = randomIndex;
             }
-           
-
-
-            console.log('LOG.........', randomIndex, randomSymbol, conditionObj)
-
-
-
+            
+            //////////////////////////////////////////////////////////////////
+            console.log('LOG........', randomIndex, randomSymbol, conditionObj)
 
 
 
