@@ -1,7 +1,14 @@
 <template>
     <div id="spin-watch" :class="['d-flex justify-ctr align-ctr relative', { 'dimension no-watch': !isWatch }]">
-        <div id="spin-watch-container" :class="['d-flex justify-ctr align-ctr', { 'dimension': isWatch, 'no-watch': !isWatch }]">
-            <div @click="spin()" ref="refGame" id="game" :class="['d-flex justify-ctr align-ctr relative', { 'no-watch': !isWatch }]">
+        <div id="spin-watch-container" :class="['d-flex justify-ctr align-ctr relative', { 'dimension': isWatch, 'no-watch': !isWatch }]">
+            <transition name="win-fade">
+                <div v-if="isWinActive" @click="winClose()" id="win-screen" :class="['d-flex justify-ctr align-ctr text-ctr', { 'win-animation': isWinActive }]">
+                    You<br/>
+                    rock!
+                </div>
+            </transition>
+            
+            <div @click="!isWinActive && spin()" ref="refGame" id="game" :class="['d-flex justify-ctr align-ctr relative', { 'no-watch': !isWatch }]">
                 <i v-if="isFirstPlay" class="far fa-circle-play"></i>
                 
                 <div 
@@ -20,13 +27,13 @@
                         ref="refProgressLeft"
                         :cx="progressDimension" 
                         :cy="progressDimension" 
-                        :r="progressDimension && progressDimension - 10" 
+                        :r="progressDimension && progressDimension - 10"
                     />
                     <circle 
                         ref="refProgressRight"
                         :cx="progressDimension" 
                         :cy="progressDimension" 
-                        :r="progressDimension && progressDimension - 10" 
+                        :r="progressDimension && progressDimension - 10"
                     />
                 </svg>
             </div>
@@ -54,6 +61,7 @@ export default {
         const refProgressLeft = ref(null);
         const refProgressRight = ref(null);
         const progressDimension = ref();
+        const isWinActive = ref(false);
 
         const REEL_LENGTH = 12;
         const DEG_GAP = 30;
@@ -96,7 +104,7 @@ export default {
             }
 
             conditionObj.prevCondition = conditionObj.selectedCondition;
-            conditionObj.selectedCondition = CONDITIONS[getRandomNumber(0 , CONDITIONS.length -1)];   
+            conditionObj.selectedCondition = 'win'//CONDITIONS[getRandomNumber(0 , CONDITIONS.length -1)];   
             
             do {
                 randomIndex = getRandomNumber(0, 11);
@@ -151,7 +159,12 @@ export default {
                 
                 setProgress(progressCounter);
                 isPlaying = false;
-                refSymbols.value[randomIndex].classList.add('spin-end');
+
+                if (conditionObj.selectedCondition === 'win' && conditionObj.conditionCounter === 2) {
+                    isWinActive.value = true;
+                } else {
+                    refSymbols.value[randomIndex].classList.add('spin-end');
+                }
             }, animDuration);
         }
 
@@ -251,6 +264,12 @@ export default {
             refProgressRight.value.style.strokeLinecap = progress < 180 ? 'round' : 'butt';
         }
 
+        const winClose = () => {
+            isWinActive.value = false;
+            progressCounter = 0;
+            setProgress(progressCounter);
+        }
+
 
 
         // INIT
@@ -307,7 +326,9 @@ export default {
             progressDimension,
             REEL_LENGTH,
             spin,
-            isFirstPlay
+            isFirstPlay,
+            isWinActive,
+            winClose
         }
     }
 }
@@ -384,6 +405,47 @@ i.fa-circle-play {
     font-size: 150px;
     box-shadow: inset 0px 0px 20px 10px var(--spinwatch-main);
     border-radius: 50%;
+}
+#win-screen {
+    width: calc(100% - 40px);
+    aspect-ratio: 1;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(0deg);
+    z-index: 9;
+    background-color: rgba(var(--spinwatch-gold-rgb), 0.8);
+    border-radius: 50%;
+    outline: 20px solid var(--spinwatch--silver);
+    outline-offset: -40px;
+    
+    font-size: 50px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.win-fade-enter-active,
+.win-fade-leave-active {
+    transition: opacity 0.3s ease-in-out;
+}
+.win-fade-enter-from,
+.win-fade-leave-to {
+    opacity: 0;
+}
+.win-fade-enter-to,
+.win-fade-leave-from {
+    opacity: 1;
+}
+#win-screen.win-animation {
+    animation: winAnimation 6s infinite linear;
+}
+@keyframes winAnimation {
+    from {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+    to {
+        transform: translate(-50%, -50%) rotate(-360deg);
+    }
 }
 
 
