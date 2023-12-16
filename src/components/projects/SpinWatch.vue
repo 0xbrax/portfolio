@@ -1,15 +1,15 @@
 <template>
     <div id="spin-watch" :class="['d-flex justify-ctr align-ctr relative', { 'dimension no-watch': !isWatch }]">
-        <div id="spin-watch-container" :class="['d-flex justify-ctr align-ctr relative', { 'dimension': isWatch, 'no-watch': !isWatch }]">
-            <transition name="win-fade">
-                <div v-if="isWinActive" @click="winClose()" id="win-screen" :class="['d-flex justify-ctr align-ctr text-ctr', { 'win-animation': isWinActive }]">
-                    You<br/>
-                    rock!
-                </div>
-            </transition>
-            
-            <div @click="!isWinActive && spin()" ref="refGame" id="game" :class="['d-flex justify-ctr align-ctr relative', { 'no-watch': !isWatch }]">
+        <div id="spin-watch-container" :class="['d-flex justify-ctr align-ctr', { 'dimension': isWatch, 'no-watch': !isWatch }]">            
+            <div @click="spin()" ref="refGame" id="game" :class="['d-flex justify-ctr align-ctr relative', { 'no-watch': !isWatch }]">
                 <i v-if="isFirstPlay" class="far fa-circle-play"></i>
+
+                <transition name="win-fade">
+                    <div v-if="isWinActive" id="win-screen" :class="['d-flex justify-ctr align-ctr text-ctr', { 'win-animation': isWinActive }]">
+                        You<br/>
+                        rock!
+                    </div>
+                </transition>
                 
                 <div 
                     class="symbol-container"
@@ -53,6 +53,7 @@ export default {
         // TODO bug grafico iniziale anello progress
 
         
+        
         const isWatch = ref(window.screen.width <= 550 && window.screen.height <= 550);
 
         const refGame = ref(null);
@@ -86,6 +87,15 @@ export default {
         const PROGRESS_INCREMENT = 60;
 
         const spin = () => {
+            if (isWinActive.value) {
+                progressCounter = 0;
+                setProgress(progressCounter);
+                isWinActive.value = false;
+                isFirstPlay.value = true;
+                winInitSymbols();
+                return;
+            }
+
             if (!isLoaded || isPlaying) return;
 
             if (randomIndex != null) refSymbols.value[randomIndex].classList.remove('spin-end');
@@ -178,7 +188,6 @@ export default {
             let degEndSymbol = -lastDeg - 330 - multiplier;
 
             for (let i = 0; i < REEL_LENGTH; i++) {
-
                 if (i !== 0) {
                     degStartContainer += DEG_GAP;
                     degEndContainer += DEG_GAP;
@@ -264,29 +273,7 @@ export default {
             refProgressRight.value.style.strokeLinecap = progress < 180 ? 'round' : 'butt';
         }
 
-        const winClose = () => {
-            isWinActive.value = false;
-            progressCounter = 0;
-            setProgress(progressCounter);
-        }
-
-
-
-        // INIT
-
-        onMounted(() => {
-            nextTick(() => {
-                progressDimension.value = refSymbolContainers.value[0].getBoundingClientRect().height;
-            });
-
-            window.addEventListener('resize', () => {
-                isWatch.value = window.screen.width <= 550 && window.screen.height <= 550;
-
-                nextTick(() => {
-                    progressDimension.value = refSymbolContainers.value[0].getBoundingClientRect().height;
-                });
-            });
-
+        const firstPlayInitSymbols = () => {
             let degStartContainer = 0;
             let degEndContainer = 330;
 
@@ -308,7 +295,78 @@ export default {
                 refSymbols.value[i].style.top = 'calc(15% + 20px)';
                 refSymbols.value[i].style.height = '30%';
             }
+        }
 
+        const winInitSymbols = () => {
+            const lastDeg = getRotationDegrees(getComputedStyle(refSymbolContainers.value[0]).transform);
+
+            let degStartContainer = lastDeg;
+            let degEndContainer = lastDeg + 330;
+
+            let degStartSymbol = -lastDeg;
+            let degEndSymbol = -lastDeg - 330;
+
+            for (let i = 0; i < REEL_LENGTH; i++) {
+                if (i !== 0) {
+                    degStartContainer += DEG_GAP;
+                    degStartSymbol -= DEG_GAP;
+                }
+                if (i !== 0) {
+                    degEndContainer += DEG_GAP;
+                    degEndSymbol -= DEG_GAP;
+                }
+
+                const animContainerKeyframes = [
+                    {
+                        transform: `translate(-50%, -100%) rotate(${degStartContainer + 'deg'})`
+                    },
+                    {
+                        transform: `translate(-50%, -100%) rotate(${degEndContainer + 'deg'})`
+                    }
+                ];
+                const animSymbolKeyframes = [
+                    {
+                        transform: `translate(-50%, -50%) rotate(${degStartSymbol + 'deg'})`,
+                        top: '100%',
+                        height: '80%'
+                    },
+                    {
+                        transform: `translate(-50%, -50%) rotate(${degEndSymbol + 'deg'})`,
+                        top: 'calc(15% + 20px)',
+                        height: '30%'
+                    }
+                ];
+
+                const animProperties = {
+                    duration: 300,
+                    iterations: 1,
+                    easing: 'ease-in-out',
+                    fill: 'forwards'
+                };
+
+                refSymbolContainers.value[i].animate(animContainerKeyframes, animProperties);
+                refSymbols.value[i].animate(animSymbolKeyframes, animProperties);
+            }
+        }
+
+
+
+        // INIT
+
+        onMounted(() => {
+            nextTick(() => {
+                progressDimension.value = refSymbolContainers.value[0].getBoundingClientRect().height;
+            });
+
+            window.addEventListener('resize', () => {
+                isWatch.value = window.screen.width <= 550 && window.screen.height <= 550;
+
+                nextTick(() => {
+                    progressDimension.value = refSymbolContainers.value[0].getBoundingClientRect().height;
+                });
+            });
+
+            firstPlayInitSymbols();
             setProgress(180);
 
             isLoaded = true;
@@ -327,8 +385,7 @@ export default {
             REEL_LENGTH,
             spin,
             isFirstPlay,
-            isWinActive,
-            winClose
+            isWinActive
         }
     }
 }
@@ -406,6 +463,7 @@ i.fa-circle-play {
     box-shadow: inset 0px 0px 20px 10px var(--spinwatch-main);
     border-radius: 50%;
 }
+
 #win-screen {
     width: calc(100% - 40px);
     aspect-ratio: 1;
@@ -413,11 +471,8 @@ i.fa-circle-play {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) rotate(0deg);
-    z-index: 9;
-    background-color: rgba(var(--spinwatch-gold-rgb), 0.8);
+    z-index: 9; 
     border-radius: 50%;
-    outline: 20px solid var(--spinwatch--silver);
-    outline-offset: -40px;
     
     font-size: 50px;
     font-weight: bold;
@@ -437,9 +492,22 @@ i.fa-circle-play {
     opacity: 1;
 }
 #win-screen.win-animation {
-    animation: winAnimation 6s infinite linear;
+    animation: winAnimation 3s infinite ease-in-out, winRotateAnimation 6s infinite linear;
 }
 @keyframes winAnimation {
+    from,
+    to {
+        background-color: rgba(var(--spinwatch-gold-rgb), 0.8);
+        outline: 20px solid var(--spinwatch--silver);
+        outline-offset: -40px;
+    }
+    50% {
+        background-color: rgba(var(--spinwatch-gold-rgb), 0.5);
+        outline: 10px solid var(--spinwatch--silver);
+        outline-offset: 5px;
+    }
+}
+@keyframes winRotateAnimation {
     from {
         transform: translate(-50%, -50%) rotate(0deg);
     }
