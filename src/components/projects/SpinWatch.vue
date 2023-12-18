@@ -1,15 +1,15 @@
 <template>
     <div id="spin-watch" :class="['d-flex justify-ctr align-ctr relative', { 'dimension no-watch': !isWatch }]">
         <div id="spin-watch-container" :class="['d-flex justify-ctr align-ctr', { 'dimension': isWatch, 'no-watch': !isWatch }]">            
-            <div @click="spin()" ref="refGame" id="game" :class="['d-flex justify-ctr align-ctr relative', { 'no-watch': !isWatch }]">
-                <i v-if="isFirstPlay" class="far fa-circle-play"></i>
+            <div @touchstart="spin()" ref="refGame" id="game" :class="['d-flex justify-ctr align-ctr relative', { 'no-watch': !isWatch }]">
+                <transition-group name="fade">
+                    <i v-if="isFirstPlay" class="far fa-circle-play"></i>
 
-                <transition name="win-fade">
                     <div v-if="isWinActive" id="win-screen" :class="['d-flex justify-ctr align-ctr text-ctr', { 'win-animation': isWinActive }]">
                         You<br/>
                         rock!
                     </div>
-                </transition>
+                </transition-group>
                 
                 <div 
                     class="symbol-container"
@@ -48,12 +48,6 @@ import { assetsUrl, getRandomNumber } from '@/assets/js/utils.js';
 export default {
     name: 'SpinWatch',
     setup() {
-        // TODO Reset degree if position is === start position => JS MAX NUMBER (degree > max when play hard)...
-        // TODO a volte bug sulla rotazione del singolo simbolo su se stesso, ha un -30deg in piu
-        // TODO bug grafico iniziale anello progress
-
-
-        
         const isWatch = ref(window.screen.width <= 550 && window.screen.height <= 550);
 
         const refGame = ref(null);
@@ -67,7 +61,8 @@ export default {
         const REEL_LENGTH = 12;
         const DEG_GAP = 30;
 
-        const CONDITIONS = [...Array(4).fill('lose'), ...Array(6).fill('fake-win'), ...Array(11).fill('win')];
+        // Lose conditions ratio 3 : 1 because you need 3 spin to win => 9 : 3 => 50 : 50
+        const CONDITIONS = [...Array(4).fill('lose'), ...Array(5).fill('fake-win'), ...Array(3 + 1).fill('win')];
         const conditionObj = {
             selectedCondition: null,
             prevCondition: null,
@@ -88,6 +83,7 @@ export default {
 
         const spin = () => {
             if (isWinActive.value) {
+                refSymbols.value[randomIndex].classList.remove('spin-end');
                 progressCounter = 0;
                 setProgress(progressCounter);
                 isWinActive.value = false;
@@ -98,8 +94,9 @@ export default {
 
             if (!isLoaded || isPlaying) return;
 
-            if (randomIndex != null) refSymbols.value[randomIndex].classList.remove('spin-end');
             isPlaying = true;
+
+            if (randomIndex != null && !isWinActive.value) refSymbols.value[randomIndex].classList.remove('spin-end');
             let animDuration = getRandomNumber(15, 20);
             animDuration = animDuration * 100;
 
@@ -111,7 +108,6 @@ export default {
             }
 
             conditionObj.prevCondition = conditionObj.selectedCondition;
-            conditionObj.selectedCondition = CONDITIONS[getRandomNumber(0 , CONDITIONS.length -1)];
             
             do {
                 randomIndex = getRandomNumber(0, 11);
@@ -129,11 +125,9 @@ export default {
                 randomSymbol = SYMBOLS[randomIndex];
                 conditionObj.conditionCounter = 2;
             } else {
+                conditionObj.selectedCondition = CONDITIONS[getRandomNumber(0 , CONDITIONS.length -1)];
                 conditionObj.prevIndex = randomIndex;
             }
-            
-            //////////////////////////////////////////////////////////////////
-            console.log('LOG........', randomIndex, randomSymbol, conditionObj)
 
 
 
@@ -148,7 +142,6 @@ export default {
                 isFirstPlay.value = false;
             }
 
-
             if (conditionObj.conditionCounter === 0) {
                 progressCounter = 0;
             }
@@ -160,14 +153,13 @@ export default {
                     progressCounter = PROGRESS_INCREMENT;
                 }
                 
+                refSymbols.value[randomIndex].classList.add('spin-end');
                 setProgress(progressCounter);
-                isPlaying = false;
-
                 if (conditionObj.selectedCondition === 'win' && conditionObj.conditionCounter === 2) {
                     isWinActive.value = true;
-                } else {
-                    refSymbols.value[randomIndex].classList.add('spin-end');
                 }
+
+                isPlaying = false;
             }, animDuration);
         }
 
@@ -349,6 +341,9 @@ export default {
         onMounted(() => {
             nextTick(() => {
                 progressDimension.value = refSymbolContainers.value[0].getBoundingClientRect().height;
+                setProgress(180);
+
+                window.addEventListener('keydown', (e) => e.code === 'Space' && spin());
             });
 
             window.addEventListener('resize', () => {
@@ -360,7 +355,6 @@ export default {
             });
 
             firstPlayInitSymbols();
-            setProgress(180);
 
             isLoaded = true;
         });
@@ -398,7 +392,7 @@ export default {
 #spin-watch.no-watch::after {
     content: "";
     background-color: var(--spinwatch-secondary);
-    box-shadow: 0px 0px 5px 5px rgba(var(--spinwatch-secondary-rgb), 0.5);
+    box-shadow: 0 0 5px 5px rgba(var(--spinwatch-secondary-rgb), 0.5);
     height: 100%;
     width: 120px;
     position: absolute;
@@ -422,7 +416,7 @@ export default {
     border-radius: 50%;
 }
 #game.no-watch {
-    box-shadow: 0px 0px 5px 5px rgba(var(--spinwatch-secondary-rgb), 0.5);
+    box-shadow: 0 0 5px 5px rgba(var(--spinwatch-secondary-rgb), 0.5);
 }
 #game::after {
     content: "";
@@ -439,10 +433,10 @@ export default {
 @keyframes circleShadowAnimation {
     from,
     to {
-        box-shadow: inset 0px 0px 10px 0 rgba(var(--spinwatch-main-rgb), 1);
+        box-shadow: inset 0 0 10px 0 rgba(var(--spinwatch-main-rgb), 1);
     }
     50% {
-        box-shadow: inset 0px 0px 0px 0 rgba(var(--spinwatch-main-rgb), 0.5);
+        box-shadow: inset 0 0 0 0 rgba(var(--spinwatch-main-rgb), 0.5);
     }
 }
 
@@ -453,7 +447,7 @@ i.fa-circle-play {
     transform: translate(-50%, -50%);
     z-index: 3;
     font-size: 150px;
-    box-shadow: inset 0px 0px 20px 10px var(--spinwatch-main);
+    box-shadow: inset 0 0 20px 10px var(--spinwatch-main);
     border-radius: 50%;
 }
 
@@ -472,16 +466,16 @@ i.fa-circle-play {
     text-transform: uppercase;
 }
 
-.win-fade-enter-active,
-.win-fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
     transition: opacity 0.3s ease-in-out;
 }
-.win-fade-enter-from,
-.win-fade-leave-to {
+.fade-enter-from,
+.fade-leave-to {
     opacity: 0;
 }
-.win-fade-enter-to,
-.win-fade-leave-from {
+.fade-enter-to,
+.fade-leave-from {
     opacity: 1;
 }
 #win-screen.win-animation {
@@ -523,12 +517,12 @@ i.fa-circle-play {
     aspect-ratio: 1;
     position: absolute;
     left: 50%;
-    border-radius: 5px;
+    border-radius: 50%;
     transition: 0.3s ease-in-out;
 }
 .symbol.spin-end {
     background-color: var(--spinwatch-gold);
-    box-shadow: 0px 0px 5px 5px rgba(var(--spinwatch-gold-rgb), 0.8);
+    box-shadow: 0 0 5px 20px var(--spinwatch-gold);
 }
 
 svg {
