@@ -1,15 +1,16 @@
 <template>
     <div id="spin-watch" :class="['d-flex justify-ctr align-ctr relative', { 'dimension no-watch': !isWatch }]">
         <div id="spin-watch-container" :class="['d-flex justify-ctr align-ctr', { 'dimension': isWatch, 'no-watch': !isWatch }]">            
-            <div @touchstart="spin()" ref="refGame" id="game" :class="['d-flex justify-ctr align-ctr relative', { 'no-watch': !isWatch }]">
-                <transition-group name="fade">
+            <div @touchstart="spin()" @mousedown="spin()" ref="refGame" id="game" :class="['d-flex justify-ctr align-ctr relative', { 'no-watch': !isWatch }]">
+                <transition name="icon">
                     <i v-if="isFirstPlay" class="far fa-circle-play"></i>
-
+                </transition>
+                <transition name="win">
                     <div v-if="isWinActive" id="win-screen" :class="['d-flex justify-ctr align-ctr text-ctr', { 'win-animation': isWinActive }]">
                         You<br/>
                         rock!
                     </div>
-                </transition-group>
+                </transition>
                 
                 <div 
                     class="symbol-container"
@@ -42,7 +43,7 @@
 </template>
 
 <script>
-import { onMounted, ref, nextTick } from 'vue';
+import { onMounted, ref, nextTick, watch } from 'vue';
 import { assetsUrl, getRandomNumber } from '@/assets/js/utils.js';
 
 export default {
@@ -61,7 +62,7 @@ export default {
         const REEL_LENGTH = 12;
         const DEG_GAP = 30;
 
-        // Lose conditions ratio 3 : 1 because you need 3 spin to win => 9 : 3 => 50 : 50
+        // conditions ratio 3 : 1 because you need 3 spin to win => 9 (4 + 5) : 3 => 50 : 50
         const CONDITIONS = [...Array(4).fill('lose'), ...Array(5).fill('fake-win'), ...Array(3 + 1).fill('win')];
         const conditionObj = {
             selectedCondition: null,
@@ -72,7 +73,11 @@ export default {
 
         const SYMBOLS = ['o', 'bar-1', 'x-w', 'bar-3', 'x-b', 'bar-2', 'o', 'bar-3', 'x-w', 'bar-1', 'x-b', 'bar-2'];
         let randomIndex;
-        let randomSymbol;
+        const animTriggerRef = ref(0);
+        const degEndObj = {
+            containers: {},
+            symbols: {}
+        }
 
         const isFirstPlay = ref(true);
         let isLoaded = false;
@@ -101,7 +106,7 @@ export default {
             animDuration = animDuration * 100;
 
 
-
+            //////// start conditions algorythm
             if (conditionObj.prevCondition === 'fake-win' && conditionObj.conditionCounter === 1 || conditionObj.prevCondition === 'win' && conditionObj.conditionCounter === 2) {
                 conditionObj.selectedCondition = null;
                 conditionObj.conditionCounter = 0;
@@ -111,24 +116,21 @@ export default {
             
             do {
                 randomIndex = getRandomNumber(0, 11);
-                randomSymbol = SYMBOLS[randomIndex];
             } while (conditionObj.prevIndex != null && SYMBOLS[randomIndex] === SYMBOLS[conditionObj.prevIndex]);
 
             if (conditionObj.prevCondition === 'fake-win' || (conditionObj.prevCondition === 'win' && conditionObj.conditionCounter === 0)) {
                 conditionObj.selectedCondition = conditionObj.prevCondition;
                 randomIndex = conditionObj.prevIndex;
-                randomSymbol = SYMBOLS[randomIndex];
                 conditionObj.conditionCounter = 1;
             } else if (conditionObj.prevCondition === 'win' && conditionObj.conditionCounter === 1) {
                 conditionObj.selectedCondition = conditionObj.prevCondition;
                 randomIndex = conditionObj.prevIndex;
-                randomSymbol = SYMBOLS[randomIndex];
                 conditionObj.conditionCounter = 2;
             } else {
                 conditionObj.selectedCondition = CONDITIONS[getRandomNumber(0 , CONDITIONS.length -1)];
                 conditionObj.prevIndex = randomIndex;
             }
-
+            //////// end conditions algorythm
 
 
             const iteration = 12 * getRandomNumber(1, 2);
@@ -145,25 +147,10 @@ export default {
             if (conditionObj.conditionCounter === 0) {
                 progressCounter = 0;
             }
-
-            setTimeout(() => {
-                if (conditionObj.conditionCounter === 1 || conditionObj.conditionCounter === 2) {
-                    progressCounter += PROGRESS_INCREMENT;
-                } else {
-                    progressCounter = PROGRESS_INCREMENT;
-                }
-                
-                refSymbols.value[randomIndex].classList.add('spin-end');
-                setProgress(progressCounter);
-                if (conditionObj.selectedCondition === 'win' && conditionObj.conditionCounter === 2) {
-                    isWinActive.value = true;
-                }
-
-                isPlaying = false;
-            }, animDuration);
         }
 
         const reelAnimation = (duration, multiplier) => {
+            animTriggerRef.value = 0;
             const lastDeg = getRotationDegrees(getComputedStyle(refSymbolContainers.value[0]).transform);
 
             let degStartContainer = lastDeg;
@@ -213,19 +200,55 @@ export default {
                 const animProperties = {
                     duration: duration,
                     iterations: 1,
-                    easing: 'ease-in-out',
-                    fill: 'forwards'
+                    easing: 'ease-in-out'
                 };
 
-                refSymbolContainers.value[i].animate(animContainerKeyframes, animProperties);
-                refSymbols.value[i].animate(animSymbolKeyframes, animProperties);
+                const animContainer = refSymbolContainers.value[i].animate(animContainerKeyframes, animProperties);
+                const animSymbol = refSymbols.value[i].animate(animSymbolKeyframes, animProperties);
 
-                setTimeout(() => {
+                const animHalfTime = setTimeout(() => {
                     if (i === randomIndex) refSymbolContainers.value[i].style.zIndex = '2';
                     else refSymbolContainers.value[i].style.zIndex = '1';
                 }, duration / 2);
+
+                degEndObj.containers[i] = degEndContainer;
+                degEndObj.symbols[i] = degEndSymbol;
+
+                animContainer.onfinish = () => {
+                    if (i === 0) animTriggerRef.value = 1;
+                    
+                    animContainer.cancel();
+                    animSymbol.cancel();
+                    clearTimeout(animHalfTime);
+
+                    refSymbolContainers.value[i].style.transform = `translate(-50%, -100%) rotate(${degEndObj.containers[i] + 'deg'})`;
+                    refSymbols.value[i].style.transform = `translate(-50%, -50%) rotate(${degEndObj.symbols[i] + 'deg'})`;
+                    refSymbols.value[i].style.top = '100%';
+                    refSymbols.value[i].style.height = '80%';
+                };
             }
         }
+
+        watch(
+            () => animTriggerRef.value,
+            (val) => {
+                if (val === 0) return;
+
+                if (conditionObj.conditionCounter === 1 || conditionObj.conditionCounter === 2) {
+                    progressCounter += PROGRESS_INCREMENT;
+                } else {
+                    progressCounter = PROGRESS_INCREMENT;
+                }
+                
+                refSymbols.value[randomIndex].classList.add('spin-end');
+                setProgress(progressCounter);
+                if (conditionObj.selectedCondition === 'win' && conditionObj.conditionCounter === 2) {
+                    isWinActive.value = true;
+                }
+
+                isPlaying = false;
+            }
+        );
 
 
 
@@ -325,12 +348,24 @@ export default {
                 const animProperties = {
                     duration: 300,
                     iterations: 1,
-                    easing: 'ease-in-out',
-                    fill: 'forwards'
+                    easing: 'ease-in-out'
                 };
 
-                refSymbolContainers.value[i].animate(animContainerKeyframes, animProperties);
-                refSymbols.value[i].animate(animSymbolKeyframes, animProperties);
+                const animContainer = refSymbolContainers.value[i].animate(animContainerKeyframes, animProperties);
+                const animSymbol = refSymbols.value[i].animate(animSymbolKeyframes, animProperties);
+
+                degEndObj.containers[i] = degEndContainer;
+                degEndObj.symbols[i] = degEndSymbol;
+
+                animContainer.onfinish = () => {
+                    animContainer.cancel();
+                    animSymbol.cancel();
+
+                    refSymbolContainers.value[i].style.transform = `translate(-50%, -100%) rotate(${degEndObj.containers[i] + 'deg'})`;
+                    refSymbols.value[i].style.transform = `translate(-50%, -50%) rotate(${degEndObj.symbols[i] + 'deg'})`;
+                    refSymbols.value[i].style.top = 'calc(15% + 20px)';
+                    refSymbols.value[i].style.height = '30%';
+                };
             }
         }
 
@@ -465,19 +500,6 @@ i.fa-circle-play {
     font-weight: bold;
     text-transform: uppercase;
 }
-
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.3s ease-in-out;
-}
-.fade-enter-from,
-.fade-leave-to {
-    opacity: 0;
-}
-.fade-enter-to,
-.fade-leave-from {
-    opacity: 1;
-}
 #win-screen.win-animation {
     animation: winAnimation 3s infinite ease-in-out, winRotateAnimation 6s infinite linear;
 }
@@ -503,6 +525,25 @@ i.fa-circle-play {
     }
 }
 
+.icon-enter-active,
+.icon-leave-active,
+.win-enter-active,
+.win-leave-active {
+    transition: opacity 0.3s ease-in-out;
+}
+.icon-enter-from,
+.icon-leave-to,
+.win-enter-from,
+.win-leave-to {
+    opacity: 0;
+}
+.icon-enter-to,
+.icon-leave-from,
+.win-enter-to,
+.win-leave-from {
+    opacity: 1;
+}
+
 
 
 .symbol-container {
@@ -518,7 +559,7 @@ i.fa-circle-play {
     position: absolute;
     left: 50%;
     border-radius: 50%;
-    transition: 0.3s ease-in-out;
+    transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 .symbol.spin-end {
     background-color: var(--spinwatch-gold);
