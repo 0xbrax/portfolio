@@ -1,7 +1,7 @@
 <template>
     <div id="spin-watch" :class="['d-flex justify-ctr align-ctr relative', { 'dimension no-watch': !isWatch }]">
         <div id="spin-watch-container" :class="['d-flex justify-ctr align-ctr', { 'dimension': isWatch, 'no-watch': !isWatch }]">            
-            <div @touchstart="spin()" @mousedown="spin()" ref="refGame" id="game" :class="['d-flex justify-ctr align-ctr relative', { 'no-watch': !isWatch }]">
+            <div @touchstart="isWatch ? spin() : undefined" @mousedown="!isWatch ? spin() : undefined" ref="refGame" id="game" :class="['d-flex justify-ctr align-ctr relative', { 'no-watch': !isWatch }]">
                 <transition name="icon">
                     <i v-if="isFirstPlay" class="far fa-circle-play"></i>
                 </transition>
@@ -102,7 +102,7 @@ export default {
             isPlaying = true;
 
             if (randomIndex != null && !isWinActive.value) refSymbols.value[randomIndex].classList.remove('spin-end');
-            let animDuration = getRandomNumber(15, 20);
+            let animDuration = getRandomNumber(20, 25);
             animDuration = animDuration * 100;
 
 
@@ -183,10 +183,12 @@ export default {
                         height: isFirstPlay.value ? '30%' : '80%'
                     },
                     {
+                        transform: `translate(-50%, -50%) rotate(${(degStartSymbol * 2) + 'deg'})`,
                         top: 'calc(15% + 20px)',
                         height: '30%'
                     },
                     {
+                        transform: `translate(-50%, -50%) rotate(${(degEndSymbol / 2) + 'deg'})`,
                         top: 'calc(15% + 20px)',
                         height: '30%'
                     },
