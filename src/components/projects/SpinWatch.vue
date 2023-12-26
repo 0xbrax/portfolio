@@ -1,5 +1,7 @@
 <template>
     <div id="spin-watch" :class="['d-flex justify-ctr align-ctr relative', { 'dimension no-watch': !isWatch }]">
+        <router-link v-if="!isWatch" to="/"><i class="fas fa-house"></i></router-link>
+
         <div id="spin-watch-container" :class="['d-flex justify-ctr align-ctr', { 'dimension': isWatch, 'no-watch': !isWatch }]">            
             <div @touchstart="isWatch ? spin() : undefined" @mousedown="!isWatch ? spin() : undefined" ref="refGame" id="game" :class="['d-flex justify-ctr align-ctr relative', { 'no-watch': !isWatch }]">
                 <transition name="icon">
@@ -374,6 +376,7 @@ export default {
 
 
         // INIT
+        document.title = '0xbrax | Spin Watch';
 
         onMounted(() => {
             nextTick(() => {
@@ -426,6 +429,27 @@ export default {
     height: 100dvh;
 }
 
+i.fa-house {
+    color: #000000;
+    font-size: 25px;
+    width: 50px;
+    aspect-ratio: 1/ 1;
+    line-height: 50px;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.2);
+    text-shadow: none;
+    border-radius: 50%;
+    position: absolute;
+    top: 25px;
+    left: 25px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+i.fa-house:hover {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+
 #spin-watch.no-watch::after {
     content: "";
     background-color: var(--spinwatch-secondary);
@@ -442,6 +466,8 @@ export default {
     background-color: var(--spinwatch--silver);
 }
 #spin-watch-container.no-watch {
+    width: 90%;
+    aspect-ratio: 1;
     border-radius: 50%;
     background-color: transparent;
 }
@@ -585,6 +611,14 @@ circle {
     }
     50% {
         stroke: rgba(var(--spinwatch-main-rgb), 0.5);
+    }
+}
+
+
+
+@media all and (min-width: 576px) {
+    #spin-watch-container.no-watch {
+        width: 360px;
     }
 }
 </style>
