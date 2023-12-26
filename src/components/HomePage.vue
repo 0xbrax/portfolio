@@ -174,6 +174,7 @@
     import PIKARIDEimage from "@/assets/projects/pikaride/pikaride.jpg";
     import STARWAYimage from "@/assets/projects/starway/starway.jpg";
     import FRUITCOCKTAILimage from "@/assets/projects/fruitcocktail/fruitcocktail.jpg";
+    import SPINWATCHimage from "@/assets/projects/spinwatch/spinwatch.jpg"
 
     import PlaneControl from "@/components/PlaneControl.vue"
 
@@ -598,6 +599,10 @@
                         image = FRUITCOCKTAILimage;
                         text = "Fruit Cocktail";
                         break;
+                    case "SPINWATCH":
+                        image = SPINWATCHimage;
+                        text = "Spin Watch";
+                        break;
                 }
 
                 const texture = await new Promise((resolve) => {
@@ -734,6 +739,9 @@
                         case "FRUITCOCKTAIL":
                             planeModelNewPosition = -1;
                             break;
+                        case "SPINWATCH":
+                            planeModelNewPosition = -2.5;
+                            break;
                     }
                     gsap.to(planeModel.position, {
                         duration: DURATION,
@@ -755,12 +763,13 @@
 
 
             // PROJECTS
-            const projectsArray = ["pikaride", "starway", "fruitcocktail"];
+            const projectsArray = ["pikaride", "starway", "fruitcocktail", "spinwatch"];
             const switchProject = (mode) => {
                 const obj = {
                     cubeModel_1,
                     cubeModel_2,
-                    cubeModel_3
+                    cubeModel_3,
+                    cubeModel_4
                 }
 
                 let index = projectsArray.indexOf(whatProject.value);
@@ -807,6 +816,15 @@
             let project_3;
             let dragonMixer_3;
             let cubeModel_3;
+
+            // PROJECT MODEL 4
+            const PROJECT_NAME_4 = "SPINWATCH";
+            const PROJECT_COLOR_4 = 0x8B0000;
+            const projectGroup_4 = new THREE.Group();
+            const dragonClock_4 = new THREE.Clock();
+            let project_4;
+            let dragonMixer_4;
+            let cubeModel_4;
 
             // TRUCK GROUP
             const truckGroup = new THREE.Group();
@@ -1079,6 +1097,10 @@
                         router.push("/project/fruitcocktail");
                         document.title = "0xbrax | Fruit Cocktail";
                         break;
+                    case "spinwatch":
+                        router.push("/project/spinwatch");
+                        document.title = "0xbrax | Spin Watch";
+                        break;
                 }
             };
 
@@ -1179,6 +1201,10 @@
                     const deltaTime = dragonClock_3.getDelta();
                     dragonMixer_3.update(deltaTime);
                 }
+                if (dragonMixer_4) {
+                    const deltaTime = dragonClock_4.getDelta();
+                    dragonMixer_4.update(deltaTime);
+                }
 
                 if (flameMixer) {
                     const deltaTime = flameClock.getDelta();
@@ -1266,6 +1292,17 @@
                 cubeModel_3 = project_3.cubeModel;
                 projectGroup_3.position.set(-1.0, 0.5, -0.1);
                 scene.add(projectGroup_3);
+
+                // spin watch
+                project_4 = await createProjectContainer(
+                    projectGroup_4,
+                    PROJECT_COLOR_4,
+                    PROJECT_NAME_4
+                );
+                dragonMixer_4 = project_4.dragonMixer;
+                cubeModel_4 = project_4.cubeModel;
+                projectGroup_4.position.set(-2.5, 0.5, -0.1);
+                scene.add(projectGroup_4);
 
                 // plane game
                 document.addEventListener('keydown', event => {
