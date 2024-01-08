@@ -905,7 +905,8 @@ export default {
                     mask.fillRect(0, 0, maskDimension.width, maskDimension.height);
                     mask.setPosition(this.slotBody.x + (xGap * this.slotBody.scaleX), this.slotBody.y + (96 * this.slotBody.scaleX));
 
-                    for (let i = 0; i < reelMap.length; i++) {
+                    const reelMapLength = reelMap.length;
+                    for (let i = 0; i < reelMapLength; i++) {
                         reels[`reel${id}`][`${reelMap[i]}Sheet`] = this.add.sprite(mask.x - (67 * this.slotBody.scaleX), 0, `${reelMap[i]}_sprite`, `${reelMap[i]}-animation_30.png`).setOrigin(0, 0);
                         reels[`reel${id}`][`${reelMap[i]}Sheet`].setScale(0.98 * this.slotBody.scaleX, 0.98 * this.slotBody.scaleX);
                         reels[`reel${id}`][`${reelMap[i]}Sheet`].y = mask.y + (maskDimension.width * i) - (87 * this.slotBody.scaleX);
