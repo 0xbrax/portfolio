@@ -386,6 +386,8 @@ export default {
                     this.slotBetIncrement = 100;
                     this.slotWin = null;
                     this.slotBalance = 1_000_000;
+                    this.slotMinBet = 100;
+                    this.slotMaxBet = 1_000
                     this.slotWinMultiplier = 2;
                     this.slotWinJollyMultiplier = 3;
                     this.slotMegaWinMultiplier = 5;
@@ -806,9 +808,9 @@ export default {
                         if (this.freeSpinValue === 100) return;
 
                         this.slotBet += this.slotBetIncrement;
-                        this.slotBetValue.setText(formatNumber(this.slotBet));
 
-                        if (this.slotBet >= 1000) {
+                        if (this.slotBet >= this.slotMaxBet) {
+                            this.slotBet = this.slotMaxBet;
                             this.slotPlusUI.input.enabled = false;
                             this.slotPlusUI.setAlpha(0.5);
                             this.slotPlusUI.input.cursor = false;
@@ -818,25 +820,28 @@ export default {
                             this.slotMinusUI.setAlpha(1);
                             this.slotMinusUI.input.cursor = 'pointer';
                         }
+
+                        this.slotBetValue.setText(formatNumber(this.slotBet));
                     });
                     this.slotMinusUI.on('pointerdown', () => {
                         if (isSettingOpened.value) return;
                         if (this.freeSpinValue === 100) return;
 
                         this.slotBet -= this.slotBetIncrement;
-                        this.slotBetValue.setText(formatNumber(this.slotBet));
 
-                        if (this.slotBet <= 100) {
+                        if (this.slotBet <= this.slotMinBet) {
+                            this.slotBet = this.slotMinBet;
                             this.slotMinusUI.input.enabled = false;
                             this.slotMinusUI.setAlpha(0.5);
                             this.slotMinusUI.input.cursor = false;
                             this.input.setDefaultCursor('default');
-                            return;
                         } else {
                             this.slotPlusUI.input.enabled = true;
                             this.slotPlusUI.setAlpha(1);
                             this.slotPlusUI.input.cursor = 'pointer';
                         }
+
+                        this.slotBetValue.setText(formatNumber(this.slotBet));
                     });
 
 
@@ -1162,10 +1167,14 @@ export default {
                         this.slotSpinUI.setAlpha(1);
                         this.slotSpinUI.input.cursor = 'pointer';
 
-                        this.slotPlusUI.input.enabled = 'pointer';
-                        this.slotPlusUI.setAlpha(1);
-                        this.slotMinusUI.input.enabled = 'pointer';
-                        this.slotMinusUI.setAlpha(1);
+                        if (this.slotBet > this.slotMinBet) {
+                            this.slotMinusUI.input.enabled = 'pointer';
+                            this.slotMinusUI.setAlpha(1);
+                        }
+                        if (this.slotBet < this.slotMaxBet) {
+                            this.slotPlusUI.input.enabled = 'pointer';
+                            this.slotPlusUI.setAlpha(1);
+                        }
 
                         if (
                             this.input.x >= this.slotSpinUI.x - (this.slotSpinUI.displayWidth / 2) &&
