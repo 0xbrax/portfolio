@@ -164,7 +164,7 @@
     import Truck from "@/assets/other/icecream_truck.glb";
     import Rocket from "@/assets/other/rocket_ship.glb";
     import Flame from "@/assets/other/flame_animation.glb";
-    import Dreampool from "@/assets/image/Dreampool_COMPRESSED.png";
+    import Dreampool from "@/assets/image/Dreampool_COMPRESSED.jpg";
 
     import Github from "@/assets/other/github_logo.glb";
     import Linkedin from "@/assets/other/linkedin_logo.glb";
