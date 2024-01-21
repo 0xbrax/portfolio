@@ -157,14 +157,14 @@
     import { gsap } from "gsap";
     import { isDeviceMobile } from "@/assets/js/utils.js";
 
-    import CLoudsSunsetVideo from "@/assets/video/360vr_clouds_sunset.mp4";
+    import CLoudsSunsetVideo from "@/assets/video/360vr_clouds_sunset_COMPRESSED.mp4";
 
     import Plane from "@/assets/other/cartoon_plane.glb";
     import Dragon from "@/assets/other/dragon_flying_small.glb";
     import Truck from "@/assets/other/icecream_truck.glb";
     import Rocket from "@/assets/other/rocket_ship.glb";
     import Flame from "@/assets/other/flame_animation.glb";
-    import Dreampool from "@/assets/image/Dreampool.png";
+    import Dreampool from "@/assets/image/Dreampool_COMPRESSED.png";
 
     import Github from "@/assets/other/github_logo.glb";
     import Linkedin from "@/assets/other/linkedin_logo.glb";
