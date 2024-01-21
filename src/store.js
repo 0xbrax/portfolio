@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
 import { reactive, ref } from 'vue';
 
-import PositivePopAudioTrack from "@/assets/audio/sfmusic_positive_pop.mp3";
-import AirplaneIdleAudioFX from "@/assets/audio/airplane_idle_fx.mp3";
+import PositivePopAudioTrack from "@/assets/audio/sfmusic_positive_pop_COMPRESSED.mp3";
+import AirplaneIdleAudioFX from "@/assets/audio/airplane_idle_fx_COMPRESSED.mp3";
 
 const STORE_NAME = 'settings';
 
