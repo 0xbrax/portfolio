@@ -1,16 +1,32 @@
-// https://vitejs.dev/config/
-
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
+import { fileURLToPath } from 'node:url';
+import restart from 'vite-plugin-restart';
+import glsl from 'vite-plugin-glsl'
+
+/*import path from 'node:path'
+'@': path.resolve(__dirname, './src')*/
 
 export default defineConfig({
   plugins: [
-    vue()
+    vue({
+      template: {
+        compilerOptions: {
+          isCustomElement: (tag) => {
+            return tag === 'swiper-container' || tag === 'swiper-slide';
+          },
+        },
+      },
+    }),
+    restart({ restart: [ '../public/**', ] }),
+    glsl()
   ],
   resolve: {
     alias: {
-      '@': '/src',
+      "@": fileURLToPath(new URL('./src', import.meta.url))
     },
   },
-  assetsInclude: ['**/*.glb']
-});
+  server: {
+    host: true,
+  },
+})
