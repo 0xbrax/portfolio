@@ -4,8 +4,7 @@ import { fileURLToPath } from 'node:url';
 import restart from 'vite-plugin-restart';
 import glsl from 'vite-plugin-glsl'
 
-/*import path from 'node:path'
-'@': path.resolve(__dirname, './src')*/
+
 
 export default defineConfig({
   plugins: [

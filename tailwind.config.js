@@ -5,9 +5,9 @@ module.exports = {
     ],
     theme: {
         extend: {
-            fontFamily: {
+            /*fontFamily: {
                 sans: ['Inter', 'sans-serif'],
-            },
+            },*/
         },
     },
     plugins: [
