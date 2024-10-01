@@ -5,6 +5,7 @@ export default class Robot {
     constructor() {
         this.experienceInstance = new Experience();
         this.instanceGroup = new THREE.Group();
+        this.instanceGroup.position.y = 1;
         this.experienceInstance.config.scene.add(this.instanceGroup);
         
         this.createRobot();
@@ -15,7 +16,6 @@ export default class Robot {
 
         this.model = this.experienceInstance.assets.models.robot.scene;
         this.model.scale.setScalar(2);
-        this.model.position.y = 1;
 
         this.model.children.forEach((child) => {
             if (child.isMesh) {
@@ -27,6 +27,7 @@ export default class Robot {
 
         this.createAnimation();
         this.createRaycaster();
+        this.createCirclecaster();
     }
 
     createAnimation() {
@@ -50,5 +51,17 @@ export default class Robot {
 
         const raycasterHelper = new THREE.ArrowHelper(rayDirection, rayOrigin, this.raycaster.far, '#00ff00');
         this.experienceInstance.config.scene.add(raycasterHelper);
+    }
+
+    createCirclecaster() {
+        const geometry = new THREE.CircleGeometry(2.5);
+        const material = new THREE.MeshBasicMaterial({ color: '#00ff00', side: THREE.DoubleSide });
+
+        this.circlecaster = new THREE.Mesh(geometry, material);
+        this.circlecaster.rotation.x = Math.PI * -0.5;
+        this.circlecaster.position.y = 0.5;
+        this.experienceInstance.config.scene.add(this.circlecaster);
+
+        this.circlecasterBoundingBox = new THREE.Box3().setFromObject(this.circlecaster);
     }
 }

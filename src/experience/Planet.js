@@ -10,7 +10,6 @@ import terrainFragmentShader from "@/shaders/terrain/fragment.glsl";
 
 
 
-
 export default class Planet {
     constructor() {
         this.experienceInstance = new Experience();
@@ -22,8 +21,8 @@ export default class Planet {
     }
 
     createPlanet() {
-        // TODO check inset shadows & attributes not used
-        let geometry = new THREE.IcosahedronGeometry(3, 60);
+        // TODO check inset shadows & all geometries attributes not used
+        let geometry = new THREE.IcosahedronGeometry(3, 30);
         geometry = mergeVertices(geometry);
         geometry.computeTangents();
         geometry.deleteAttribute('uv');
@@ -31,8 +30,8 @@ export default class Planet {
 
 
         const debugObject = {};
-        debugObject.colorWaterDeep = '#002b3d';
-        debugObject.colorWaterSurface = '#66a8ff';
+        debugObject.colorWaterDeep = '#2a5fc5';
+        debugObject.colorWaterSurface = '#35cdff';
         debugObject.colorSand = '#ffe894';
         debugObject.colorGrass = '#85d534';
         debugObject.colorRock = '#bfbd8d';
@@ -162,8 +161,8 @@ export default class Planet {
                 color: debugObject.colorWaterSurface,
                 transmission: 1,
                 roughness: 0.3,
-                transparent: true,
-                opacity: 0.5
+                //transparent: true,
+                //opacity: 0.75
             })
         );
         //water.visible = false;

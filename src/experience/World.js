@@ -3,6 +3,7 @@ import * as THREE from "three";
 import EventEmitter from "@/experience/EventEmitter.js";
 import Robot from "@/experience/Robot.js";
 import Planet from "@/experience/Planet.js";
+import InterestPoints from "@/experience/InterestPoints.js";
 
 
 
@@ -48,6 +49,7 @@ export default class World extends EventEmitter {
         this.createLight();
         this.robot = new Robot();
         this.planet = new Planet();
+        this.interestPoints = new InterestPoints();
     }
 
     createLight() {
@@ -112,10 +114,20 @@ export default class World extends EventEmitter {
         const intersects = this.robot.raycaster.intersectObject(this.planet.model);
         if (intersects.length > 0) {
             const intersect = intersects[0];
-
-            //console.log('|||||||| Intersection -->', intersect.distance)
-
-            this.robot.instanceGroup.position.y = -(intersect.distance - 3);
+            this.robot.instanceGroup.position.y = (intersect.distance - this.robot.raycaster.ray.origin.y) * -1;
         }
+
+        this.interestPoints.instanceGroup.children.forEach((object) => {
+            const boundingBox = new THREE.Box3().setFromObject(object);
+
+            if (!object.cIsIntersected && this.robot.circlecasterBoundingBox.intersectsBox(boundingBox)) {
+                object.cIsIntersected = true;
+                object.scale.setScalar(1.5);
+            }
+            if (object.cIsIntersected && !this.robot.circlecasterBoundingBox.intersectsBox(boundingBox)) {
+                object.cIsIntersected = false;
+                object.scale.setScalar(1);
+            }
+        });
     }
 }
