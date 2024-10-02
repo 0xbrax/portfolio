@@ -48,20 +48,18 @@ export default class Robot {
         this.raycaster = new THREE.Raycaster();
         this.raycaster.set(rayOrigin, rayDirection);
         this.raycaster.far = 6;
-
-        const raycasterHelper = new THREE.ArrowHelper(rayDirection, rayOrigin, this.raycaster.far, '#00ff00');
-        this.experienceInstance.config.scene.add(raycasterHelper);
     }
 
     createCirclecaster() {
-        const geometry = new THREE.CircleGeometry(2.5);
-        const material = new THREE.MeshBasicMaterial({ color: '#00ff00', side: THREE.DoubleSide });
+        const geometry = new THREE.CircleGeometry(2.5, 12);
+        const material = new THREE.MeshBasicMaterial({ color: '#00ff00', side: THREE.DoubleSide, wireframe: true });
 
         this.circlecaster = new THREE.Mesh(geometry, material);
         this.circlecaster.rotation.x = Math.PI * -0.5;
         this.circlecaster.position.y = 0.5;
-        this.experienceInstance.config.scene.add(this.circlecaster);
 
+        this.circlecaster.visible = false;
+        this.experienceInstance.config.scene.add(this.circlecaster);
         this.circlecasterBoundingBox = new THREE.Box3().setFromObject(this.circlecaster);
     }
 }

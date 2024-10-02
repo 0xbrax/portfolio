@@ -26,6 +26,16 @@ export const DEBUG = (isActive = false) => {
     });
     rendererFolder.add(experienceInstance.config.renderer, 'toneMappingExposure').min(0).max(10).step(0.01);
 
+    const directionalLightHelper = new THREE.DirectionalLightHelper(experienceInstance.world.directionalLight);
+    experienceInstance.config.scene.add(directionalLightHelper);
+
+    const raycasterHelper = new THREE.ArrowHelper(experienceInstance.world.robot.raycaster.ray.direction, experienceInstance.world.robot.raycaster.ray.origin, experienceInstance.world.robot.raycaster.far, '#00ff00');
+    experienceInstance.config.scene.add(raycasterHelper);
+
+    experienceInstance.world.robot.circlecaster.visible = true;
+
+
+
     const createInterestPoint = () => {
         const sphericalToCartesian = (radius, theta, phi) => {
             const x = radius * Math.sin(phi) * Math.cos(theta);
@@ -48,14 +58,14 @@ export const DEBUG = (isActive = false) => {
         const setPointPosition = () => {
             const position = sphericalToCartesian(3 + 0.5, positions.theta, positions.phi);
             point.position.copy(position);
-            point.lookAt(new THREE.Vector3(0, -2, 0));
+            point.lookAt(new THREE.Vector3(0, experienceInstance.world.planet.instanceGroup.position.y, 0));
         };
         setPointPosition();
 
         interestPointFolder.add(positions, 'theta').min(0).max(Math.PI * 2).step(0.01).onChange(setPointPosition);
         interestPointFolder.add(positions, 'phi').min(0).max(Math.PI).step(0.01).onChange(setPointPosition);
     };
-    createInterestPoint();
+    //createInterestPoint();
 
 
 

@@ -7,6 +7,8 @@ import { GPUComputationRenderer } from "three/addons";
 import terrainPositionsShader from "@/shaders/gpgpu/terrainPositions.glsl";
 import terrainVertexShader from "@/shaders/terrain/vertex.glsl";
 import terrainFragmentShader from "@/shaders/terrain/fragment.glsl";
+import waterVertexShader from '../shaders/water/vertex.glsl';
+import waterFragmentShader from '../shaders/water/fragment.glsl';
 
 
 
@@ -18,6 +20,7 @@ export default class Planet {
         this.experienceInstance.config.scene.add(this.instanceGroup);
         
         this.createPlanet();
+        this.createWater();
     }
 
     createPlanet() {
@@ -29,13 +32,13 @@ export default class Planet {
 
 
 
-        const debugObject = {};
-        debugObject.colorWaterDeep = '#2a5fc5';
-        debugObject.colorWaterSurface = '#35cdff';
-        debugObject.colorSand = '#ffe894';
-        debugObject.colorGrass = '#85d534';
-        debugObject.colorRock = '#bfbd8d';
-        debugObject.colorSnow = '#ffffff';
+        this.debugObject = {};
+        this.debugObject.colorWaterDeep = '#2a5fc5';
+        this.debugObject.colorWaterSurface = '#35cdff';
+        this.debugObject.colorSand = '#ffe894';
+        this.debugObject.colorGrass = '#85d534';
+        this.debugObject.colorRock = '#bfbd8d';
+        this.debugObject.colorSnow = '#ffffff';
     
         let uniformsObject = {
             uPositionFrequency: new THREE.Uniform(0.5),
@@ -126,12 +129,12 @@ export default class Planet {
         uniformsObject = {
             ...uniformsObject,
             
-            uColorWaterDeep: new THREE.Uniform(new THREE.Color(debugObject.colorWaterDeep)),
-            uColorWaterSurface: new THREE.Uniform(new THREE.Color(debugObject.colorWaterSurface)),
-            uColorSand: new THREE.Uniform(new THREE.Color(debugObject.colorSand)),
-            uColorGrass: new THREE.Uniform(new THREE.Color(debugObject.colorGrass)),
-            uColorRock: new THREE.Uniform(new THREE.Color(debugObject.colorRock)),
-            uColorSnow: new THREE.Uniform(new THREE.Color(debugObject.colorSnow))
+            uColorWaterDeep: new THREE.Uniform(new THREE.Color(this.debugObject.colorWaterDeep)),
+            uColorWaterSurface: new THREE.Uniform(new THREE.Color(this.debugObject.colorWaterSurface)),
+            uColorSand: new THREE.Uniform(new THREE.Color(this.debugObject.colorSand)),
+            uColorGrass: new THREE.Uniform(new THREE.Color(this.debugObject.colorGrass)),
+            uColorRock: new THREE.Uniform(new THREE.Color(this.debugObject.colorRock)),
+            uColorSnow: new THREE.Uniform(new THREE.Color(this.debugObject.colorSnow))
         };
 
         const material = new CustomShaderMaterial({
@@ -140,7 +143,7 @@ export default class Planet {
             fragmentShader: terrainFragmentShader,
             uniforms: uniformsObject,
             ////////
-            color: debugObject.colorGrass,
+            color: this.debugObject.colorGrass,
             metalness: 0,
             roughness: 0.5,
             //wireframe: false
@@ -152,23 +155,36 @@ export default class Planet {
         );
 
         gpgpu.computation.dispose();
-
-    
-    
-        const water = new THREE.Mesh(
-            new THREE.IcosahedronGeometry(3, 15),
-            new THREE.MeshPhysicalMaterial({
-                color: debugObject.colorWaterSurface,
-                transmission: 1,
-                roughness: 0.3,
-                //transparent: true,
-                //opacity: 0.75
-            })
-        );
-        //water.visible = false;
         
         
 
-        this.instanceGroup.add(this.model, water);
+        this.instanceGroup.add(this.model);
+    }
+
+    createWater() {
+        const geometry = new THREE.IcosahedronGeometry(3 + 0.01, 15);
+
+        const uniformsObject = {
+            uTime: new THREE.Uniform(0),
+            uFrequency: new THREE.Uniform(new THREE.Vector2(3, 1.5)),
+            uColor: new THREE.Uniform(new THREE.Color(this.debugObject.colorWaterSurface))
+        };
+
+        const material = new CustomShaderMaterial({
+            baseMaterial: THREE.MeshPhysicalMaterial,
+            vertexShader: waterVertexShader,
+            fragmentShader: waterFragmentShader,
+            uniforms: uniformsObject,
+            ////////
+            transmission: 1,
+            roughness: 0.3,
+            //wireframe: false
+        });
+
+
+
+        this.subModel = new THREE.Mesh(geometry, material);
+
+        this.instanceGroup.add(this.subModel);
     }
 }

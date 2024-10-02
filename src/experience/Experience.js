@@ -21,11 +21,28 @@ export default class Experience extends EventEmitter {
         //this.loading = loading;
 
         const RESOURCES = {
+            fonts: [
+                {
+                    name: 'regular',
+                    type: 'font',
+                    path: 'https://threejs.org/examples/fonts/helvetiker_regular.typeface.json'
+                }
+            ],
             models: [
                 {
                     name: 'robot',
                     type: 'gltf',
                     path: '/models/cute-bot_compressed.glb'
+                },
+                {
+                    name: 'plane',
+                    type: 'gltf',
+                    path: '/models/plane_edit_compressed.glb'
+                },
+                {
+                    name: 'duck',
+                    type: 'gltf',
+                    path: '/models/rubber-duck_compressed.glb'
                 }
             ]
         };
@@ -60,19 +77,21 @@ export default class Experience extends EventEmitter {
 
             this.emit('loaded');
         }, { once: true });
-        this.loader.on('error', (data) => {
-            console.log(`Asset load error: ${JSON.stringify(data)}`);
+        this.loader.on('error', (e) => {
+            // TODO fix and handle message
+            console.log(`Asset load error: ${JSON.stringify(e)}`);
         }, { once: true });
     }
 
     start() {
         this.world.start();
-        this.config.controls.target.copy(this.world.robot.instanceGroup.position.clone());
+        // current target is scene center (x: 0, y: 0, z: 0)
+        //this.config.controls.target.copy(this.world....position.clone());
 
         this.isReady = true;
 
         ////////
-        this.DEBUG = DEBUG(true);
+        //this.DEBUG = DEBUG(true);
     }
 
     tick() {
@@ -80,10 +99,9 @@ export default class Experience extends EventEmitter {
         this.deltaTime = this.elapsedTime - this.previousTime;
         this.previousTime = this.elapsedTime;
 
-        this.config.controls.update();
-
         if (this.isReady) this.world.update();
 
+        this.config.controls.update();
         this.config.renderer.render(this.config.scene, this.config.camera);
         window.requestAnimationFrame(() => {
             this.tick();

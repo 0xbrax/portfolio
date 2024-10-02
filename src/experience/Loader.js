@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { DRACOLoader, GLTFLoader, FBXLoader } from "three/addons";
+import { FontLoader, DRACOLoader, GLTFLoader } from "three/addons";
 import EventEmitter from "./EventEmitter.js";
 //import Experience from "./Experience.js";
 
@@ -13,6 +13,8 @@ export default class Loader extends EventEmitter {
         this.resources = resources;
         this.assets = {};
         this.loadingManager = new THREE.LoadingManager();
+        this.fontLoader = new FontLoader();
+        this.fontLoader.setCrossOrigin('anonymous');
         this.textureLoader = new THREE.TextureLoader();
         this.textureLoader.setCrossOrigin('anonymous');
         this.gltfLoader = new GLTFLoader();
@@ -20,8 +22,6 @@ export default class Loader extends EventEmitter {
         dracoLoader.setDecoderPath('/draco/');
         this.gltfLoader.setDRACOLoader(dracoLoader);
         this.gltfLoader.setCrossOrigin('anonymous');
-        this.fbxLoader = new FBXLoader();
-        this.fbxLoader.setCrossOrigin('anonymous');
 
         this.totalAssets = 0;
         this.loadedAssets = 0;
@@ -55,25 +55,25 @@ export default class Loader extends EventEmitter {
             for (const asset of this.resources[key]) {
                 this.loadingManager.itemStart(asset.path);
 
-                if (asset.type === 'texture') {
+                if (asset.type === 'font') {
+                    this.fontLoader.load(asset.path, (file) => {
+                        this.assets[key][asset.name] = file;
+                        this.onLoadAsset(asset.path);
+                    }, undefined, (e) => {
+                        this.loadingManager.itemError(asset.path);
+                    });
+                } else if (asset.type === 'texture') {
                     this.textureLoader.load(asset.path, (file) => {
                         this.assets[key][asset.name] = file;
                         this.onLoadAsset(asset.path);
-                    }, undefined, () => {
+                    }, undefined, (e) => {
                         this.loadingManager.itemError(asset.path);
                     });
                 } else if (asset.type === 'gltf') {
                     this.gltfLoader.load(asset.path, (file) => {
                         this.assets[key][asset.name] = file;
                         this.onLoadAsset(asset.path);
-                    }, undefined, () => {
-                        this.loadingManager.itemError(asset.path);
-                    });
-                } else if (asset.type === 'fbx') {
-                    this.fbxLoader.load(asset.path, (file) => {
-                        this.assets[key][asset.name] = file;
-                        this.onLoadAsset(asset.path);
-                    }, undefined, () => {
+                    }, undefined, (e) => {
                         this.loadingManager.itemError(asset.path);
                     });
                 } else if (asset.type === 'audio') {
@@ -83,7 +83,7 @@ export default class Loader extends EventEmitter {
                             this.assets[key][asset.name] = sound;
                             this.onLoadAsset(asset.path);
                         },
-                        onloaderror: () => {
+                        onloaderror: (e) => {
                             this.loadingManager.itemError(asset.path);
                         }
                     });
