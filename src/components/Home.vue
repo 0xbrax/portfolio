@@ -5,8 +5,10 @@
 </template>
 
 <script>
-import Experience from '@/experience/Experience.js';
 import { onMounted, onUnmounted, ref } from "vue";
+import Experience from '@/experience/Experience.js';
+import { RESOURCES, INTEREST_POINTS } from "@/experience/ASSETS.js";
+
 export default {
     name: "Home",
     setup() {
@@ -16,7 +18,7 @@ export default {
         const homeEl = ref(null);
 
         onMounted(() => {
-            experience = new Experience(homeEl.value, undefined);
+            experience = new Experience(homeEl.value, undefined, RESOURCES, INTEREST_POINTS);
 
             experience.on('loaded', () => {
                 // wait for logo transition ends

@@ -32,7 +32,7 @@ export default class Config {
         this.experienceInstance.container.appendChild(this.renderer.domElement);
 
         //this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        //this.renderer.toneMappingExposure = 2;
+        //this.renderer.toneMappingExposure = 1.5;
         this.renderer.setClearColor('#424242');
     }
 

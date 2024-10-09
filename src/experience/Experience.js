@@ -10,7 +10,7 @@ import { DEBUG } from "@/experience/Debug.js";
 let instance = null;
 
 export default class Experience extends EventEmitter {
-    constructor(container, loading) {
+    constructor(container, loading, resources, interestPoints) {
         if (instance) return instance;
         super();
         instance = this;
@@ -19,36 +19,13 @@ export default class Experience extends EventEmitter {
 
         this.container = container;
         //this.loading = loading;
+        this.resources = resources;
+        this.interestPoints = interestPoints;
 
-        const RESOURCES = {
-            fonts: [
-                {
-                    name: 'regular',
-                    type: 'font',
-                    path: 'https://threejs.org/examples/fonts/helvetiker_regular.typeface.json'
-                }
-            ],
-            models: [
-                {
-                    name: 'robot',
-                    type: 'gltf',
-                    path: '/models/cute-bot_compressed.glb'
-                },
-                {
-                    name: 'plane',
-                    type: 'gltf',
-                    path: '/models/plane_edit_compressed.glb'
-                },
-                {
-                    name: 'duck',
-                    type: 'gltf',
-                    path: '/models/rubber-duck_compressed.glb'
-                }
-            ]
-        };
+
 
         this.config = new Config();
-        this.loader = new Loader(RESOURCES);
+        this.loader = new Loader();
         this.assets = null;
         this.world = null;
 

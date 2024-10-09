@@ -162,7 +162,7 @@ export default class World extends EventEmitter {
         });
 
         const updatedPlaneBoundingBox = new THREE.Box3().setFromObject(this.plane.subInstanceGroup);
-        if (this.robot.robotBoundingBox.intersectsBox(updatedPlaneBoundingBox)) {
+        if (this.robot.circlecasterBoundingBox.intersectsBox(updatedPlaneBoundingBox)) {
             console.log('LOG --------')
 
             this.plane.instanceGroup.rotation.x -= this.experienceInstance.deltaTime * (this.thetaSpeed + this.thetaIntesectionSpeed);

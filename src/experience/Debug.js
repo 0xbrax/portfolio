@@ -13,6 +13,7 @@ export const DEBUG = (isActive = false) => {
     const DEBUG = new GUI();
 
     const rendererFolder = DEBUG.addFolder('renderer').close();
+    const planetFolder = DEBUG.addFolder('planet').close();
     const interestPointFolder = DEBUG.addFolder('interestPoint').close();
 
 
@@ -33,8 +34,20 @@ export const DEBUG = (isActive = false) => {
     experienceInstance.config.scene.add(raycasterHelper);
 
     experienceInstance.world.robot.circlecaster.visible = true;
-
     experienceInstance.world.plane.orbit.visible = true;
+
+
+
+    planetFolder.addColor(experienceInstance.world.planet.debugObject, 'colorWaterDeep').onChange(() => experienceInstance.world.planet.model.material.uniforms.uColorWaterDeep.value.set(experienceInstance.world.planet.debugObject.colorWaterDeep));
+    planetFolder.addColor(experienceInstance.world.planet.debugObject, 'colorWaterSurface').onChange(() => {
+        experienceInstance.world.planet.model.material.uniforms.uColorWaterSurface.value.set(experienceInstance.world.planet.debugObject.colorWaterSurface);
+        experienceInstance.world.planet.subModel.material.uniforms.uColorWaterSurface.value.set(experienceInstance.world.planet.debugObject.colorWaterSurface);
+    });
+    planetFolder.addColor(experienceInstance.world.planet.debugObject, 'colorWaterFoam').onChange(experienceInstance.world.planet.subModel.material.uniforms.uColorWaterFoam.value.set(experienceInstance.world.planet.debugObject.colorWaterFoam));
+    planetFolder.addColor(experienceInstance.world.planet.debugObject, 'colorSand').onChange(() => experienceInstance.world.planet.model.material.uniforms.uColorSand.value.set(experienceInstance.world.planet.debugObject.colorSand));
+    planetFolder.addColor(experienceInstance.world.planet.debugObject, 'colorGrass').onChange(() => experienceInstance.world.planet.model.material.uniforms.uColorGrass.value.set(experienceInstance.world.planet.debugObject.colorGrass));
+    planetFolder.addColor(experienceInstance.world.planet.debugObject, 'colorSnow').onChange(() => experienceInstance.world.planet.model.material.uniforms.uColorSnow.value.set(experienceInstance.world.planet.debugObject.colorSnow));
+    planetFolder.addColor(experienceInstance.world.planet.debugObject, 'colorRock').onChange(() => experienceInstance.world.planet.model.material.uniforms.uColorRock.value.set(experienceInstance.world.planet.debugObject.colorRock));
 
 
 

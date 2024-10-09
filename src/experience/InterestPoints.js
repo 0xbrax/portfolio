@@ -8,25 +8,7 @@ export default class InterestPoints {
         this.instanceGroup = new THREE.Group();
         this.experienceInstance.world.planet.instanceGroup.add(this.instanceGroup);
 
-
-
-        this.INTEREST_POINTS = [
-            {
-                theta: 2.28,
-                phi: 0.56,
-                text: `Fruit Cocktail`
-            },
-            {
-                theta: 0.75,
-                phi: 1.32,
-                text: `NoK.Army`
-            },
-            {
-                theta: 2.17,
-                phi: 1.94,
-                text: `Pika Ride`
-            }
-        ];
+        this.interestPoints = this.experienceInstance.interestPoints;
 
         this.createPoints();
     }
@@ -43,19 +25,19 @@ export default class InterestPoints {
             color: '#c59316'
         });
 
-        const plateTextGeometry = new THREE.PlaneGeometry(1, 0.7, 16, 8);
+        const plateTextGeometry = new THREE.PlaneGeometry(1, 0.7, 1, 1);
 
         const pixelsPerUnit = 256;
 
 
 
-        this.INTEREST_POINTS.forEach((el) => {
+        this.interestPoints.forEach((el) => {
             const pointGroup = new THREE.Group();
             const pole = new THREE.Mesh(poleGeometry, poleMaterial);
 
             const plateGroup = new THREE.Group();
             const plateBody = new THREE.Mesh(plateBodyGeometry, plateBodyMaterial);
-            plateBody.scale.set(1.5, 2.2, 1);
+            plateBody.rotation.z = Math.PI * -0.5;
 
             const plateTextMaterial = new THREE.MeshStandardMaterial();
             const texture = this.createTextTexture(el.text, 1 * pixelsPerUnit, 1 * pixelsPerUnit);
@@ -67,8 +49,7 @@ export default class InterestPoints {
             plateTextMaterial.transparent = true;
 
             const plateText = new THREE.Mesh(plateTextGeometry, plateTextMaterial);
-            plateText.position.y = 1.355;
-            plateText.position.z = 0.03 + 0.001; // 0.001 --> z-fighting prevent
+            plateText.position.z = 0.025 + 0.001; // 0.001 --> z-fighting prevent
 
 
 
@@ -79,8 +60,8 @@ export default class InterestPoints {
             pointGroup.lookAt(new THREE.Vector3(0, 0, 0));
 
             plateGroup.rotation.x = Math.PI * -0.5;
-            plateGroup.position.y = 0.08;
-            plateGroup.position.z = 0.46;
+            plateGroup.position.y = 0.075;
+            plateGroup.position.z = -0.88;
 
             plateGroup.add(plateBody, plateText);
             pointGroup.add(pole, plateGroup);
@@ -158,42 +139,39 @@ export default class InterestPoints {
     }
 
     roundedBoxGeometry() {
-        const bevelSize = 0.02;
+        const length = 0.6;
+        const width = 1;
         const bevelThickness = 0.02;
+        const bevelSize = 0.02;
 
-        const geometry = new TextGeometry('-', {
-            font: this.experienceInstance.assets.fonts.regular,
-            size: 2,
-            depth: 0.02,
-            curveSegments: 1,
+        const shape = new THREE.Shape();
+        shape.moveTo( 0,0 );
+        shape.lineTo( 0, width );
+        shape.lineTo( length, width );
+        shape.lineTo( length, 0 );
+        shape.lineTo( 0, 0 );
+
+        const extrudeSettings = {
+            steps: 1,
+            depth: 0.01,
             bevelEnabled: true,
             bevelThickness: bevelThickness,
             bevelSize: bevelSize,
+            bevelOffset: 0,
             bevelSegments: 4
-        });
+        };
+
+        const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
 
         geometry.computeBoundingBox();
         const boundingBox = geometry.boundingBox;
         const size = boundingBox.getSize(new THREE.Vector3());
 
-        const offsetX = (size.x - bevelSize * 0.5) / 2;
-        const offsetY = (size.y - bevelSize * 0.5) / 2;
+        const offsetX = (size.x - bevelSize * 2) / 2;
+        const offsetY = (size.y - bevelSize * 2) / 2;
         const offsetZ = (size.z - bevelThickness * 2) / 2;
         geometry.translate(-offsetX, -offsetY, -offsetZ);
 
         return geometry;
-
-        ////////
-        // DEBUG
-        /*const material = new THREE.MeshStandardMaterial({
-            color: '#ff0000',
-            //wireframe: true
-        });
-        const textMesh = new THREE.Mesh(geometry, material);
-
-        textMesh.position.x = 0;
-        textMesh.position.y = 3;
-
-        this.experienceInstance.world.planet.instanceGroup.add(textMesh);*/
     }
 }

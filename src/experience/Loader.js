@@ -1,7 +1,7 @@
 import * as THREE from "three";
-import { FontLoader, DRACOLoader, GLTFLoader } from "three/addons";
+import { DRACOLoader, GLTFLoader } from "three/addons";
 import EventEmitter from "./EventEmitter.js";
-//import Experience from "./Experience.js";
+import Experience from "./Experience.js";
 
 
 
@@ -9,12 +9,13 @@ export default class Loader extends EventEmitter {
     constructor(resources) {
         super();
 
-        //this.experienceInstance = new Experience();
-        this.resources = resources;
+        // TODO if it loads gltf only use loading manager progress to better result
+
+        this.experienceInstance = new Experience();
+        this.resources = this.experienceInstance.resources;
         this.assets = {};
         this.loadingManager = new THREE.LoadingManager();
-        this.fontLoader = new FontLoader();
-        this.fontLoader.setCrossOrigin('anonymous');
+
         this.textureLoader = new THREE.TextureLoader();
         this.textureLoader.setCrossOrigin('anonymous');
         this.gltfLoader = new GLTFLoader();
@@ -55,14 +56,7 @@ export default class Loader extends EventEmitter {
             for (const asset of this.resources[key]) {
                 this.loadingManager.itemStart(asset.path);
 
-                if (asset.type === 'font') {
-                    this.fontLoader.load(asset.path, (file) => {
-                        this.assets[key][asset.name] = file;
-                        this.onLoadAsset(asset.path);
-                    }, undefined, (e) => {
-                        this.loadingManager.itemError(asset.path);
-                    });
-                } else if (asset.type === 'texture') {
+                if (asset.type === 'texture') {
                     this.textureLoader.load(asset.path, (file) => {
                         this.assets[key][asset.name] = file;
                         this.onLoadAsset(asset.path);

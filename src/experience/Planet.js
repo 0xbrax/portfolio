@@ -35,6 +35,7 @@ export default class Planet {
         this.debugObject = {};
         this.debugObject.colorWaterDeep = '#2a5fc5';
         this.debugObject.colorWaterSurface = '#35cdff';
+        this.debugObject.colorWaterFoam = '#68daff';
         this.debugObject.colorSand = '#ffe894';
         this.debugObject.colorGrass = '#85d534';
         this.debugObject.colorRock = '#bfbd8d';
@@ -162,12 +163,13 @@ export default class Planet {
     }
 
     createWater() {
-        const geometry = new THREE.IcosahedronGeometry(3 + 0.01, 15);
+        const geometry = new THREE.IcosahedronGeometry(3 + 0.012, 15);
 
         const uniformsObject = {
             uTime: new THREE.Uniform(0),
             uFrequency: new THREE.Uniform(new THREE.Vector2(3, 1.5)),
-            uColor: new THREE.Uniform(new THREE.Color(this.debugObject.colorWaterSurface))
+            uColorWaterSurface: new THREE.Uniform(new THREE.Color(this.debugObject.colorWaterSurface)),
+            uColorWaterFoam: new THREE.Uniform(new THREE.Color(this.debugObject.colorWaterFoam))
         };
 
         const material = new CustomShaderMaterial({

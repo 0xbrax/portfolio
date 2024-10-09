@@ -3,7 +3,7 @@ precision lowp float;
 uniform float uTime;
 uniform vec2 uFrequency;
 
-varying float vElevation;
+varying vec3 vPosition;
 
 void main() {
     vec3 newPosition = csm_Position;
@@ -15,5 +15,5 @@ void main() {
     csm_Position = newPosition;
 
     // Varyings
-    vElevation = elevation;
+    vPosition = csm_Position;
 }
