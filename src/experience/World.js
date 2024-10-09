@@ -28,7 +28,7 @@ export default class World extends EventEmitter {
 
                 const anyKeyPressed = Object.values(this.keys).some(value => value === true);
                 if (anyKeyPressed && !this.robot.animation.isPlaying) {
-                    this.robot.animation.action.play();
+                    this.robot.animationCrossFade('walk');
                     this.robot.animation.isPlaying = true;
                 }
             }
@@ -39,7 +39,7 @@ export default class World extends EventEmitter {
 
                 const anyKeyPressed = Object.values(this.keys).some(value => value === true);
                 if (!anyKeyPressed && this.robot.animation.isPlaying) {
-                    this.robot.animation.action.stop();
+                    this.robot.animationCrossFade('idle');
                     this.robot.animation.isPlaying = false;
                 }
             }

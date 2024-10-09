@@ -12,8 +12,6 @@ export default class Robot {
     }
 
     createRobot() {
-        console.log('LOG - - -', this.experienceInstance.assets.models.robot)
-
         this.model = this.experienceInstance.assets.models.robot.scene;
         this.model.scale.setScalar(2);
 
@@ -31,23 +29,39 @@ export default class Robot {
     }
 
     createAnimation() {
-        // TODO animations crossfade
         this.animation = {};
         this.animation.mixer = new THREE.AnimationMixer(this.model);
-        this.animation.mixer.timeScale = 1;
-        const clip = this.experienceInstance.assets.models.robot.animations[4];
+        this.animation.current = null;
+        this.animation.actions = {};
 
-        this.animation.action = this.animation.mixer.clipAction(clip);
+        this.animation.actions.idle = this.animation.mixer.clipAction(this.experienceInstance.assets.models.robot.animations[1]);
+        this.animation.actions.walk = this.animation.mixer.clipAction(this.experienceInstance.assets.models.robot.animations[4]);
+        this.animation.actions.run = this.animation.mixer.clipAction(this.experienceInstance.assets.models.robot.animations[3]);
+        this.animation.actions.dance = this.animation.mixer.clipAction(this.experienceInstance.assets.models.robot.animations[0]);
+
+        this.animation.current = this.animation.actions.idle;
+
+        this.animation.current.play();
         this.animation.isPlaying = false;
+    }
+    animationCrossFade(action) {
+        const newAction = this.animation.actions[action];
+        const oldAction = this.animation.current;
+
+        newAction.reset();
+        newAction.play();
+        newAction.crossFadeFrom(oldAction, 0.3);
+
+        this.animation.current = newAction;
     }
 
     createRaycaster() {
         const rayDirection = new THREE.Vector3(0, -1, 0);
         rayDirection.normalize();
-        const rayOrigin = new THREE.Vector3(0, 4, 0);
+        const rayOrigin = new THREE.Vector3(0, 6, 0);
         this.raycaster = new THREE.Raycaster();
         this.raycaster.set(rayOrigin, rayDirection);
-        this.raycaster.far = 6;
+        this.raycaster.far = 8;
     }
 
     createCirclecaster() {
