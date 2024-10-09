@@ -5,21 +5,33 @@ export default class Plane {
     constructor() {
         this.experienceInstance = new Experience();
         this.instanceGroup = new THREE.Group();
-        this.instanceGroup.position.y = 3;
-        this.experienceInstance.config.scene.add(this.instanceGroup);
+        this.experienceInstance.world.planet.instanceGroup.add(this.instanceGroup);
 
+        this.subInstanceGroup = new THREE.Group();
+        this.subInstanceGroup.position.y = 5.25;
+        this.subInstanceGroup.rotation.y = Math.PI * 0.5;
+        this.instanceGroup.add(this.subInstanceGroup);
+
+        this.createOrbit();
         this.createPlane();
         this.createDuck();
+    }
+
+    createOrbit() {
+        const geometry = new THREE.CircleGeometry(6, 6);
+        const material = new THREE.MeshBasicMaterial({ color: '#00ff00', side: THREE.DoubleSide, wireframe: true });
+
+        this.orbit = new THREE.Mesh(geometry, material);
+
+        this.orbit.visible = false;
+        this.instanceGroup.add(this.orbit);
     }
 
     createPlane() {
         this.model = this.experienceInstance.assets.models.plane.scene;
         this.model.scale.setScalar(7);
 
-        this.model.rotation.x = Math.PI * -0.5;
-        this.model.rotation.y = Math.PI;
-
-        this.instanceGroup.add(this.model);
+        this.subInstanceGroup.add(this.model);
 
         this.createAnimation();
     }
@@ -38,12 +50,9 @@ export default class Plane {
         this.subModel = this.experienceInstance.assets.models.duck.scene;
         this.subModel.scale.setScalar(0.11);
 
-        this.subModel.rotation.x = Math.PI * -0.5;
-        this.subModel.rotation.y = Math.PI;
+        this.subModel.position.z = 0.345;
+        this.subModel.position.y = 0.575;
 
-        this.subModel.position.z = -0.57;
-        this.subModel.position.y = -0.345;
-
-        this.instanceGroup.add(this.subModel);
+        this.subInstanceGroup.add(this.subModel);
     }
 }

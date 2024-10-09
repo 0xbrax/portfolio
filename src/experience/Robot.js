@@ -24,6 +24,7 @@ export default class Robot {
         });
 
         this.instanceGroup.add(this.model);
+        this.robotBoundingBox = new THREE.Box3().setFromObject(this.model);
 
         this.createAnimation();
         this.createRaycaster();

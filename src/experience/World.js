@@ -47,10 +47,11 @@ export default class World extends EventEmitter {
 
 
 
-        this.theta = 0;
-        this.phi = 0;
-        this.thetaSpeed = 0.2;
+        // TODO invert theta symbol to set direction (with subInstanceGroup rotY) and intersection direction
+        this.thetaSpeed = 0.02;
         this.phiSpeed = 0.4;
+        this.thetaIntesectionSpeed = 0.3;
+        this.phiIntesectionSpeed = 0.5;
     }
 
     start() {
@@ -59,7 +60,8 @@ export default class World extends EventEmitter {
         this.planet = new Planet();
         this.interestPoints = new InterestPoints();
         this.plane = new Plane();
-        this.plane.model.cIsRotationUpdated = false;
+
+        this.plane.subInstanceGroup.rotation.y -= 0.1;
     }
 
     createLight() {
@@ -90,16 +92,16 @@ export default class World extends EventEmitter {
         }
 
         else if (this.keys.ArrowUp) {
-            rotationAxis.set(-1, 0, 0);
+            rotationAxis.set(-1, 0, 0).normalize();
             this.robot.instanceGroup.rotation.set(0, 0, 0);
         } else if (this.keys.ArrowDown) {
-            rotationAxis.set(1, 0, 0);
+            rotationAxis.set(1, 0, 0).normalize();
             this.robot.instanceGroup.rotation.set(0, Math.PI, 0);
         } else if (this.keys.ArrowLeft) {
-            rotationAxis.set(0, 0, 1);
+            rotationAxis.set(0, 0, 1).normalize();
             this.robot.instanceGroup.rotation.set(0, Math.PI * 0.5, 0);
         } else if (this.keys.ArrowRight) {
-            rotationAxis.set(0, 0, -1);
+            rotationAxis.set(0, 0, -1).normalize();
             this.robot.instanceGroup.rotation.set(0, Math.PI * -0.5, 0);
         }
 
@@ -111,59 +113,9 @@ export default class World extends EventEmitter {
         }
     }
 
-    updatePlaneOrbit(radius, theta, phi) {
-        const x = radius * Math.sin(phi) * Math.cos(theta);
-        const y = radius * Math.cos(phi);
-        const z = radius * Math.sin(phi) * Math.sin(theta);
-
-        this.plane.instanceGroup.position.set(x, y, z).add(this.planet.instanceGroup.position);
-
-        this.planeLookAtCenter();
-    }
-
-    planeLookAtCenter() {
-        this.plane.instanceGroup.lookAt(this.planet.instanceGroup.position);
-        const normalizedPhi = this.phi % (2 * Math.PI);
-        // TODO duck problem, put it on Blender ?
-        /*let gap = Math.sin(normalizedPhi) * this.experienceInstance.deltaTime * this.thetaSpeed;
-
-        if (normalizedPhi > Math.PI * 0.5) {
-            gap = -gap;
-        }
-        if (normalizedPhi > Math.PI) {
-            gap = -gap;
-        }
-        if (normalizedPhi > Math.PI * 1.5) {
-            gap = -gap;
-        }*/
-
-        if (this.plane.model.cIsRotationUpdated && normalizedPhi < Math.PI) {
-            this.plane.model.rotation.x = Math.PI * -0.5;
-            this.plane.model.rotation.y = Math.PI;
-            this.plane.model.rotation.z = 0;
-
-            this.plane.subModel.position.y = -0.345;
-            this.plane.subModel.rotation.x = Math.PI * -0.5;
-            this.plane.subModel.rotation.y = Math.PI;
-            this.plane.subModel.rotation.z = 0;
-
-            this.plane.model.cIsRotationUpdated = false;
-        }
-        if (!this.plane.model.cIsRotationUpdated && normalizedPhi > Math.PI) {
-            this.plane.model.rotation.x = Math.PI * 0.5;
-            this.plane.model.rotation.y = -Math.PI;
-            this.plane.model.rotation.z = Math.PI;
-
-            this.plane.subModel.rotation.x = Math.PI * 0.5;
-            this.plane.subModel.rotation.y = -Math.PI;
-            this.plane.subModel.rotation.z = Math.PI;
-
-            this.plane.subModel.position.y = 0.345;
-
-            this.plane.model.cIsRotationUpdated = true;
-        }
-
-        //this.plane.model.rotation.y = this.plane.model.rotation.y + (!this.plane.model.cIsRotationUpdated ? -gap : gap);
+    updatePlaneOrbit(deltaTime) {
+        this.plane.instanceGroup.rotation.x -= deltaTime * this.thetaSpeed;
+        this.plane.instanceGroup.rotation.z -= deltaTime * this.phiSpeed;
     }
 
     updateInterestPointsOrientation() {
@@ -186,11 +138,6 @@ export default class World extends EventEmitter {
         this.rotatePlanet(this.experienceInstance.deltaTime);
         this.planet.subModel.material.uniforms.uTime.value = this.experienceInstance.elapsedTime;
         this.plane.animation.mixer.update(this.experienceInstance.deltaTime);
-
-        this.theta += this.experienceInstance.deltaTime * this.thetaSpeed;
-        this.phi += this.experienceInstance.deltaTime * this.phiSpeed;
-        this.updatePlaneOrbit(5, this.theta, this.phi);
-
         this.updateInterestPointsOrientation();
 
 
@@ -202,16 +149,26 @@ export default class World extends EventEmitter {
         }
 
         this.interestPoints.instanceGroup.children.forEach((object) => {
-            const boundingBox = new THREE.Box3().setFromObject(object);
+            const updatedObjectBoundingBox = new THREE.Box3().setFromObject(object);
 
-            if (!object.cIsIntersected && this.robot.circlecasterBoundingBox.intersectsBox(boundingBox)) {
+            if (!object.cIsIntersected && this.robot.circlecasterBoundingBox.intersectsBox(updatedObjectBoundingBox)) {
                 object.cIsIntersected = true;
                 object.scale.setScalar(1.5);
             }
-            if (object.cIsIntersected && !this.robot.circlecasterBoundingBox.intersectsBox(boundingBox)) {
+            if (object.cIsIntersected && !this.robot.circlecasterBoundingBox.intersectsBox(updatedObjectBoundingBox)) {
                 object.cIsIntersected = false;
                 object.scale.setScalar(1);
             }
         });
+
+        const updatedPlaneBoundingBox = new THREE.Box3().setFromObject(this.plane.subInstanceGroup);
+        if (this.robot.robotBoundingBox.intersectsBox(updatedPlaneBoundingBox)) {
+            console.log('LOG --------')
+
+            this.plane.instanceGroup.rotation.x -= this.experienceInstance.deltaTime * (this.thetaSpeed + this.thetaIntesectionSpeed);
+            this.plane.instanceGroup.rotation.z -= this.experienceInstance.deltaTime * (this.phiSpeed + this.phiIntesectionSpeed);
+        } else {
+            this.updatePlaneOrbit(this.experienceInstance.deltaTime);
+        }
     }
 }

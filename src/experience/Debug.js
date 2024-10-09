@@ -34,6 +34,8 @@ export const DEBUG = (isActive = false) => {
 
     experienceInstance.world.robot.circlecaster.visible = true;
 
+    experienceInstance.world.plane.orbit.visible = true;
+
 
 
     const createInterestPoint = () => {

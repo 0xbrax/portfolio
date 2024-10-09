@@ -91,7 +91,7 @@ export default class Experience extends EventEmitter {
         this.isReady = true;
 
         ////////
-        //this.DEBUG = DEBUG(true);
+        this.DEBUG = DEBUG(true);
     }
 
     tick() {
