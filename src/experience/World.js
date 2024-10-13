@@ -12,7 +12,7 @@ export default class World extends EventEmitter {
     constructor() {
         super();
         this.experienceInstance = new Experience();
-
+        this.isFPVActive = true;
 
 
         // TODO emit
@@ -26,10 +26,12 @@ export default class World extends EventEmitter {
             if (event.key in this.keys) {
                 this.keys[event.key] = true;
 
-                const anyKeyPressed = Object.values(this.keys).some(value => value === true);
-                if (anyKeyPressed && !this.robot.animation.isPlaying) {
-                    this.robot.animationCrossFade('walk');
-                    this.robot.animation.isPlaying = true;
+                if (!this.isFPVActive) {
+                    const anyKeyPressed = Object.values(this.keys).some(value => value === true);
+                    if (anyKeyPressed && !this.robot.animation.isPlaying) {
+                        this.robot.animationCrossFade('walk');
+                        this.robot.animation.isPlaying = true;
+                    }
                 }
             }
         });
@@ -37,10 +39,12 @@ export default class World extends EventEmitter {
             if (event.key in this.keys) {
                 this.keys[event.key] = false;
 
-                const anyKeyPressed = Object.values(this.keys).some(value => value === true);
-                if (!anyKeyPressed && this.robot.animation.isPlaying) {
-                    this.robot.animationCrossFade('idle');
-                    this.robot.animation.isPlaying = false;
+                if (!this.isFPVActive) {
+                    const anyKeyPressed = Object.values(this.keys).some(value => value === true);
+                    if (!anyKeyPressed && this.robot.animation.isPlaying) {
+                        this.robot.animationCrossFade('idle');
+                        this.robot.animation.isPlaying = false;
+                    }
                 }
             }
         });
@@ -61,7 +65,23 @@ export default class World extends EventEmitter {
         this.interestPoints = new InterestPoints();
         this.plane = new Plane();
 
-        this.plane.subInstanceGroup.rotation.y -= 0.1;
+
+
+        if (!this.isFPVActive) return;
+        this.plane.subInstanceGroup.rotation.x = 0.75;
+        this.thetaSpeed = 0;
+
+        /*this.experienceInstance.config.controls.enabled = false;
+        //this.experienceInstance.config.controls.enablePan = false;
+        //this.experienceInstance.config.controls.enableZoom = false;
+
+        this.experienceInstance.config.scene.remove(this.experienceInstance.config.camera);
+        this.plane.instanceGroup.add(this.experienceInstance.config.camera);
+        this.experienceInstance.config.camera.position.set(-1, 9, 0);
+
+        this.experienceInstance.config.controls.target.set(1, 3, 0);
+
+        this.experienceInstance.config.controls.update();*/
     }
 
     createLight() {
@@ -117,6 +137,33 @@ export default class World extends EventEmitter {
         this.plane.instanceGroup.rotation.x -= deltaTime * this.thetaSpeed;
         this.plane.instanceGroup.rotation.z -= deltaTime * this.phiSpeed;
     }
+    movePlane(deltaTime) {
+        const angleZ = this.plane.instanceGroup.rotation.z % (Math.PI * 2);
+
+        this.sign = 1;
+        if (angleZ <= 0 && angleZ > -Math.PI) {
+            console.log("Angolo tra 0 e -π");
+
+            this.sign = -1;
+        } else if (angleZ <= -Math.PI && angleZ > -2 * Math.PI) {
+            console.log("Angolo tra -π e -2π");
+
+            this.sign = 1;
+        }
+
+        if (this.keys.ArrowUp) {
+            this.plane.instanceGroup.rotation.z -= deltaTime * (this.phiSpeed + this.phiIntesectionSpeed);
+        } else if (this.keys.ArrowDown) {
+            this.plane.instanceGroup.rotation.z -= (deltaTime * this.phiSpeed) / 2;
+        } else if (this.keys.ArrowLeft) {
+            /*if (this.sign === -1) this.plane.instanceGroup.rotation.x += deltaTime * (this.thetaSpeed + this.thetaIntesectionSpeed);
+            else this.plane.instanceGroup.rotation.x -= deltaTime * (this.thetaSpeed + this.thetaIntesectionSpeed);*/
+
+            this.plane.instanceGroup.rotation.x += deltaTime * (this.thetaSpeed + this.thetaIntesectionSpeed);
+        } else if (this.keys.ArrowRight) {
+            this.plane.instanceGroup.rotation.x -= deltaTime * (this.thetaSpeed + this.thetaIntesectionSpeed);
+        }
+    }
 
     updateInterestPointsOrientation() {
         const cameraPosition = this.experienceInstance.config.camera.position;
@@ -135,7 +182,8 @@ export default class World extends EventEmitter {
     
     update() {
         this.robot.animation.mixer.update(this.experienceInstance.deltaTime);
-        this.rotatePlanet(this.experienceInstance.deltaTime);
+        if (!this.isFPVActive) this.rotatePlanet(this.experienceInstance.deltaTime);
+        if (this.isFPVActive) this.movePlane(this.experienceInstance.deltaTime);
         this.planet.subModel.material.uniforms.uTime.value = this.experienceInstance.elapsedTime;
         this.plane.animation.mixer.update(this.experienceInstance.deltaTime);
         this.updateInterestPointsOrientation();
@@ -161,14 +209,15 @@ export default class World extends EventEmitter {
             }
         });
 
-        const updatedPlaneBoundingBox = new THREE.Box3().setFromObject(this.plane.subInstanceGroup);
+        /*const updatedPlaneBoundingBox = new THREE.Box3().setFromObject(this.plane.subInstanceGroup);
         if (this.robot.circlecasterBoundingBox.intersectsBox(updatedPlaneBoundingBox)) {
-            console.log('LOG --------')
+            //console.log('LOG --------')
 
             this.plane.instanceGroup.rotation.x -= this.experienceInstance.deltaTime * (this.thetaSpeed + this.thetaIntesectionSpeed);
             this.plane.instanceGroup.rotation.z -= this.experienceInstance.deltaTime * (this.phiSpeed + this.phiIntesectionSpeed);
         } else {
             this.updatePlaneOrbit(this.experienceInstance.deltaTime);
-        }
+        }*/
+        this.updatePlaneOrbit(this.experienceInstance.deltaTime);
     }
 }

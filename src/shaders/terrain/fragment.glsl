@@ -30,7 +30,7 @@ void main() {
     // Rock
     float rockMix = vUpDot;
     rockMix = 1.0 - step(0.8, rockMix);
-    rockMix *= step(0.03, vWobble);
+    rockMix *= step(0.06, vWobble);
     color = mix(color, uColorRock, rockMix);
 
     rockMix = step(0.6, vWobble);
