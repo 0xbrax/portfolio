@@ -40,7 +40,7 @@ export default class InterestPoints {
             plateBody.rotation.z = Math.PI * -0.5;
 
             const plateTextMaterial = new THREE.MeshStandardMaterial();
-            const texture = this.createTextTexture(el.text, 1 * pixelsPerUnit, 1 * pixelsPerUnit);
+            const texture = this.createTextTexture(el.props.title, 1 * pixelsPerUnit, 1 * pixelsPerUnit);
             texture.colorSpace = THREE.SRGBColorSpace;
             texture.generateMipmaps = false;
             texture.minFilter = THREE.NearestFilter;
@@ -64,6 +64,7 @@ export default class InterestPoints {
             plateGroup.position.z = -0.88;
 
             plateGroup.add(plateBody, plateText);
+            pointGroup.cProps = { id: el.id, ...el.props };
             pointGroup.add(pole, plateGroup);
             this.instanceGroup.add(pointGroup);
         });

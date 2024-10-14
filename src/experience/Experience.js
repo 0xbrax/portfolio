@@ -67,6 +67,13 @@ export default class Experience extends EventEmitter {
 
         this.isReady = true;
 
+        this.world.on('intersectInterest', ({ detail }) => {
+            this.emit('intersectInterest', detail);
+        });
+        this.world.on('unIntersectInterest', ({ detail }) => {
+            this.emit('unIntersectInterest', detail);
+        });
+
         ////////
         this.DEBUG = DEBUG(true);
     }

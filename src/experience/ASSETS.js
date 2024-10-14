@@ -20,18 +20,27 @@ export const RESOURCES = {
 
 export const INTEREST_POINTS = [
     {
+        id: 0,
         theta: 2.28,
         phi: 0.56,
-        text: `Fruit Cocktail`
+        props: {
+            title: `Fruit Cocktail`
+        }
     },
     {
+        id: 1,
         theta: 0.75,
         phi: 1.32,
-        text: `NoK.Army`
+        props: {
+            title: `NoK.Army`
+        }
     },
     {
+        id: 2,
         theta: 2.17,
         phi: 1.94,
-        text: `Pika Ride`
+        props: {
+            title: `Pika Ride`
+        }
     }
 ];

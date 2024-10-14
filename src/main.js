@@ -1,6 +1,6 @@
 import { createApp } from 'vue';
 import './assets/style.css';
-//import { register } from 'swiper/element/bundle';
+import { register } from 'swiper/element/bundle';
 
 import App from './App.vue';
 import router from "@/router.js";
@@ -9,7 +9,7 @@ import { $isMobile } from "@/assets/utils.js";
 
 
 
-//register();
+register();
 const app = createApp(App);
 
 app.use(router);

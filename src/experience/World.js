@@ -12,7 +12,7 @@ export default class World extends EventEmitter {
     constructor() {
         super();
         this.experienceInstance = new Experience();
-        this.isFPVActive = true;
+        this.isFPVActive = false; // TODO Check usage
 
 
         // TODO emit
@@ -23,11 +23,13 @@ export default class World extends EventEmitter {
             ArrowRight: false
         };
         window.addEventListener('keydown', (event) => {
-            if (event.key in this.keys) {
-                this.keys[event.key] = true;
+            console.log(event)
+
+            if (event.code in this.keys) {
+                this.keys[event.code] = true;
 
                 if (!this.isFPVActive) {
-                    const anyKeyPressed = Object.values(this.keys).some(value => value === true);
+                    const anyKeyPressed = Object.values(this.keys).some(el => el === true);
                     if (anyKeyPressed && !this.robot.animation.isPlaying) {
                         this.robot.animationCrossFade('walk');
                         this.robot.animation.isPlaying = true;
@@ -36,11 +38,11 @@ export default class World extends EventEmitter {
             }
         });
         window.addEventListener('keyup', (event) => {
-            if (event.key in this.keys) {
-                this.keys[event.key] = false;
+            if (event.code in this.keys) {
+                this.keys[event.code] = false;
 
                 if (!this.isFPVActive) {
-                    const anyKeyPressed = Object.values(this.keys).some(value => value === true);
+                    const anyKeyPressed = Object.values(this.keys).some(el => el === true);
                     if (!anyKeyPressed && this.robot.animation.isPlaying) {
                         this.robot.animationCrossFade('idle');
                         this.robot.animation.isPlaying = false;
@@ -138,7 +140,7 @@ export default class World extends EventEmitter {
         this.plane.instanceGroup.rotation.z -= deltaTime * this.phiSpeed;
     }
     movePlane(deltaTime) {
-        const angleZ = this.plane.instanceGroup.rotation.z % (Math.PI * 2);
+        /*const angleZ = this.plane.instanceGroup.rotation.z % (Math.PI * 2);
 
         this.sign = 1;
         if (angleZ <= 0 && angleZ > -Math.PI) {
@@ -149,7 +151,7 @@ export default class World extends EventEmitter {
             console.log("Angolo tra -π e -2π");
 
             this.sign = 1;
-        }
+        }*/
 
         if (this.keys.ArrowUp) {
             this.plane.instanceGroup.rotation.z -= deltaTime * (this.phiSpeed + this.phiIntesectionSpeed);
@@ -202,10 +204,12 @@ export default class World extends EventEmitter {
             if (!object.cIsIntersected && this.robot.circlecasterBoundingBox.intersectsBox(updatedObjectBoundingBox)) {
                 object.cIsIntersected = true;
                 object.scale.setScalar(1.5);
+                this.emit('intersectInterest', object.cProps);
             }
             if (object.cIsIntersected && !this.robot.circlecasterBoundingBox.intersectsBox(updatedObjectBoundingBox)) {
                 object.cIsIntersected = false;
                 object.scale.setScalar(1);
+                this.emit('unIntersectInterest', object.cProps)
             }
         });
 
