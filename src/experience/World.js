@@ -11,6 +11,7 @@ import Plane from "@/experience/Plane.js";
 export default class World extends EventEmitter {
     constructor() {
         super();
+
         this.experienceInstance = new Experience();
 
         this.isFPVActive = false;
@@ -35,16 +36,21 @@ export default class World extends EventEmitter {
 
     start() {
         this.createLight();
-        this.robot = new Robot();
         this.planet = new Planet();
-        this.interestPoints = new InterestPoints();
-        this.plane = new Plane();
+
+        this.planet.on('workerComplete', () => {
+            this.robot = new Robot();
+            this.interestPoints = new InterestPoints();
+            this.plane = new Plane();
+
+            /*if (!this.isFPVActive) return;
+            this.plane.subInstanceGroup.rotation.x = 0.75; // todo var
+            this.thetaSpeed = 0;*/
+
+            this.emit('loadComplete');
+        }, { once: true });
 
 
-
-        if (!this.isFPVActive) return;
-        this.plane.subInstanceGroup.rotation.x = 0.75; // todo var
-        this.thetaSpeed = 0;
 
         /*this.experienceInstance.config.controls.enabled = false;
         //this.experienceInstance.config.controls.enablePan = false;

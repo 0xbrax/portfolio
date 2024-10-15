@@ -43,16 +43,15 @@ export default class Experience extends EventEmitter {
     }
 
     init() {
-        this.tick();
+        //this.tick();
 
         this.loader.start();
         this.loader.on('complete', () => {
             this.assets = this.loader.assets;
-            this.world = new World();
 
             this.start();
 
-            this.emit('loaded');
+            //this.emit('loaded');
         }, { once: true });
         this.loader.on('error', (e) => {
             // TODO fix and handle message
@@ -61,21 +60,32 @@ export default class Experience extends EventEmitter {
     }
 
     start() {
+        this.world = new World();
         this.world.start();
+
         // current target is scene center (x: 0, y: 0, z: 0)
-        //this.config.controls.target.copy(this.world....position.clone());
+        // this.config.controls.target.copy(this.world....position.clone());
 
-        this.isReady = true;
+        this.world.on('loadComplete', () => {
+            console.time('TIME TO RENDER')
 
-        this.world.on('intersectInterest', ({ detail }) => {
-            this.emit('intersectInterest', detail);
-        });
-        this.world.on('unIntersectInterest', ({ detail }) => {
-            this.emit('unIntersectInterest', detail);
-        });
+            this.tick();
 
-        ////////
-        this.DEBUG = DEBUG(true);
+            this.world.on('intersectInterest', ({ detail }) => {
+                this.emit('intersectInterest', detail);
+            });
+            this.world.on('unIntersectInterest', ({ detail }) => {
+                this.emit('unIntersectInterest', detail);
+            });
+
+            this.isReady = true;
+            this.emit('loaded');
+
+            ////////
+            this.DEBUG = DEBUG(true);
+
+            console.timeEnd('TIME TO RENDER')
+        }, { once: true });
     }
 
     tick() {
@@ -83,7 +93,7 @@ export default class Experience extends EventEmitter {
         this.deltaTime = this.elapsedTime - this.previousTime;
         this.previousTime = this.elapsedTime;
 
-        if (this.isReady) this.world.update();
+        this.world.update();
 
         this.config.controls.update();
         this.config.renderer.render(this.config.scene, this.config.camera);

@@ -230,6 +230,8 @@ export default {
                     setJoypadControl();
 
 
+                    console.log('TUTTO PRONTO')
+
 
                     isExperienceReady.value = true;
                     clearTimeout(timeout);

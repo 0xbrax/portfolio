@@ -26,14 +26,6 @@ export default defineConfig({
     },
   },
   server: {
-    host: true,
+    host: true
   },
-  build: {
-    rollupOptions: {
-      input: {
-        main: 'src/main.js',
-        worker: 'src/worker/gpuWorker.js'
-      }
-    }
-  }
 })
