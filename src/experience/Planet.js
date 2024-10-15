@@ -7,8 +7,20 @@ import { GPUComputationRenderer } from "three/addons";
 import terrainPositionsShader from "@/shaders/gpgpu/terrainPositions.glsl";
 import terrainVertexShader from "@/shaders/terrain/vertex.glsl";
 import terrainFragmentShader from "@/shaders/terrain/fragment.glsl";
-import waterVertexShader from '../shaders/water/vertex.glsl';
-import waterFragmentShader from '../shaders/water/fragment.glsl';
+import waterVertexShader from '@/shaders/water/vertex.glsl';
+import waterFragmentShader from '@/shaders/water/fragment.glsl';
+
+
+
+const worker = new Worker(new URL('../worker/gpuWorker.js', import.meta.url), { type: 'module' });
+
+worker.postMessage({
+    test: 'ciao mondo'
+});
+worker.onmessage = (event) => {
+    const { output } = event.data;
+    console.log('LOG', output)
+};
 
 
 

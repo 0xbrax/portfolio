@@ -12,44 +12,17 @@ export default class World extends EventEmitter {
     constructor() {
         super();
         this.experienceInstance = new Experience();
-        this.isFPVActive = false; // TODO Check usage
 
+        this.isFPVActive = false;
 
-        // TODO emit
         this.keys = {
             ArrowUp: false,
             ArrowDown: false,
             ArrowLeft: false,
-            ArrowRight: false
+            ArrowRight: false,
+            Space: false
         };
-        window.addEventListener('keydown', (event) => {
-            console.log(event)
-
-            if (event.code in this.keys) {
-                this.keys[event.code] = true;
-
-                if (!this.isFPVActive) {
-                    const anyKeyPressed = Object.values(this.keys).some(el => el === true);
-                    if (anyKeyPressed && !this.robot.animation.isPlaying) {
-                        this.robot.animationCrossFade('walk');
-                        this.robot.animation.isPlaying = true;
-                    }
-                }
-            }
-        });
-        window.addEventListener('keyup', (event) => {
-            if (event.code in this.keys) {
-                this.keys[event.code] = false;
-
-                if (!this.isFPVActive) {
-                    const anyKeyPressed = Object.values(this.keys).some(el => el === true);
-                    if (!anyKeyPressed && this.robot.animation.isPlaying) {
-                        this.robot.animationCrossFade('idle');
-                        this.robot.animation.isPlaying = false;
-                    }
-                }
-            }
-        });
+        this.planetRotationSpeed = 0.6;
 
 
 
@@ -70,7 +43,7 @@ export default class World extends EventEmitter {
 
 
         if (!this.isFPVActive) return;
-        this.plane.subInstanceGroup.rotation.x = 0.75;
+        this.plane.subInstanceGroup.rotation.x = 0.75; // todo var
         this.thetaSpeed = 0;
 
         /*this.experienceInstance.config.controls.enabled = false;
@@ -96,7 +69,7 @@ export default class World extends EventEmitter {
     }
 
     rotatePlanet(deltaTime) {
-        const rotationSpeed = deltaTime * 0.75;
+        const rotationSpeed = deltaTime * this.planetRotationSpeed;
         let rotationAxis = new THREE.Vector3(0, 0, 0);
         
         if (this.keys.ArrowUp && this.keys.ArrowLeft) {

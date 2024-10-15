@@ -40,6 +40,7 @@ export default class Robot {
         this.animation.actions.dance = this.animation.mixer.clipAction(this.experienceInstance.assets.models.robot.animations[0]);
 
         this.animation.current = this.animation.actions.idle;
+        this.animation.name = 'idle';
 
         this.animation.current.play();
         this.animation.isPlaying = false;
@@ -47,6 +48,7 @@ export default class Robot {
     animationCrossFade(action) {
         const newAction = this.animation.actions[action];
         const oldAction = this.animation.current;
+        this.animation.name = action;
 
         newAction.reset();
         newAction.play();

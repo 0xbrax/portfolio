@@ -95,7 +95,7 @@ export default class Experience extends EventEmitter {
 
 
     destroy() {
-        // not once events clean up using off
+        // TODO not once events clean up using off
 
         this.config.scene.traverse((child) => {
             if (child instanceof THREE.Mesh) {
