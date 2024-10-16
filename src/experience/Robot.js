@@ -9,23 +9,16 @@ export default class Robot {
         this.experienceInstance.config.scene.add(this.instanceGroup);
         
         this.createRobot();
+        this.createAnimation();
+        this.createRaycaster();
+        this.createCirclecaster();
     }
 
     createRobot() {
         this.model = this.experienceInstance.assets.models.robot.scene;
         this.model.scale.setScalar(2);
 
-        this.model.children.forEach((child) => {
-            if (child.isMesh) {
-                child.frustumCulled = false;
-            }
-        });
-
         this.instanceGroup.add(this.model);
-
-        this.createAnimation();
-        this.createRaycaster();
-        this.createCirclecaster();
     }
 
     createAnimation() {

@@ -5,6 +5,7 @@ import Robot from "@/experience/Robot.js";
 import Planet from "@/experience/Planet.js";
 import InterestPoints from "@/experience/InterestPoints.js";
 import Plane from "@/experience/Plane.js";
+import { gsap } from "gsap";
 
 
 
@@ -25,44 +26,52 @@ export default class World extends EventEmitter {
         };
         this.planetRotationSpeed = 0.6;
 
-
-
-        // TODO invert theta symbol to set direction (with subInstanceGroup rotY) and intersection direction
         this.thetaSpeed = 0.02;
         this.phiSpeed = 0.4;
-        this.thetaIntesectionSpeed = 0.3;
-        this.phiIntesectionSpeed = 0.5;
+        // TODO quando l'aereo gira al contrari onon funziona il valore va invertito
+        this.thetaIntesectionSpeed = 0.4;
+        this.phiIntesectionSpeed = 0.6;
+
+        this.start();
     }
 
     start() {
         this.createLight();
+
+        console.time('t PLANET')
+
         this.planet = new Planet();
-
         this.planet.on('workerComplete', () => {
-            this.robot = new Robot();
-            this.interestPoints = new InterestPoints();
-            this.plane = new Plane();
+            this.experienceInstance.config.renderer.render(this.experienceInstance.config.scene, this.experienceInstance.config.camera);
 
-            /*if (!this.isFPVActive) return;
-            this.plane.subInstanceGroup.rotation.x = 0.75; // todo var
-            this.thetaSpeed = 0;*/
+            console.timeEnd('t PLANET')
+            window.requestAnimationFrame(() => {
+                console.time('t ROBOT')
 
-            this.emit('loadComplete');
+                this.robot = new Robot();
+                this.experienceInstance.config.renderer.render(this.experienceInstance.config.scene, this.experienceInstance.config.camera);
+
+                console.timeEnd('t ROBOT')
+                window.requestAnimationFrame(() => {
+                    console.time('t POINT')
+
+                    this.interestPoints = new InterestPoints();
+                    this.experienceInstance.config.renderer.render(this.experienceInstance.config.scene, this.experienceInstance.config.camera);
+
+                    console.timeEnd('t POINT')
+                    window.requestAnimationFrame(() => {
+                        console.time('t PLANE')
+
+                        this.plane = new Plane();
+                        //this.updatePlaneOrbit(0);
+                        this.experienceInstance.config.renderer.render(this.experienceInstance.config.scene, this.experienceInstance.config.camera);
+
+                        console.timeEnd('t PLANE')
+                        this.emit('loadComplete');
+                    });
+                });
+            });
         }, { once: true });
-
-
-
-        /*this.experienceInstance.config.controls.enabled = false;
-        //this.experienceInstance.config.controls.enablePan = false;
-        //this.experienceInstance.config.controls.enableZoom = false;
-
-        this.experienceInstance.config.scene.remove(this.experienceInstance.config.camera);
-        this.plane.instanceGroup.add(this.experienceInstance.config.camera);
-        this.experienceInstance.config.camera.position.set(-1, 9, 0);
-
-        this.experienceInstance.config.controls.target.set(1, 3, 0);
-
-        this.experienceInstance.config.controls.update();*/
     }
 
     createLight() {
@@ -118,33 +127,6 @@ export default class World extends EventEmitter {
         this.plane.instanceGroup.rotation.x -= deltaTime * this.thetaSpeed;
         this.plane.instanceGroup.rotation.z -= deltaTime * this.phiSpeed;
     }
-    movePlane(deltaTime) {
-        /*const angleZ = this.plane.instanceGroup.rotation.z % (Math.PI * 2);
-
-        this.sign = 1;
-        if (angleZ <= 0 && angleZ > -Math.PI) {
-            console.log("Angolo tra 0 e -π");
-
-            this.sign = -1;
-        } else if (angleZ <= -Math.PI && angleZ > -2 * Math.PI) {
-            console.log("Angolo tra -π e -2π");
-
-            this.sign = 1;
-        }*/
-
-        if (this.keys.ArrowUp) {
-            this.plane.instanceGroup.rotation.z -= deltaTime * (this.phiSpeed + this.phiIntesectionSpeed);
-        } else if (this.keys.ArrowDown) {
-            this.plane.instanceGroup.rotation.z -= (deltaTime * this.phiSpeed) / 2;
-        } else if (this.keys.ArrowLeft) {
-            /*if (this.sign === -1) this.plane.instanceGroup.rotation.x += deltaTime * (this.thetaSpeed + this.thetaIntesectionSpeed);
-            else this.plane.instanceGroup.rotation.x -= deltaTime * (this.thetaSpeed + this.thetaIntesectionSpeed);*/
-
-            this.plane.instanceGroup.rotation.x += deltaTime * (this.thetaSpeed + this.thetaIntesectionSpeed);
-        } else if (this.keys.ArrowRight) {
-            this.plane.instanceGroup.rotation.x -= deltaTime * (this.thetaSpeed + this.thetaIntesectionSpeed);
-        }
-    }
 
     updateInterestPointsOrientation() {
         const cameraPosition = this.experienceInstance.config.camera.position;
@@ -159,15 +141,57 @@ export default class World extends EventEmitter {
         });
     }
 
+    setUnsetFPV() {
+        if (!this.isFPVActive) {
+            this.plane.subInstanceGroup.rotation.x = 0.75;
+            this.robot.animationCrossFade('dance');
+
+            this.experienceInstance.config.controls.enabled = false;
+
+            this.experienceInstance.config.scene.remove(this.experienceInstance.config.camera);
+            this.plane.instanceGroup.add(this.experienceInstance.config.camera);
+            this.experienceInstance.config.camera.position.set(0, 9, 0);
+            this.experienceInstance.config.controls.target.set(1, 3, 0);
+
+
+
+            /*const groupPosition = new THREE.Vector3();
+            this.plane.instanceGroup.getWorldPosition(groupPosition);
+
+            const offset = new THREE.Vector3(0, 0, 0);
+            offset.applyQuaternion(this.plane.instanceGroup.quaternion);
+            const cameraTarget = groupPosition.clone().add(offset);
+
+            this.experienceInstance.config.controls.target.copy(cameraTarget);*/
+
+
+
+            this.experienceInstance.config.controls.update();
+        } else {
+            this.plane.subInstanceGroup.rotation.x = 0;
+            this.robot.animationCrossFade('idle');
+
+            this.experienceInstance.config.controls.enabled = true;
+
+            this.plane.instanceGroup.remove(this.experienceInstance.config.camera);
+            this.experienceInstance.config.scene.add(this.experienceInstance.config.camera);
+            this.experienceInstance.config.camera.position.set(12, 4, 8);
+            this.experienceInstance.config.controls.target.set(0, 0, 0);
+
+            this.experienceInstance.config.controls.update();
+        }
+
+        this.isFPVActive = !this.isFPVActive;
+    }
+
 
     
     update() {
         this.robot.animation.mixer.update(this.experienceInstance.deltaTime);
-        if (!this.isFPVActive) this.rotatePlanet(this.experienceInstance.deltaTime);
-        if (this.isFPVActive) this.movePlane(this.experienceInstance.deltaTime);
+        this.rotatePlanet(this.experienceInstance.deltaTime);
         this.planet.subModel.material.uniforms.uTime.value = this.experienceInstance.elapsedTime;
-        this.plane.animation.mixer.update(this.experienceInstance.deltaTime);
         this.updateInterestPointsOrientation();
+        this.plane.animation.mixer.update(this.experienceInstance.deltaTime);
 
 
 
@@ -182,25 +206,46 @@ export default class World extends EventEmitter {
 
             if (!object.cIsIntersected && this.robot.circlecasterBoundingBox.intersectsBox(updatedObjectBoundingBox)) {
                 object.cIsIntersected = true;
-                object.scale.setScalar(1.5);
+
+                gsap.killTweensOf(object.scale);
+                const animation = gsap.to(object.scale, {
+                    x: 1.5,
+                    y: 1.5,
+                    z: 1.5,
+                    duration: 0.3,
+                    ease: "power2.inOut",
+                    onComplete: () => {
+                        animation.kill();
+                    }
+                });
+
                 this.emit('intersectInterest', object.cProps);
             }
             if (object.cIsIntersected && !this.robot.circlecasterBoundingBox.intersectsBox(updatedObjectBoundingBox)) {
                 object.cIsIntersected = false;
-                object.scale.setScalar(1);
+
+                gsap.killTweensOf(object.scale);
+                const animation = gsap.to(object.scale, {
+                    x: 1,
+                    y: 1,
+                    z: 1,
+                    duration: 0.3,
+                    ease: "power2.inOut",
+                    onComplete: () => {
+                        animation.kill();
+                    }
+                });
+
                 this.emit('unIntersectInterest', object.cProps)
             }
         });
 
-        /*const updatedPlaneBoundingBox = new THREE.Box3().setFromObject(this.plane.subInstanceGroup);
+        const updatedPlaneBoundingBox = new THREE.Box3().setFromObject(this.plane.subInstanceGroup);
         if (this.robot.circlecasterBoundingBox.intersectsBox(updatedPlaneBoundingBox)) {
-            //console.log('LOG --------')
-
             this.plane.instanceGroup.rotation.x -= this.experienceInstance.deltaTime * (this.thetaSpeed + this.thetaIntesectionSpeed);
             this.plane.instanceGroup.rotation.z -= this.experienceInstance.deltaTime * (this.phiSpeed + this.phiIntesectionSpeed);
         } else {
             this.updatePlaneOrbit(this.experienceInstance.deltaTime);
-        }*/
-        this.updatePlaneOrbit(this.experienceInstance.deltaTime);
+        }
     }
 }

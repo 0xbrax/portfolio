@@ -1,7 +1,10 @@
 <template>
     <div id="home" ref="homeEl" class="h-full">
+        <div id="buttons" class="absolute left-[50%] top-[6rem] translate-x-[-50%]">
+            <LucidePlane @click="setUnsetFPV()" />
+        </div>
 
-        <div id="controls" class="absolute right-0 bottom-0 flex items-center gap-4">
+        <div id="keys" class="absolute right-0 bottom-0 flex items-center gap-4">
             <kbd :class="['kbd', { 'opacity-50': !keys.Space }]">space</kbd>
 
             <div>
@@ -218,6 +221,10 @@ export default {
             });
         };
 
+        const setUnsetFPV = () => {
+            experience.world.setUnsetFPV();
+        };
+
 
 
         onMounted(() => {
@@ -230,17 +237,17 @@ export default {
                     setJoypadControl();
 
 
-                    console.log('TUTTO PRONTO')
+                    console.log('LFG')
 
 
                     isExperienceReady.value = true;
                     clearTimeout(timeout);
                 }, 300);
 
-                experience.on('intersectInterest', ({ detail }) => {
+                experience.world.on('intersectInterest', ({ detail }) => {
                     swiperSlides.value.unshift(detail);
                 });
-                experience.on('unIntersectInterest', ({ detail }) => {
+                experience.world.on('unIntersectInterest', ({ detail }) => {
                     swiperSlides.value = swiperSlides.value.filter(el => el.id !== detail.id);
                 });
             }, { once: true });
@@ -254,7 +261,8 @@ export default {
         return {
             homeEl,
             swiperSlides,
-            keys
+            keys,
+            setUnsetFPV
         }
     }
 }

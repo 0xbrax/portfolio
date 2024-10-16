@@ -61,30 +61,21 @@ export default class Experience extends EventEmitter {
 
     start() {
         this.world = new World();
-        this.world.start();
-
-        // current target is scene center (x: 0, y: 0, z: 0)
-        // this.config.controls.target.copy(this.world....position.clone());
 
         this.world.on('loadComplete', () => {
             console.time('TIME TO RENDER')
 
-            this.tick();
+            window.requestAnimationFrame(() => {
+                ////////
+                //this.DEBUG = DEBUG(true);
+                ////////
 
-            this.world.on('intersectInterest', ({ detail }) => {
-                this.emit('intersectInterest', detail);
+                this.emit('loaded');
+                this.tick();
+                this.isReady = true;
+
+                console.timeEnd('TIME TO RENDER')
             });
-            this.world.on('unIntersectInterest', ({ detail }) => {
-                this.emit('unIntersectInterest', detail);
-            });
-
-            this.isReady = true;
-            this.emit('loaded');
-
-            ////////
-            this.DEBUG = DEBUG(true);
-
-            console.timeEnd('TIME TO RENDER')
         }, { once: true });
     }
 
@@ -95,7 +86,7 @@ export default class Experience extends EventEmitter {
 
         this.world.update();
 
-        this.config.controls.update();
+        if (!this.world.isFPVActive) this.config.controls.update();
         this.config.renderer.render(this.config.scene, this.config.camera);
         window.requestAnimationFrame(() => {
             this.tick();

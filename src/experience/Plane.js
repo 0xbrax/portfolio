@@ -5,7 +5,6 @@ export default class Plane {
     constructor() {
         this.experienceInstance = new Experience();
         this.instanceGroup = new THREE.Group();
-        //this.instanceGroup.rotation.reorder('ZYX');
         this.experienceInstance.world.planet.instanceGroup.add(this.instanceGroup);
 
         this.subInstanceGroup = new THREE.Group();

@@ -20,6 +20,9 @@ export default class Planet extends EventEmitter {
         this.experienceInstance = new Experience();
         this.instanceGroup = new THREE.Group();
         this.instanceGroup.position.y = -2;
+        this.instanceGroup.children.forEach((child) => {
+            child.frustumCulled = false;
+        });
         this.experienceInstance.config.scene.add(this.instanceGroup);
 
         this.debugObject = {};
@@ -32,8 +35,8 @@ export default class Planet extends EventEmitter {
         this.debugObject.colorSnow = '#ffffff';
 
         // TODO check inset shadows & all geometries attributes not used
-        this.createPlanet();
         this.createWater();
+        this.createPlanet();
     }
 
     createPlanet() {
@@ -163,6 +166,8 @@ export default class Planet extends EventEmitter {
                 geometry,
                 material
             );
+
+
 
             this.instanceGroup.add(this.model);
 
