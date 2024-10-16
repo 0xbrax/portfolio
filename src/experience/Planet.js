@@ -125,6 +125,7 @@ export default class Planet extends EventEmitter {
 
             ////////
             // DEBUG
+            ////////
             /*gpgpu.debug = new THREE.Mesh(
                 new THREE.PlaneGeometry(3, 3),
                 new THREE.MeshBasicMaterial({

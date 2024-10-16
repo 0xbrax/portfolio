@@ -4,17 +4,13 @@ import * as THREE from "three";
 
 
 
-export const DEBUG = (isActive = false) => {
-    if (!isActive) {
-        return;
-    }
-
+export const DEBUG = () => {
     const experienceInstance = new Experience();
-    const DEBUG = new GUI();
+    const DEBUG = new GUI({ title: 'DEBUG', closeFolders: true });
 
-    const rendererFolder = DEBUG.addFolder('renderer').close();
-    const planetFolder = DEBUG.addFolder('planet').close();
-    const interestPointFolder = DEBUG.addFolder('interestPoint').close();
+    const rendererFolder = DEBUG.addFolder('renderer');
+    const planetFolder = DEBUG.addFolder('planet');
+    const interestPointFolder = DEBUG.addFolder('interestPoint');
 
 
 
@@ -38,7 +34,7 @@ export const DEBUG = (isActive = false) => {
 
 
 
-    /*planetFolder.addColor(experienceInstance.world.planet.debugObject, 'colorWaterDeep').onChange(() => experienceInstance.world.planet.model.material.uniforms.uColorWaterDeep.value.set(experienceInstance.world.planet.debugObject.colorWaterDeep));
+    planetFolder.addColor(experienceInstance.world.planet.debugObject, 'colorWaterDeep').onChange(() => experienceInstance.world.planet.model.material.uniforms.uColorWaterDeep.value.set(experienceInstance.world.planet.debugObject.colorWaterDeep));
     planetFolder.addColor(experienceInstance.world.planet.debugObject, 'colorWaterSurface').onChange(() => {
         experienceInstance.world.planet.model.material.uniforms.uColorWaterSurface.value.set(experienceInstance.world.planet.debugObject.colorWaterSurface);
         experienceInstance.world.planet.subModel.material.uniforms.uColorWaterSurface.value.set(experienceInstance.world.planet.debugObject.colorWaterSurface);
@@ -48,7 +44,7 @@ export const DEBUG = (isActive = false) => {
     planetFolder.addColor(experienceInstance.world.planet.debugObject, 'colorGrass').onChange(() => experienceInstance.world.planet.model.material.uniforms.uColorGrass.value.set(experienceInstance.world.planet.debugObject.colorGrass));
     planetFolder.addColor(experienceInstance.world.planet.debugObject, 'colorSnow').onChange(() => experienceInstance.world.planet.model.material.uniforms.uColorSnow.value.set(experienceInstance.world.planet.debugObject.colorSnow));
     planetFolder.addColor(experienceInstance.world.planet.debugObject, 'colorRock').onChange(() => experienceInstance.world.planet.model.material.uniforms.uColorRock.value.set(experienceInstance.world.planet.debugObject.colorRock));
-*/
+
 
 
     const createInterestPoint = () => {
@@ -80,7 +76,7 @@ export const DEBUG = (isActive = false) => {
         interestPointFolder.add(positions, 'theta').min(0).max(Math.PI * 2).step(0.01).onChange(setPointPosition);
         interestPointFolder.add(positions, 'phi').min(0).max(Math.PI).step(0.01).onChange(setPointPosition);
     };
-    //createInterestPoint();
+    createInterestPoint();
 
 
 

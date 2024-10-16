@@ -41,7 +41,7 @@ export default {
         }, 300);
 
         window.addEventListener('click', () => {
-            console.log('CLICK')
+            console.log('- - - CPU CLICK TEST - - -')
         });
 
         return {

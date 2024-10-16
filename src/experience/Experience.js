@@ -63,18 +63,18 @@ export default class Experience extends EventEmitter {
         this.world = new World();
 
         this.world.on('loadComplete', () => {
-            console.time('TIME TO RENDER')
+            console.time('t FINAL RENDER')
 
             window.requestAnimationFrame(() => {
                 ////////
-                //this.DEBUG = DEBUG(true);
+                if (window.location.hash === '#debug') this.DEBUG = DEBUG();
                 ////////
 
                 this.emit('loaded');
                 this.tick();
                 this.isReady = true;
 
-                console.timeEnd('TIME TO RENDER')
+                console.timeEnd('t FINAL RENDER')
             });
         }, { once: true });
     }
