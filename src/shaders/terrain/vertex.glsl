@@ -3,16 +3,17 @@ attribute vec4 tangent;
 attribute float aWobble;
 
 uniform float uPositionFrequency;
+uniform float uSeed;
 uniform float uStrength;
 
 varying vec3 vPosition;
 varying float vWobble;
 varying float vUpDot;
 
-#include ../includes/simplexNoise3D.glsl
+#include ../includes/simplexNoise4D.glsl
 
 float getWobble(vec3 position) {
-    return simplexNoise3D(vec3(position * uPositionFrequency)) * uStrength;
+    return simplexNoise4D(vec4(vec3(position * uPositionFrequency), uSeed)) * uStrength;
 }
 
 

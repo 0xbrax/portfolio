@@ -5,7 +5,7 @@ export default class Robot {
     constructor() {
         this.experienceInstance = new Experience();
         this.instanceGroup = new THREE.Group();
-        this.instanceGroup.position.y = 1;
+        this.instanceGroup.position.y = 0.95;
         this.experienceInstance.config.scene.add(this.instanceGroup);
         
         this.createRobot();

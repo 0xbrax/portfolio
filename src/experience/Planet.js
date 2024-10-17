@@ -14,7 +14,7 @@ import waterFragmentShader from '@/shaders/water/fragment.glsl';
 
 
 export default class Planet extends EventEmitter {
-    constructor() {
+    constructor(interestPointsLength) {
         super();
 
         this.experienceInstance = new Experience();
@@ -24,6 +24,11 @@ export default class Planet extends EventEmitter {
             child.frustumCulled = false;
         });
         this.experienceInstance.config.scene.add(this.instanceGroup);
+
+        // SEED --> Good result between -1000 and 1000
+        this.sphereRadius = 3;
+        this.interestPointsLength = interestPointsLength;
+        this.interestPointsMinDistance = 3;
 
         this.debugObject = {};
         this.debugObject.colorWaterDeep = '#2a5fc5';
@@ -36,19 +41,20 @@ export default class Planet extends EventEmitter {
 
         // TODO check inset shadows & all geometries attributes not used
         this.createWater();
-        this.createPlanet();
+        this.createPlanet(this.experienceInstance.seed);
     }
 
-    createPlanet() {
-        const worker = new Worker(new URL('../worker/gpuWorker.js', import.meta.url));
+    createPlanet(seed, isNew) {
+        const worker = new Worker(new URL('../worker/planetWorker.js', import.meta.url));
 
-        let geometry = new THREE.IcosahedronGeometry(3, 30);
+        let geometry = new THREE.IcosahedronGeometry(this.sphereRadius, 30);
         geometry = mergeVertices(geometry);
         geometry.computeTangents();
         geometry.deleteAttribute('uv');
 
         let uniformsObject = {
             uPositionFrequency: new THREE.Uniform(0.5),
+            uSeed: new THREE.Uniform(seed),
             uStrength: new THREE.Uniform(0.6)
         };
 
@@ -104,7 +110,10 @@ export default class Planet extends EventEmitter {
                     step: 2,
                     positionsBuffer: positionsArray.buffer,
                     originalPositionsBuffer: originalPositionsArray.buffer,
-                    wobblesBuffer: wobblesArray.buffer
+                    wobblesBuffer: wobblesArray.buffer,
+                    sphereRadius: this.sphereRadius,
+                    interestPointsLength: this.interestPointsLength,
+                    interestPointsMinDistance: this.interestPointsMinDistance
                 }, [positionsArray.buffer, originalPositionsArray.buffer, wobblesArray.buffer]);
 
                 return;
@@ -113,7 +122,7 @@ export default class Planet extends EventEmitter {
 
 
             // step 2
-            const { originalPositionsBuffer, positionsGeometryBuffer, wobblesBuffer } = event.data;
+            const { originalPositionsBuffer, positionsGeometryBuffer, wobblesBuffer, selectedPoints } = event.data;
             const originalPositionsArray = new Float32Array(originalPositionsBuffer);
             const positionsGeometryArray = new Float32Array(positionsGeometryBuffer);
             const wobblesArray = new Float32Array(wobblesBuffer);
@@ -171,8 +180,13 @@ export default class Planet extends EventEmitter {
 
 
             this.instanceGroup.add(this.model);
+            this.experienceInstance.updateSeed(seed);
 
-            this.emit('workerComplete');
+            if (!isNew) {
+                this.emit('workerComplete', { selectedPoints });
+            } else {
+                this.emit('newPlanetWorkerComplete', { selectedPoints });
+            }
         };
     }
 
@@ -202,5 +216,21 @@ export default class Planet extends EventEmitter {
         this.subModel = new THREE.Mesh(geometry, material);
 
         this.instanceGroup.add(this.subModel);
+    }
+
+
+
+    destroyPlanet() {
+        this.instanceGroup.remove(this.model);
+        this.model.material.dispose();
+        this.model.geometry.dispose();
+    }
+
+    generateNewPlanet(seed) {
+        this.destroyPlanet();
+
+        window.requestAnimationFrame(() => {
+            this.createPlanet(seed, true);
+        });
     }
 }

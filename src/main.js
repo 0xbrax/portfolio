@@ -7,7 +7,10 @@ import router from "@/router.js";
 import { store } from '@/store/index.js';
 import { $isMobile } from "@/assets/utils.js";
 
-import { LucidePlane } from "lucide-vue-next";
+import {
+    LucidePlane,
+    LucideEarth
+} from "lucide-vue-next";
 
 
 
@@ -20,6 +23,7 @@ app.use(store());
 app.config.globalProperties.$isMobile = $isMobile;
 
 app.component('LucidePlane', LucidePlane);
+app.component('LucideEarth', LucideEarth);
 
 
 

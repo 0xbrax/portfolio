@@ -1,12 +1,13 @@
 uniform vec2 uResolution;
 
 uniform float uPositionFrequency;
+uniform float uSeed;
 uniform float uStrength;
 
-#include ../includes/simplexNoise3D.glsl
+#include ../includes/simplexNoise4D.glsl
 
 float getWobble(vec3 position) {
-    return simplexNoise3D(vec3(position * uPositionFrequency)) * uStrength;
+    return simplexNoise4D(vec4(vec3(position * uPositionFrequency), uSeed)) * uStrength;
 }
 
 

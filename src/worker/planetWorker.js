@@ -3,6 +3,23 @@ const workerData = {
     positionsGeometryArray: null
 };
 
+const selectedPoints = [];
+let pointsCount = null;
+let pointsMinDistance = null;
+
+/*const getRandomPointOnSphere = (radius) => {
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+
+    const x = radius * Math.sin(phi) * Math.cos(theta);
+    const y = radius * Math.sin(phi) * Math.sin(theta);
+    const z = radius * Math.cos(phi);
+
+    return { x, y, z };
+};*/
+
+
+
 self.onmessage = (event) => {
     const {
         step,
@@ -11,7 +28,10 @@ self.onmessage = (event) => {
         positionsTextureBuffer,
         positionsBuffer,
         originalPositionsBuffer,
-        wobblesBuffer
+        wobblesBuffer,
+        sphereRadius,
+        interestPointsLength,
+        interestPointsMinDistance
     } = event.data;
 
     if (step === 1) {
@@ -51,6 +71,9 @@ self.onmessage = (event) => {
     const originalPositionsArray = new Float32Array(originalPositionsBuffer);
     const wobblesArray = new Float32Array(wobblesBuffer);
 
+    pointsCount = interestPointsLength;
+    pointsMinDistance = interestPointsMinDistance;
+
     for (let i = 0; i < workerData.gpgpuCount; i++) {
         const i3 = i * 3; // xyz
         const i4 = i * 4; // rgba
@@ -68,13 +91,51 @@ self.onmessage = (event) => {
         workerData.positionsGeometryArray[i3 + 1] = y;
         workerData.positionsGeometryArray[i3 + 2] = z;
         wobblesArray[i] = w;
+
+
+
+        if (selectedPoints.length < pointsCount) {
+            selectedPoints.push({ x, y, z });
+        } else {
+            let minIndex = -1;
+            let minDistance = Infinity;
+
+            for (let j = 0; j < selectedPoints.length; j++) {
+                const existingPoint = selectedPoints[j];
+                const existingDistance = Math.sqrt(existingPoint.x ** 2 + existingPoint.y ** 2 + existingPoint.z ** 2);
+                if (existingDistance < minDistance) {
+                    minDistance = existingDistance;
+                    minIndex = j;
+                }
+            }
+
+            let canAdd = true;
+
+            for (let j = 0; j < selectedPoints.length; j++) {
+                const existingPoint = selectedPoints[j];
+                const distance = Math.sqrt((x - existingPoint.x) ** 2 + (y - existingPoint.y) ** 2 + (z - existingPoint.z) ** 2);
+                if (distance < pointsMinDistance) {
+                    canAdd = false;
+                    break;
+                }
+            }
+
+            if (canAdd) {
+                selectedPoints[minIndex] = { x, y, z };
+            } /*else {
+                // TODO Check values (in-water bug ? --seed 0) & Try to get other points before random
+                const randomPoint = getRandomPointOnSphere(sphereRadius);
+                selectedPoints[minIndex] = randomPoint;
+            }*/
+        }
     }
 
     self.postMessage(
         {
             originalPositionsBuffer: originalPositionsArray.buffer,
             positionsGeometryBuffer: workerData.positionsGeometryArray.buffer,
-            wobblesBuffer: wobblesArray.buffer
+            wobblesBuffer: wobblesArray.buffer,
+            selectedPoints
         },
         [
             originalPositionsArray.buffer,

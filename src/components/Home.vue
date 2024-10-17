@@ -2,6 +2,8 @@
     <div id="home" ref="homeEl" class="h-full">
         <div id="buttons" class="absolute left-[50%] top-[6rem] translate-x-[-50%]">
             <LucidePlane @click="setUnsetFPV()" />
+
+            <LucideEarth @click="generateNewPlanet()" />
         </div>
 
         <div id="keys" class="absolute right-0 bottom-0 flex items-center gap-4">
@@ -45,6 +47,9 @@ import { onMounted, onUnmounted, reactive, ref } from "vue";
 import Experience from '@/experience/Experience.js';
 import { RESOURCES, INTEREST_POINTS } from "@/experience/ASSETS.js";
 import nipplejs from 'nipplejs';
+import { getPseudoRandomNumber } from "@/assets/utils.js";
+
+
 
 export default {
     name: "Home",
@@ -83,6 +88,8 @@ export default {
             { keys: ['ArrowLeft'], start: Math.PI - angleSection, end: Math.PI + angleSection }, // 300° to 360°
             { keys: ['ArrowUp', 'ArrowLeft'], start: (Math.PI * 0.75) - angleSection, end: (Math.PI * 0.75) + angleSection },
         ];
+
+
 
         const normalizeZeroAngle = (angle, angleSection) => {
             if (angle >= 0 && angle < angleSection) {
@@ -171,6 +178,8 @@ export default {
                     experience.world.keys[key] = false;
                 });
 
+                if (experience.world.isFPVActive) return;
+
                 const direction = getDirection(nipple.angle.radian, angleSection, directions);
                 const power = getPower(nipple.distance, joypadOptions.size)
 
@@ -193,8 +202,6 @@ export default {
                     keys.Space = false;
                     experience.world.keys.Space = false;
                 }
-
-                if (experience.world.isFPVActive) return;
 
                 const anyKeyPressed = Object.keys(keys).filter(key => key !== 'Space').some(key => keys[key] === true);
                 if (anyKeyPressed && !experience.world.robot.animation.isPlaying) {
@@ -221,14 +228,22 @@ export default {
             });
         };
 
+
+
         const setUnsetFPV = () => {
             experience.world.setUnsetFPV();
+        };
+
+        const generateNewPlanet = () => {
+            const randomSeed = getPseudoRandomNumber(-1000, 1000);
+            experience.world.planet.generateNewPlanet(randomSeed);
         };
 
 
 
         onMounted(() => {
-            experience = new Experience(homeEl.value, undefined, RESOURCES, INTEREST_POINTS);
+            const randomSeed = getPseudoRandomNumber(-1000, 1000);
+            experience = new Experience(homeEl.value, undefined, RESOURCES, INTEREST_POINTS, randomSeed);
 
             experience.on('loaded', () => {
                 // wait for logo transition ends
@@ -258,11 +273,14 @@ export default {
             if (joypad) joypad.destroy();
         });
 
+
+
         return {
             homeEl,
             swiperSlides,
             keys,
-            setUnsetFPV
+            setUnsetFPV,
+            generateNewPlanet
         }
     }
 }

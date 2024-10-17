@@ -19,7 +19,7 @@ export default class Plane {
     }
 
     createOrbit() {
-        const geometry = new THREE.CircleGeometry(6, 6);
+        const geometry = new THREE.CircleGeometry(this.experienceInstance.world.planet.sphereRadius * 2, 6);
         const material = new THREE.MeshBasicMaterial({ color: '#00ff00', side: THREE.DoubleSide, wireframe: true });
 
         this.orbit = new THREE.Mesh(geometry, material);

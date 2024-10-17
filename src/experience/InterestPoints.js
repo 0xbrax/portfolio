@@ -3,17 +3,18 @@ import Experience from "@/experience/Experience.js";
 import { TextGeometry } from "three/addons";
 
 export default class InterestPoints {
-    constructor() {
+    constructor(selectedPoints) {
         this.experienceInstance = new Experience();
         this.instanceGroup = new THREE.Group();
         this.experienceInstance.world.planet.instanceGroup.add(this.instanceGroup);
 
         this.interestPoints = this.experienceInstance.interestPoints;
+        this.selectedPoints = selectedPoints
 
-        this.createPoints();
+        this.createPoints(this.selectedPoints);
     }
 
-    createPoints() {
+    createPoints(selectedPoints) {
         const poleGeometry = new THREE.CylinderGeometry(0.05, 0.05, 2.5, 12);
         poleGeometry.rotateX(Math.PI * -0.5);
         const poleMaterial = new THREE.MeshStandardMaterial({
@@ -31,8 +32,10 @@ export default class InterestPoints {
 
 
 
-        this.interestPoints.forEach((el) => {
+        this.interestPoints.forEach((el, i) => {
             const pointGroup = new THREE.Group();
+            this.setSphericalPosition(pointGroup, selectedPoints[i]);
+
             const pole = new THREE.Mesh(poleGeometry, poleMaterial);
 
             const plateGroup = new THREE.Group();
@@ -40,7 +43,7 @@ export default class InterestPoints {
             plateBody.rotation.z = Math.PI * -0.5;
 
             const plateTextMaterial = new THREE.MeshStandardMaterial();
-            const texture = this.createTextTexture(el.props.title, 1 * pixelsPerUnit, 1 * pixelsPerUnit);
+            const texture = this.createTextTexture(el.title, 1 * pixelsPerUnit, 1 * pixelsPerUnit);
             texture.colorSpace = THREE.SRGBColorSpace;
             texture.generateMipmaps = false;
             texture.minFilter = THREE.NearestFilter;
@@ -51,31 +54,25 @@ export default class InterestPoints {
             const plateText = new THREE.Mesh(plateTextGeometry, plateTextMaterial);
             plateText.position.z = 0.025 + 0.001; // 0.001 --> z-fighting prevent
 
-
-
-            const theta = el.theta; // y angle
-            const phi = el.phi;  // x angle
-            const pointPosition = this.sphericalToCartesian(3 + 0.25, theta, phi);
-            pointGroup.position.copy(pointPosition);
-            pointGroup.lookAt(new THREE.Vector3(0, 0, 0));
-
             plateGroup.rotation.x = Math.PI * -0.5;
             plateGroup.position.y = 0.075;
             plateGroup.position.z = -0.88;
 
             plateGroup.add(plateBody, plateText);
-            pointGroup.cProps = { id: el.id, ...el.props };
+            pointGroup.cProps = { ...el };
             pointGroup.add(pole, plateGroup);
             this.instanceGroup.add(pointGroup);
         });
     }
 
-    sphericalToCartesian(radius, theta, phi) {
-        const x = radius * Math.sin(phi) * Math.cos(theta);
-        const y = radius * Math.cos(phi);
-        const z = radius * Math.sin(phi) * Math.sin(theta);
+    setSphericalPosition(object, selectedPoint) {
+        const position = new THREE.Vector3(...Object.values(selectedPoint));
+        object.position.copy(position);
 
-        return new THREE.Vector3(x, y, z);
+        const direction = new THREE.Vector3().subVectors(new THREE.Vector3(0, 0, 0), position).normalize();
+        const up = new THREE.Vector3(0, 0, 1);
+        const quaternion = new THREE.Quaternion().setFromUnitVectors(up, direction);
+        object.quaternion.copy(quaternion);
     }
 
     createTextTexture(text, width, height) {

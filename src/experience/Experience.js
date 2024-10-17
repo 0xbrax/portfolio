@@ -10,7 +10,7 @@ import { DEBUG } from "@/experience/Debug.js";
 let instance = null;
 
 export default class Experience extends EventEmitter {
-    constructor(container, loading, resources, interestPoints) {
+    constructor(container, loading, resources, interestPoints, seed) {
         if (instance) return instance;
         super();
         instance = this;
@@ -21,6 +21,7 @@ export default class Experience extends EventEmitter {
         //this.loading = loading;
         this.resources = resources;
         this.interestPoints = interestPoints;
+        this.seed = seed;
 
 
 
@@ -42,16 +43,16 @@ export default class Experience extends EventEmitter {
         });
     }
 
-    init() {
-        //this.tick();
+    updateSeed(seed) {
+        this.seed;
+    }
 
+    init() {
         this.loader.start();
         this.loader.on('complete', () => {
             this.assets = this.loader.assets;
 
             this.start();
-
-            //this.emit('loaded');
         }, { once: true });
         this.loader.on('error', (e) => {
             // TODO fix and handle message

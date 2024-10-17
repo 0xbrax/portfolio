@@ -40,7 +40,7 @@ export default class World extends EventEmitter {
         this.createLight();
 
         console.time('t PLANET Worker');
-        await this.loadObjectWithWorker('planet', Planet);
+        const { selectedPoints } = await this.loadObjectWithWorker('planet', Planet, this.experienceInstance.interestPoints.length);
         console.timeEnd('t PLANET Worker');
 
         console.time('t ROBOT');
@@ -48,7 +48,7 @@ export default class World extends EventEmitter {
         console.timeEnd('t ROBOT');
 
         console.time('t POINT');
-        await this.loadObject('interestPoints', InterestPoints);
+        await this.loadObject('interestPoints', InterestPoints, selectedPoints);
         console.timeEnd('t POINT');
 
         console.time('t PLANE');
@@ -56,20 +56,29 @@ export default class World extends EventEmitter {
         console.timeEnd('t PLANE');
 
         this.emit('loadComplete');
+
+
+
+        this.planet.on('newPlanetWorkerComplete', ({ detail }) => {
+            const selectedPoints = detail.selectedPoints;
+            this.interestPoints.instanceGroup.children.forEach((object, i) => {
+                this.interestPoints.setSphericalPosition(object, selectedPoints[i]);
+            });
+        });
     }
 
-    loadObjectWithWorker(objectName, ObjectClass) {
+    loadObjectWithWorker(objectName, ObjectClass, ...args) {
         return new Promise((resolve) => {
-            this[objectName] = new ObjectClass();
-            this[objectName].on('workerComplete', () => {
+            this[objectName] = new ObjectClass(...args);
+            this[objectName].on('workerComplete', ({ detail }) => {
                 this.experienceInstance.config.renderer.render(this.experienceInstance.config.scene, this.experienceInstance.config.camera);
-                resolve();
+                resolve(detail);
             }, { once: true });
         });
     }
-    loadObject(objectName, ObjectClass) {
+    loadObject(objectName, ObjectClass, ...args) {
         return new Promise((resolve) => {
-            this[objectName] = new ObjectClass();
+            this[objectName] = new ObjectClass(...args);
             this.experienceInstance.config.renderer.render(this.experienceInstance.config.scene, this.experienceInstance.config.camera);
             resolve();
         });
@@ -130,15 +139,12 @@ export default class World extends EventEmitter {
     }
 
     updateInterestPointsOrientation() {
-        const cameraPosition = this.experienceInstance.config.camera.position;
+        const cameraPosition = this.experienceInstance.config.camera.position.clone();
 
-        this.interestPoints.instanceGroup.children.forEach((el) => {
-            el.lookAt(new THREE.Vector3(0,  this.experienceInstance.world.planet.instanceGroup.position.y, 0));
-
-            const direction = new THREE.Vector3().subVectors(cameraPosition, el.position).normalize();
-            const angle = Math.atan2(direction.z, direction.x);
-
-            el.rotation.z = angle + Math.PI * -0.5;
+        this.interestPoints.instanceGroup.children.forEach((object) => {
+            const direction = new THREE.Vector3().subVectors(cameraPosition, object.position).normalize();
+            const angleZ = Math.atan2(direction.z, direction.x);
+            object.rotation.z = angleZ + (Math.PI * -0.5);
         });
     }
 
@@ -181,10 +187,14 @@ export default class World extends EventEmitter {
 
 
 
-        const intersects = this.robot.raycaster.intersectObject(this.planet.model);
-        if (intersects.length > 0) {
-            const intersect = intersects[0];
-            this.robot.instanceGroup.position.y = (intersect.distance - this.robot.raycaster.ray.origin.y) * -1;
+        if (this.planet.model) {
+            const intersects = this.robot.raycaster.intersectObject(this.planet.model);
+            if (intersects.length > 0) {
+                const intersect = intersects[0];
+                this.robot.instanceGroup.position.y = (intersect.distance - this.robot.raycaster.ray.origin.y) * -1;
+            }
+        } else {
+            this.robot.instanceGroup.position.y = 0.95;
         }
 
         this.interestPoints.instanceGroup.children.forEach((object) => {
@@ -222,7 +232,7 @@ export default class World extends EventEmitter {
                     }
                 });
 
-                this.emit('unIntersectInterest', object.cProps)
+                this.emit('unIntersectInterest', object.cProps);
             }
         });
 

@@ -47,38 +47,5 @@ export const DEBUG = () => {
 
 
 
-    const createInterestPoint = () => {
-        const sphericalToCartesian = (radius, theta, phi) => {
-            const x = radius * Math.sin(phi) * Math.cos(theta);
-            const y = radius * Math.cos(phi);
-            const z = radius * Math.sin(phi) * Math.sin(theta);
-
-            return new THREE.Vector3(x, y, z);
-        };
-
-        const point = new THREE.Mesh(
-            new THREE.BoxGeometry(1, 1, 1),
-            new THREE.MeshBasicMaterial({ color: '#00ff00' })
-        );
-        experienceInstance.world.interestPoints.instanceGroup.add(point);
-
-        const positions = {
-            theta: Math.random() * Math.PI * 2, // y angle
-            phi: Math.random() * Math.PI // x angle
-        };
-        const setPointPosition = () => {
-            const position = sphericalToCartesian(3 + 0.5, positions.theta, positions.phi);
-            point.position.copy(position);
-            point.lookAt(new THREE.Vector3(0, experienceInstance.world.planet.instanceGroup.position.y, 0));
-        };
-        setPointPosition();
-
-        interestPointFolder.add(positions, 'theta').min(0).max(Math.PI * 2).step(0.01).onChange(setPointPosition);
-        interestPointFolder.add(positions, 'phi').min(0).max(Math.PI).step(0.01).onChange(setPointPosition);
-    };
-    createInterestPoint();
-
-
-
     return DEBUG;
 };
