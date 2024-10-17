@@ -23,14 +23,17 @@ export const RESOURCES = {
 export const INTEREST_POINTS = [
     {
         id: 0,
-        title: `Fruit Cocktail`
+        title: `Fruit Cocktail`,
+        url: ''
     },
     {
         id: 1,
-        title: `NoK.Army`
+        title: `NoK.Army`,
+        url: ''
     },
     {
         id: 2,
-        title: `Pika Ride`
+        title: `Pika Ride`,
+        url: ''
     }
 ];

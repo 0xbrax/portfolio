@@ -4,19 +4,25 @@ const workerData = {
 };
 
 const selectedPoints = [];
-let pointsCount = null;
-let pointsMinDistance = null;
 
-/*const getRandomPointOnSphere = (radius) => {
-    const theta = Math.random() * Math.PI * 2;
-    const phi = Math.acos(2 * Math.random() - 1);
 
-    const x = radius * Math.sin(phi) * Math.cos(theta);
-    const y = radius * Math.sin(phi) * Math.sin(theta);
-    const z = radius * Math.cos(phi);
 
-    return { x, y, z };
-};*/
+const isPointValid = (point, minDistanceFromCenter, minDistanceFromPoints) => {
+    const distanceFromCenter = Math.sqrt(point.x ** 2 + point.y ** 2 + point.z ** 2);
+
+    if (distanceFromCenter < minDistanceFromCenter) {
+        return false;
+    }
+
+    for (const existingPoint of selectedPoints) {
+        const distance = Math.sqrt((point.x - existingPoint.x) ** 2 + (point.y - existingPoint.y) ** 2 + (point.z - existingPoint.z) ** 2);
+        if (distance < minDistanceFromPoints) {
+            return false;
+        }
+    }
+
+    return true;
+};
 
 
 
@@ -30,8 +36,7 @@ self.onmessage = (event) => {
         originalPositionsBuffer,
         wobblesBuffer,
         sphereRadius,
-        interestPointsLength,
-        interestPointsMinDistance
+        interestPointsLength
     } = event.data;
 
     if (step === 1) {
@@ -48,6 +53,8 @@ self.onmessage = (event) => {
             positionsTextureArray[i4 + 3] = 0; // data channel will be used for wobble value
         }
 
+        
+        
         workerData.gpgpuCount = gpgpuCount;
         workerData.positionsGeometryArray = positionsGeometryArray;
 
@@ -71,9 +78,6 @@ self.onmessage = (event) => {
     const originalPositionsArray = new Float32Array(originalPositionsBuffer);
     const wobblesArray = new Float32Array(wobblesBuffer);
 
-    pointsCount = interestPointsLength;
-    pointsMinDistance = interestPointsMinDistance;
-
     for (let i = 0; i < workerData.gpgpuCount; i++) {
         const i3 = i * 3; // xyz
         const i4 = i * 4; // rgba
@@ -91,44 +95,71 @@ self.onmessage = (event) => {
         workerData.positionsGeometryArray[i3 + 1] = y;
         workerData.positionsGeometryArray[i3 + 2] = z;
         wobblesArray[i] = w;
+    }
 
+    
 
+    const pointsCount = interestPointsLength;
+    const pointMaxAttempts = 100;
+    const minDistanceFromCenter = 0.25;
+    const minDistanceFromPoints = 1;
 
-        if (selectedPoints.length < pointsCount) {
-            selectedPoints.push({ x, y, z });
-        } else {
-            let minIndex = -1;
-            let minDistance = Infinity;
+    while (selectedPoints.length < pointsCount) {
+        let isCheckValid = false;
 
-            for (let j = 0; j < selectedPoints.length; j++) {
-                const existingPoint = selectedPoints[j];
-                const existingDistance = Math.sqrt(existingPoint.x ** 2 + existingPoint.y ** 2 + existingPoint.z ** 2);
-                if (existingDistance < minDistance) {
-                    minDistance = existingDistance;
-                    minIndex = j;
-                }
+        // search...
+        for (let counter = 0; counter < pointMaxAttempts; counter++) {
+            const randomIndex = Math.floor(Math.random() * workerData.gpgpuCount);
+            const i3 = randomIndex * 3; // xyz
+
+            const x = workerData.positionsGeometryArray[i3];
+            const y = workerData.positionsGeometryArray[i3 + 1];
+            const z = workerData.positionsGeometryArray[i3 + 2];
+
+            const point = { x, y, z };
+
+            if (isPointValid(point, sphereRadius + minDistanceFromCenter, minDistanceFromPoints)) {
+                selectedPoints.push(point);
+                isCheckValid = true;
+                break;
             }
+        }
 
-            let canAdd = true;
+        // try again with sorter distance
+        if (!isCheckValid) {
+            for (let counter = 0; counter < (pointMaxAttempts / 2); counter++) {
+                const randomIndex = Math.floor(Math.random() * workerData.gpgpuCount);
+                const i3 = randomIndex * 3; // xyz
 
-            for (let j = 0; j < selectedPoints.length; j++) {
-                const existingPoint = selectedPoints[j];
-                const distance = Math.sqrt((x - existingPoint.x) ** 2 + (y - existingPoint.y) ** 2 + (z - existingPoint.z) ** 2);
-                if (distance < pointsMinDistance) {
-                    canAdd = false;
+                const x = workerData.positionsGeometryArray[i3];
+                const y = workerData.positionsGeometryArray[i3 + 1];
+                const z = workerData.positionsGeometryArray[i3 + 2];
+
+                const point = { x, y, z };
+
+                if (isPointValid(point, sphereRadius + (minDistanceFromCenter / 2), (minDistanceFromPoints / 2))) {
+                    selectedPoints.push(point);
+                    isCheckValid = true;
                     break;
                 }
             }
+        }
 
-            if (canAdd) {
-                selectedPoints[minIndex] = { x, y, z };
-            } /*else {
-                // TODO Check values (in-water bug ? --seed 0) & Try to get other points before random
-                const randomPoint = getRandomPointOnSphere(sphereRadius);
-                selectedPoints[minIndex] = randomPoint;
-            }*/
+        // random fallback
+        if (!isCheckValid) {
+            const randomIndex = Math.floor(Math.random() * workerData.gpgpuCount);
+            const i3 = randomIndex * 3; // xyz
+
+            const x = workerData.positionsGeometryArray[i3];
+            const y = workerData.positionsGeometryArray[i3 + 1];
+            const z = workerData.positionsGeometryArray[i3 + 2];
+
+            const point = { x, y, z };
+            selectedPoints.push(point);
         }
     }
+
+
 
     self.postMessage(
         {

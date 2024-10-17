@@ -25,10 +25,8 @@ export default class Planet extends EventEmitter {
         });
         this.experienceInstance.config.scene.add(this.instanceGroup);
 
-        // SEED --> Good result between -1000 and 1000
         this.sphereRadius = 3;
         this.interestPointsLength = interestPointsLength;
-        this.interestPointsMinDistance = 3;
 
         this.debugObject = {};
         this.debugObject.colorWaterDeep = '#2a5fc5';
@@ -112,8 +110,7 @@ export default class Planet extends EventEmitter {
                     originalPositionsBuffer: originalPositionsArray.buffer,
                     wobblesBuffer: wobblesArray.buffer,
                     sphereRadius: this.sphereRadius,
-                    interestPointsLength: this.interestPointsLength,
-                    interestPointsMinDistance: this.interestPointsMinDistance
+                    interestPointsLength: this.interestPointsLength
                 }, [positionsArray.buffer, originalPositionsArray.buffer, wobblesArray.buffer]);
 
                 return;

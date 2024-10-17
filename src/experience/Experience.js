@@ -21,7 +21,7 @@ export default class Experience extends EventEmitter {
         //this.loading = loading;
         this.resources = resources;
         this.interestPoints = interestPoints;
-        this.seed = seed;
+        this.seed = seed; // good result between -1000 and 1000
 
 
 
