@@ -10,7 +10,6 @@ export const DEBUG = () => {
 
     const rendererFolder = DEBUG.addFolder('renderer');
     const planetFolder = DEBUG.addFolder('planet');
-    const interestPointFolder = DEBUG.addFolder('interestPoint');
 
 
 

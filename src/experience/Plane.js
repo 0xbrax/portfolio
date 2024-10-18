@@ -8,7 +8,7 @@ export default class Plane {
         this.experienceInstance.world.planet.instanceGroup.add(this.instanceGroup);
 
         this.subInstanceGroup = new THREE.Group();
-        this.subInstanceGroup.position.y = 5.25;
+        this.subInstanceGroup.position.y = 7;
         this.subInstanceGroup.rotation.reorder('ZYX');
         this.subInstanceGroup.rotation.y = Math.PI * 0.5;
         this.instanceGroup.add(this.subInstanceGroup);
@@ -19,7 +19,7 @@ export default class Plane {
     }
 
     createOrbit() {
-        const geometry = new THREE.CircleGeometry(this.experienceInstance.world.planet.sphereRadius * 2, 6);
+        const geometry = new THREE.CircleGeometry(8.5, 6);
         const material = new THREE.MeshBasicMaterial({ color: '#00ff00', side: THREE.DoubleSide, wireframe: true });
 
         this.orbit = new THREE.Mesh(geometry, material);

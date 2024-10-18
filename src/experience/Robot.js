@@ -60,11 +60,12 @@ export default class Robot {
     }
 
     createCirclecaster() {
-        const geometry = new THREE.CylinderGeometry(1.25, 1.25, 3.5, 12);
+        const geometry = new THREE.CircleGeometry(1.5, 12);
         const material = new THREE.MeshBasicMaterial({ color: '#00ff00', side: THREE.DoubleSide, wireframe: true });
 
         this.circlecaster = new THREE.Mesh(geometry, material);
-        this.circlecaster.position.y = 2.75;
+        this.circlecaster.rotation.x = Math.PI * -0.5;
+        this.circlecaster.position.y = 0.75;
 
         this.circlecaster.visible = false;
         this.experienceInstance.config.scene.add(this.circlecaster);

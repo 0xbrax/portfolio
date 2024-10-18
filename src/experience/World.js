@@ -26,9 +26,6 @@ export default class World extends EventEmitter {
 
         this.thetaSpeed = 0.02;
         this.phiSpeed = 0.4;
-        // TODO se l'aereo arriva dall'altro lato del robot non funziona
-        this.thetaIntesectionSpeed = 0.4;
-        this.phiIntesectionSpeed = 0.6;
 
         this.isFPVActive = false;
         this.cameraPositionBeforeFPV = null;
@@ -142,7 +139,7 @@ export default class World extends EventEmitter {
 
     setUnsetFPV() {
         if (!this.isFPVActive) {
-            this.plane.subInstanceGroup.rotation.x = 0.5;
+            this.plane.subInstanceGroup.rotation.x = 0.75;
             this.robot.animationCrossFade('dance');
 
             this.experienceInstance.config.controls.enabled = false;
@@ -151,8 +148,8 @@ export default class World extends EventEmitter {
             this.plane.instanceGroup.add(this.experienceInstance.config.camera);
 
             this.cameraPositionBeforeFPV = this.experienceInstance.config.camera.position.clone();
-            this.experienceInstance.config.camera.position.set(-0.25, 7.5, 0);
-            this.experienceInstance.config.camera.rotation.set(Math.PI * 1.5, 5.8, Math.PI * 1.5);
+            this.experienceInstance.config.camera.position.set(0.3, 8.5, 0);
+            this.experienceInstance.config.camera.rotation.set(Math.PI * 1.5, 5.95, Math.PI * 1.5);
         } else {
             this.plane.subInstanceGroup.rotation.x = 0;
             this.robot.animationCrossFade('idle');
@@ -174,8 +171,9 @@ export default class World extends EventEmitter {
         this.robot.animation.mixer.update(this.experienceInstance.deltaTime);
         this.rotatePlanet(this.experienceInstance.deltaTime);
         this.planet.subModel.material.uniforms.uTime.value = this.experienceInstance.elapsedTime;
-        this.updateInterestPointsOrientation();
         this.plane.animation.mixer.update(this.experienceInstance.deltaTime);
+        this.updatePlaneOrbit(this.experienceInstance.deltaTime);
+        this.updateInterestPointsOrientation();
 
 
 
@@ -227,13 +225,5 @@ export default class World extends EventEmitter {
                 this.emit('unIntersectInterest', object.cProps);
             }
         });
-
-        const updatedPlaneBoundingBox = new THREE.Box3().setFromObject(this.plane.subInstanceGroup);
-        if (this.robot.circlecasterBoundingBox.intersectsBox(updatedPlaneBoundingBox)) {
-            this.plane.instanceGroup.rotation.x -= this.experienceInstance.deltaTime * (this.thetaSpeed + this.thetaIntesectionSpeed);
-            this.plane.instanceGroup.rotation.z -= this.experienceInstance.deltaTime * (this.phiSpeed + this.phiIntesectionSpeed);
-        } else {
-            this.updatePlaneOrbit(this.experienceInstance.deltaTime);
-        }
     }
 }
