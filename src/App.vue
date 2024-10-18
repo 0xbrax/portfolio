@@ -2,7 +2,7 @@
     <Navbar />
 
     <transition name="fade-out">
-        <Loader v-if="isLoaderActive" @start="isLoaderActive = false" />
+        <Loader v-if="isLoaderActive" @onStart="isLoaderActive = false" />
     </transition>
 
     <transition name="fade">
@@ -38,7 +38,7 @@ export default {
 
 
         window.addEventListener('click', () => {
-            console.log('- - - CPU CLICK TEST - - -')
+            console.log('TODO - - - CPU CLICK TEST - - -')
         });
 
         return {

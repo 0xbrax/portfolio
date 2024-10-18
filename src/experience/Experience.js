@@ -16,7 +16,7 @@ export default class Experience extends EventEmitter {
         super();
         instance = this;
 
-        this.isReady = false;
+        this.isReady = false; // not used
 
         this.container = container;
         this.resources = resources;
@@ -103,6 +103,15 @@ export default class Experience extends EventEmitter {
                 if (window.location.hash === '#debug') this.DEBUG = DEBUG();
                 ////////
 
+                this.world.planet.on('newPlanetWorkerComplete', ({ detail }) => {
+                    const selectedPoints = detail.selectedPoints;
+                    this.world.interestPoints.instanceGroup.children.forEach((object, i) => {
+                        this.world.interestPoints.setSphericalPosition(object, selectedPoints[i]);
+                    });
+
+                    this.emit('newPlanetReady');
+                });
+
                 this.tick();
                 this.isReady = true;
                 this.emit('loaded');
@@ -110,6 +119,10 @@ export default class Experience extends EventEmitter {
                 console.timeEnd('t FINAL RENDER')
             });
         }, { once: true });
+    }
+
+    generateNewPlanet(seed) {
+        this.world.planet.generateNewPlanet(seed);
     }
 
     tick() {

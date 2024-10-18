@@ -1,8 +1,8 @@
 <template>
-    <div id="navbar" class="navbar absolute left-0 top-0 z-20 p-4">
+    <div id="navbar" class="navbar absolute left-0 top-0 z-[500] p-4">
             <div class="navbar-start relative">
                 <transition name="fade">
-                    <span v-show="!isMenuVisible" class="text-xl font-bold text-secondary">LOGO</span>
+                    <span v-show="!isMenuVisible" class="text-xl font-bold text-accent">LOGO</span>
                 </transition>
             </div>
 

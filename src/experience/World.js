@@ -15,18 +15,18 @@ export default class World extends EventEmitter {
 
         this.experienceInstance = new Experience();
 
-        this.keys = {
-            ArrowUp: false,
-            ArrowDown: false,
-            ArrowLeft: false,
-            ArrowRight: false,
+        this.inputKeys = {
+            KeyW: false,
+            KeyS: false,
+            KeyA: false,
+            KeyD: false,
             Space: false
         };
         this.planetRotationSpeed = 0.6;
 
         this.thetaSpeed = 0.02;
         this.phiSpeed = 0.4;
-        // TODO quando l'aereo gira al contrari onon funziona il valore va invertito
+        // TODO se l'aereo arriva dall'altro lato del robot non funziona
         this.thetaIntesectionSpeed = 0.4;
         this.phiIntesectionSpeed = 0.6;
 
@@ -56,15 +56,6 @@ export default class World extends EventEmitter {
         console.timeEnd('t PLANE');
 
         this.emit('loadComplete');
-
-
-
-        this.planet.on('newPlanetWorkerComplete', ({ detail }) => {
-            const selectedPoints = detail.selectedPoints;
-            this.interestPoints.instanceGroup.children.forEach((object, i) => {
-                this.interestPoints.setSphericalPosition(object, selectedPoints[i]);
-            });
-        });
     }
 
     loadObjectWithWorker(objectName, ObjectClass, ...args) {
@@ -97,30 +88,30 @@ export default class World extends EventEmitter {
         const rotationSpeed = deltaTime * this.planetRotationSpeed;
         let rotationAxis = new THREE.Vector3(0, 0, 0);
         
-        if (this.keys.ArrowUp && this.keys.ArrowLeft) {
+        if (this.inputKeys.KeyW && this.inputKeys.KeyA) {
             rotationAxis.set(-1, 0, 1).normalize();
             this.robot.instanceGroup.rotation.set(0, Math.PI * 0.25, 0);
-        } else if (this.keys.ArrowUp && this.keys.ArrowRight) {
+        } else if (this.inputKeys.KeyW && this.inputKeys.KeyD) {
             rotationAxis.set(-1, 0, -1).normalize();
             this.robot.instanceGroup.rotation.set(0, Math.PI * -0.25, 0);
-        } else if (this.keys.ArrowDown && this.keys.ArrowLeft) {
+        } else if (this.inputKeys.KeyS && this.inputKeys.KeyA) {
             rotationAxis.set(1, 0, 1).normalize();
             this.robot.instanceGroup.rotation.set(0, Math.PI * 0.75, 0);
-        } else if (this.keys.ArrowDown && this.keys.ArrowRight) {
+        } else if (this.inputKeys.KeyS && this.inputKeys.KeyD) {
             rotationAxis.set(1, 0, -1).normalize();
             this.robot.instanceGroup.rotation.set(0, Math.PI * -0.75, 0);
         }
 
-        else if (this.keys.ArrowUp) {
+        else if (this.inputKeys.KeyW) {
             rotationAxis.set(-1, 0, 0).normalize();
             this.robot.instanceGroup.rotation.set(0, 0, 0);
-        } else if (this.keys.ArrowDown) {
+        } else if (this.inputKeys.KeyS) {
             rotationAxis.set(1, 0, 0).normalize();
             this.robot.instanceGroup.rotation.set(0, Math.PI, 0);
-        } else if (this.keys.ArrowLeft) {
+        } else if (this.inputKeys.KeyA) {
             rotationAxis.set(0, 0, 1).normalize();
             this.robot.instanceGroup.rotation.set(0, Math.PI * 0.5, 0);
-        } else if (this.keys.ArrowRight) {
+        } else if (this.inputKeys.KeyD) {
             rotationAxis.set(0, 0, -1).normalize();
             this.robot.instanceGroup.rotation.set(0, Math.PI * -0.5, 0);
         }
@@ -139,6 +130,7 @@ export default class World extends EventEmitter {
     }
 
     updateInterestPointsOrientation() {
+        // TODO Check if there are some bugs - planet quaterion
         const cameraPosition = this.experienceInstance.config.camera.position.clone();
 
         this.interestPoints.instanceGroup.children.forEach((object) => {
@@ -191,10 +183,10 @@ export default class World extends EventEmitter {
             const intersects = this.robot.raycaster.intersectObject(this.planet.model);
             if (intersects.length > 0) {
                 const intersect = intersects[0];
-                this.robot.instanceGroup.position.y = (intersect.distance - this.robot.raycaster.ray.origin.y) * -1;
+                this.robot.instanceGroup.position.y = (intersect.distance - this.robot.raycaster.ray.origin.y + 0.06) * -1;
             }
         } else {
-            this.robot.instanceGroup.position.y = 0.95;
+            this.robot.instanceGroup.position.y = 0.94;
         }
 
         this.interestPoints.instanceGroup.children.forEach((object) => {

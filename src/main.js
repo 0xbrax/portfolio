@@ -10,7 +10,10 @@ import { $isMobile } from "@/assets/utils.js";
 import {
     LucidePlane,
     LucideEarth,
-    LucideSquareArrowUpRight
+    LucideDices,
+    LucideSquareArrowUpRight,
+    LucideVolume2,
+    LucideVolumeX
 } from "lucide-vue-next";
 
 
@@ -25,6 +28,10 @@ app.config.globalProperties.$isMobile = $isMobile;
 
 app.component('LucidePlane', LucidePlane);
 app.component('LucideEarth', LucideEarth);
+app.component('LucideDices', LucideDices);
+app.component('LucideSquareArrowUpRight', LucideSquareArrowUpRight);
+app.component('LucideVolume2', LucideVolume2);
+app.component('LucideVolumeX', LucideVolumeX);
 
 
 

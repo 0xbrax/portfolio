@@ -1,41 +1,43 @@
 <template>
-    <div id="home" ref="homeEl" class="h-full">
-        <div id="buttons" class="absolute left-[50%] top-[6rem] translate-x-[-50%]">
-            <LucidePlane @click="setUnsetFPV()" />
-
-            <LucideEarth @click="generateNewPlanet()" />
+    <div id="home" ref="homeEl" class="h-full relative">
+        <div id="buttons" class="absolute left-[1rem] top-[50%] translate-y-[-50%]">
+            <button :class="['btn btn-outline btn-primary btn-circle', { 'btn-active': isFPVActive }]">
+                <LucidePlane @click="setUnsetFPV()" />
+            </button>
         </div>
 
-        <div id="keys" class="absolute right-0 bottom-0 flex items-center gap-4">
-            <kbd :class="['kbd', { 'opacity-50': !keys.Space }]">space</kbd>
-
+        <div v-show="!$isMobile.value" id="keys" class="absolute z-20 left-[1rem] bottom-[1rem] flex items-center gap-4">
+            <kbd :class="['kbd', { 'opacity-50': !inputKeys.Space }]">space</kbd>
             <div>
                 <div class="flex w-full justify-center mb-2">
-                    <kbd :class="['kbd', { 'opacity-50': !keys.ArrowUp }]">▲</kbd>
+                    <kbd :class="['kbd', { 'opacity-50': !inputKeys.KeyW }]">W</kbd>
                 </div>
                 <div class="flex w-full justify-center gap-4">
-                    <kbd :class="['kbd', { 'opacity-50': !keys.ArrowLeft }]">◀</kbd>
-                    <kbd :class="['kbd', { 'opacity-50': !keys.ArrowDown }]">▼</kbd>
-                    <kbd :class="['kbd', { 'opacity-50': !keys.ArrowRight }]">▶</kbd>
+                    <kbd :class="['kbd', { 'opacity-50': !inputKeys.KeyA }]">A</kbd>
+                    <kbd :class="['kbd', { 'opacity-50': !inputKeys.KeyS }]">S</kbd>
+                    <kbd :class="['kbd', { 'opacity-50': !inputKeys.KeyD }]">D</kbd>
                 </div>
             </div>
         </div>
 
-        <div id="joypad" class="absolute left-0 bottom-0 h-[100px] aspect-square rounded-full"></div>
+        <div v-show="$isMobile.value" id="joypad" class="absolute z-20 left-[1rem] bottom-[1rem] h-[100px] aspect-square rounded-full"></div>
 
         <transition name="fade">
             <swiper-container
                 v-show="swiperSlides.length"
                 effect="cards"
-                id="swiper"
-                class="mySwiper h-32 w-4/5 md:w-96 absolute left-[50%] bottom-0 translate-x-[-50%]"
+                class="h-32 w-4/5 md:w-96 absolute z-10 left-[50%] bottom-0 translate-x-[-50%]"
             >
                 <swiper-slide
                     v-for="slide in swiperSlides"
                     :key="slide.id"
                     class="card glass flex justify-center items-center"
                 >
-                    {{ slide.title }}
+                    <div class="flex items-center gap-4">
+                        <span class="grow">{{ slide.title }}</span>
+
+                        <a :href="slide.url" target="_blank"><LucideSquareArrowUpRight /></a>
+                    </div>
                 </swiper-slide>
             </swiper-container>
         </transition>
@@ -47,7 +49,7 @@ import { onMounted, onUnmounted, reactive, ref } from "vue";
 import Experience from '@/experience/Experience.js';
 import { RESOURCES, INTEREST_POINTS } from "@/experience/ASSETS.js";
 import nipplejs from 'nipplejs';
-import { getPseudoRandomNumber } from "@/assets/utils.js";
+import { $isMobile, getPseudoRandomNumber } from "@/assets/utils.js";
 import { useSettingStore } from "@/store/setting.js";
 
 
@@ -61,12 +63,13 @@ export default {
 
         const homeEl = ref(null);
         const swiperSlides = ref([]);
+        const isFPVActive = ref(false);
 
-        const keys = reactive({
-            ArrowUp: false,
-            ArrowDown: false,
-            ArrowLeft: false,
-            ArrowRight: false,
+        const inputKeys = reactive({
+            KeyW: false,
+            KeyS: false,
+            KeyA: false,
+            KeyD: false,
             Space: false
         });
 
@@ -76,19 +79,20 @@ export default {
             position: { left: '50%', top: '50%' },
             mode: 'static',
             color: '#fff248',
+            restOpacity: 0.75,
             size: 100
         };
 
         const angleSection = Math.PI / 8;
         const directions = [
-            { keys: ['ArrowUp'], start: (Math.PI * 0.5) - angleSection, end: (Math.PI * 0.5) + angleSection },
-            { keys: ['ArrowUp', 'ArrowRight'], start: (Math.PI * 0.25) - angleSection, end: (Math.PI * 0.25) + angleSection },
-            { keys: ['ArrowRight'], start: (Math.PI * 2) - angleSection, end: (Math.PI * 2) + angleSection },
-            { keys: ['ArrowDown', 'ArrowRight'], start: (Math.PI * 1.75) - angleSection, end: (Math.PI * 1.75) + angleSection },
-            { keys: ['ArrowDown'], start: (Math.PI * 1.5) - angleSection, end: (Math.PI * 1.5) + angleSection },
-            { keys: ['ArrowDown', 'ArrowLeft'], start: (Math.PI * 1.25) - angleSection, end: (Math.PI * 1.25) + angleSection },
-            { keys: ['ArrowLeft'], start: Math.PI - angleSection, end: Math.PI + angleSection }, // 300° to 360°
-            { keys: ['ArrowUp', 'ArrowLeft'], start: (Math.PI * 0.75) - angleSection, end: (Math.PI * 0.75) + angleSection },
+            { keys: ['KeyW'], start: (Math.PI * 0.5) - angleSection, end: (Math.PI * 0.5) + angleSection },
+            { keys: ['KeyW', 'KeyD'], start: (Math.PI * 0.25) - angleSection, end: (Math.PI * 0.25) + angleSection },
+            { keys: ['KeyD'], start: (Math.PI * 2) - angleSection, end: (Math.PI * 2) + angleSection },
+            { keys: ['KeyS', 'KeyD'], start: (Math.PI * 1.75) - angleSection, end: (Math.PI * 1.75) + angleSection },
+            { keys: ['KeyS'], start: (Math.PI * 1.5) - angleSection, end: (Math.PI * 1.5) + angleSection },
+            { keys: ['KeyS', 'KeyA'], start: (Math.PI * 1.25) - angleSection, end: (Math.PI * 1.25) + angleSection },
+            { keys: ['KeyA'], start: Math.PI - angleSection, end: Math.PI + angleSection }, // 300° to 360°
+            { keys: ['KeyW', 'KeyA'], start: (Math.PI * 0.75) - angleSection, end: (Math.PI * 0.75) + angleSection },
         ];
 
 
@@ -124,15 +128,35 @@ export default {
 
         const setKeysControl = () => {
             window.addEventListener('keydown', (event) => {
-                if (event.code in keys) {
-                    keys[event.code] = true;
-                    experience.world.keys[event.code] = true;
+                if ($isMobile.value) return;
 
+                if (event.code in inputKeys) {
                     if (experience.world.isFPVActive) return;
 
-                    const anyKeyPressed = Object.keys(keys).filter(key => key !== 'Space').some(key => keys[key] === true);
+                    switch (event.code) {
+                        case 'KeyW':
+                            inputKeys.KeyS = false;
+                            experience.world.inputKeys.KeyS = false;
+                            break;
+                        case 'KeyS':
+                            inputKeys.KeyW = false;
+                            experience.world.inputKeys.KeyW = false;
+                            break;
+                        case 'KeyA':
+                            inputKeys.KeyD = false;
+                            experience.world.inputKeys.KeyD = false;
+                            break;
+                        case 'KeyD':
+                            inputKeys.KeyA = false;
+                            experience.world.inputKeys.KeyA = false;
+                    }
+
+                    inputKeys[event.code] = true;
+                    experience.world.inputKeys[event.code] = true;
+
+                    const anyKeyPressed = Object.keys(inputKeys).filter(key => key !== 'Space').some(key => inputKeys[key] === true);
                     if (anyKeyPressed && !experience.world.robot.animation.isPlaying) {
-                        if (keys.Space) {
+                        if (inputKeys.Space) {
                             experience.world.robot.animationCrossFade('run');
                             experience.world.planetRotationSpeed = 0.8;
                         }
@@ -143,26 +167,28 @@ export default {
 
                         experience.world.robot.animation.isPlaying = true;
                     }
-                    if (experience.world.robot.animation.isPlaying && experience.world.robot.animation.name !== 'run' && keys.Space) {
+                    if (experience.world.robot.animation.isPlaying && experience.world.robot.animation.name !== 'run' && inputKeys.Space) {
                         experience.world.robot.animationCrossFade('run');
                         experience.world.planetRotationSpeed = 0.8;
                     }
                 }
             });
             window.addEventListener('keyup', (event) => {
-                if (event.code in keys) {
-                    keys[event.code] = false;
-                    experience.world.keys[event.code] = false;
+                if ($isMobile.value) return;
+
+                if (event.code in inputKeys) {
+                    inputKeys[event.code] = false;
+                    experience.world.inputKeys[event.code] = false;
 
                     if (experience.world.isFPVActive) return;
 
-                    const anyKeyPressed = Object.keys(keys).filter(key => key !== 'Space').some(key => keys[key] === true);
+                    const anyKeyPressed = Object.keys(inputKeys).filter(key => key !== 'Space').some(key => inputKeys[key] === true);
                     if (!anyKeyPressed && experience.world.robot.animation.isPlaying) {
                         experience.world.robot.animationCrossFade('idle');
                         experience.world.robot.animation.isPlaying = false;
                     }
 
-                    if (experience.world.robot.animation.isPlaying && experience.world.robot.animation.name === 'run' && !keys.Space) {
+                    if (experience.world.robot.animation.isPlaying && experience.world.robot.animation.name === 'run' && !inputKeys.Space) {
                         experience.world.robot.animationCrossFade('walk');
                         experience.world.planetRotationSpeed = 0.6;
                     }
@@ -175,9 +201,11 @@ export default {
             joypad = nipplejs.create(joypadOptions);
 
             joypad.on('move', (_, nipple) => {
-                Object.keys(keys).forEach((key) => {
-                    keys[key] = false;
-                    experience.world.keys[key] = false;
+                if (!$isMobile.value) return;
+
+                Object.keys(inputKeys).forEach((key) => {
+                    inputKeys[key] = false;
+                    experience.world.inputKeys[key] = false;
                 });
 
                 if (experience.world.isFPVActive) return;
@@ -186,41 +214,43 @@ export default {
                 const power = getPower(nipple.distance, joypadOptions.size)
 
                 if (direction.length === 1) {
-                    const key = direction[0];
-                    keys[key] = true;
-                    experience.world.keys[key] = true;
+                    const directionKey = direction[0];
+                    inputKeys[directionKey] = true;
+                    experience.world.inputKeys[directionKey] = true;
                 } else if (direction.length === 2) {
-                    const keys = direction;
-                    keys.forEach((key) => {
-                        keys[key] = true;
-                        experience.world.keys[key] = true; // TODO check
+                    const directionKeys = direction;
+                    directionKeys.forEach((key) => {
+                        inputKeys[key] = true;
+                        experience.world.inputKeys[key] = true;
                     });
                 }
 
                 if (power === 'high') {
-                    keys.Space = true;
-                    experience.world.keys.Space = true;
+                    inputKeys.Space = true;
+                    experience.world.inputKeys.Space = true;
                 } else if (power === 'low') {
-                    keys.Space = false;
-                    experience.world.keys.Space = false;
+                    inputKeys.Space = false;
+                    experience.world.inputKeys.Space = false;
                 }
 
-                const anyKeyPressed = Object.keys(keys).filter(key => key !== 'Space').some(key => keys[key] === true);
+                const anyKeyPressed = Object.keys(inputKeys).filter(key => key !== 'Space').some(key => inputKeys[key] === true);
                 if (anyKeyPressed && !experience.world.robot.animation.isPlaying) {
                     experience.world.robot.animation.isPlaying = true;
                 }
-                if (experience.world.robot.animation.isPlaying && experience.world.robot.animation.name !== 'run' && keys.Space) {
+                if (experience.world.robot.animation.isPlaying && experience.world.robot.animation.name !== 'run' && inputKeys.Space) {
                     experience.world.robot.animationCrossFade('run');
                     experience.world.planetRotationSpeed = 0.8;
-                } else if (experience.world.robot.animation.isPlaying && experience.world.robot.animation.name !== 'walk' && !keys.Space) {
+                } else if (experience.world.robot.animation.isPlaying && experience.world.robot.animation.name !== 'walk' && !inputKeys.Space) {
                     experience.world.robot.animationCrossFade('walk');
                     experience.world.planetRotationSpeed = 0.6;
                 }
             });
             joypad.on('end', () => {
-                Object.keys(keys).forEach((key) => {
-                    keys[key] = false;
-                    experience.world.keys[key] = false;
+                if (!$isMobile.value) return;
+
+                Object.keys(inputKeys).forEach((key) => {
+                    inputKeys[key] = false;
+                    experience.world.inputKeys[key] = false;
                 });
 
                 if (experience.world.isFPVActive) return;
@@ -233,14 +263,8 @@ export default {
 
 
         const setUnsetFPV = () => {
+            isFPVActive.value = !isFPVActive.value;
             experience.world.setUnsetFPV();
-        };
-
-        const generateNewPlanet = () => {
-            const randomSeed = getPseudoRandomNumber(-1000, 1000);
-            settingStore.worldSeed = randomSeed;
-
-            experience.world.planet.generateNewPlanet(randomSeed);
         };
 
 
@@ -249,6 +273,7 @@ export default {
             const randomSeed = getPseudoRandomNumber(-1000, 1000);
             // store seed update when worker inits
             experience = new Experience(homeEl.value, RESOURCES, INTEREST_POINTS, randomSeed);
+            settingStore.experienceRef = experience;
 
             experience.on('loaded', () => {
                 setKeysControl();
@@ -267,6 +292,10 @@ export default {
                 experience.world.on('unIntersectInterest', ({ detail }) => {
                     swiperSlides.value = swiperSlides.value.filter(el => el.id !== detail.id);
                 });
+
+                experience.on('newPlanetReady', () => {
+                    settingStore.isNewPlanetReady = true;
+                });
             }, { once: true });
         });
 
@@ -280,13 +309,31 @@ export default {
         return {
             homeEl,
             swiperSlides,
-            keys,
+            inputKeys,
             setUnsetFPV,
-            generateNewPlanet
+            isFPVActive
         }
     }
 }
 </script>
 
 <style>
+#joypad .back,
+#joypad .front {
+    border-width: 1px;
+    border-color: var(--fallback-bc, oklch(var(--bc) / var(--tw-border-opacity)));
+    --tw-border-opacity: 0.2;
+}
+#joypad .back {
+    opacity: 0.5 !important;
+}
+#joypad .front {
+    opacity: 1 !important;
+}
+
+#home .btn.btn-active {
+    outline-style: solid;
+    outline-width: 2px;
+    outline-offset: 2px;
+}
 </style>
