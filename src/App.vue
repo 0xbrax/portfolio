@@ -2,7 +2,7 @@
     <Navbar />
 
     <transition name="fade-out">
-        <Loader v-if="isLoaderActive" />
+        <Loader v-if="isLoaderActive" @start="isLoaderActive = false" />
     </transition>
 
     <transition name="fade">
@@ -35,10 +35,7 @@ export default {
 
         const isLoaderActive = ref(true);
 
-        const timeout = setTimeout(() => {
-            isLoaderActive.value = false;
-            clearTimeout(timeout);
-        }, 300);
+
 
         window.addEventListener('click', () => {
             console.log('- - - CPU CLICK TEST - - -')

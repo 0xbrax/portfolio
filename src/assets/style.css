@@ -1,12 +1,8 @@
-/*@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');*/
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --primary-color: #00ff00;
-}
+
 
 html,
 body {
@@ -15,8 +11,6 @@ body {
   width: 100%;
   height: 100vh;
   height: 100svh;
-
-  /*background: radial-gradient(circle, rgb(205, 205, 205) 3%, rgb(155, 155, 155) 100%);*/
 }
 
 

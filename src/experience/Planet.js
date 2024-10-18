@@ -39,10 +39,10 @@ export default class Planet extends EventEmitter {
 
         // TODO check inset shadows & all geometries attributes not used
         this.createWater();
-        this.createPlanet(this.experienceInstance.seed);
+        this.createPlanet(this.experienceInstance.seed, true);
     }
 
-    createPlanet(seed, isNew) {
+    createPlanet(seed, isInit) {
         const worker = new Worker(new URL('../worker/planetWorker.js', import.meta.url));
 
         let geometry = new THREE.IcosahedronGeometry(this.sphereRadius, 30);
@@ -179,7 +179,7 @@ export default class Planet extends EventEmitter {
             this.instanceGroup.add(this.model);
             this.experienceInstance.updateSeed(seed);
 
-            if (!isNew) {
+            if (isInit) {
                 this.emit('workerComplete', { selectedPoints });
             } else {
                 this.emit('newPlanetWorkerComplete', { selectedPoints });
@@ -227,7 +227,7 @@ export default class Planet extends EventEmitter {
         this.destroyPlanet();
 
         window.requestAnimationFrame(() => {
-            this.createPlanet(seed, true);
+            this.createPlanet(seed, false);
         });
     }
 }

@@ -9,7 +9,8 @@ import { $isMobile } from "@/assets/utils.js";
 
 import {
     LucidePlane,
-    LucideEarth
+    LucideEarth,
+    LucideSquareArrowUpRight
 } from "lucide-vue-next";
 
 

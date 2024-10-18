@@ -6,47 +6,41 @@ import Experience from "./Experience.js";
 
 
 export default class Loader extends EventEmitter {
-    constructor(resources) {
+    constructor() {
         super();
-
-        // TODO if it loads gltf only use loading manager progress to better result
 
         this.experienceInstance = new Experience();
         this.resources = this.experienceInstance.resources;
         this.assets = {};
         this.loadingManager = new THREE.LoadingManager();
 
-        this.textureLoader = new THREE.TextureLoader();
-        this.textureLoader.setCrossOrigin('anonymous');
-        this.gltfLoader = new GLTFLoader();
+        this.gltfLoader = new GLTFLoader(this.loadingManager);
         const dracoLoader = new DRACOLoader();
         dracoLoader.setDecoderPath('/draco/');
         this.gltfLoader.setDRACOLoader(dracoLoader);
         this.gltfLoader.setCrossOrigin('anonymous');
 
-        this.totalAssets = 0;
-        this.loadedAssets = 0;
-        for (const key in this.resources) {
-            this.totalAssets += this.resources[key].length;
+        this.audioTotalAssets = this.resources['audio'] ? this.resources['audio'].length : 0;
+        this.audioLoadedAssets = 0;
+        this.workersCount = 1;
+
+        this.loadingManager.onProgress = (_, itemsLoaded, itemsTotal) => {
+            const assetsLoaded = itemsLoaded;
+            const assetsTotal = itemsTotal + this.audioLoadedAssets + this.workersCount;
+
+            this.emit('progress', { assetsLoaded, assetsTotal });
+        };
+        this.loadingManager.onLoad = () => {
+            this.emit('complete', { workersCount: this.workersCount });
+        };
+    }
+
+    onLoadAsset() {
+        this.audioLoadedAssets++;
+
+        if (this.audioLoadedAssets === this.audioTotalAssets) {
+            this.loadingManager.onLoad();
         }
-        this.loadingManager.onError = (url) => {
-            const data = { url };
-            this.emit('error', data);
-        };
-        this.loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
-            const progress = itemsLoaded / itemsTotal;
-
-            console.log('LOG - - -', progress)
-
-        };
-        this.onLoadAsset = (assetPath) => {
-            this.loadingManager.itemEnd(assetPath);
-            this.loadedAssets++;
-
-            if (this.loadedAssets === this.totalAssets) {
-                this.emit('complete');
-            }
-        };
     }
 
     start() {
@@ -56,29 +50,22 @@ export default class Loader extends EventEmitter {
             for (const asset of this.resources[key]) {
                 this.loadingManager.itemStart(asset.path);
 
-                if (asset.type === 'texture') {
-                    this.textureLoader.load(asset.path, (file) => {
-                        this.assets[key][asset.name] = file;
-                        this.onLoadAsset(asset.path);
-                    }, undefined, (e) => {
-                        this.loadingManager.itemError(asset.path);
-                    });
-                } else if (asset.type === 'gltf') {
+                if (asset.type === 'gltf') {
                     this.gltfLoader.load(asset.path, (file) => {
                         this.assets[key][asset.name] = file;
-                        this.onLoadAsset(asset.path);
-                    }, undefined, (e) => {
-                        this.loadingManager.itemError(asset.path);
+                        this.loadingManager.itemEnd(asset.path);
+                    }, undefined, (error) => {
+                        this.emit('error', { error });
                     });
                 } else if (asset.type === 'audio') {
                     const sound = new Howl({
                         src: [asset.path],
                         onload: () => {
                             this.assets[key][asset.name] = sound;
-                            this.onLoadAsset(asset.path);
+                            this.onLoadAsset();
                         },
-                        onloaderror: (e) => {
-                            this.loadingManager.itemError(asset.path);
+                        onloaderror: (error) => {
+                            this.emit('error', { error });
                         }
                     });
                 }

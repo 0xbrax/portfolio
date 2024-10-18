@@ -48,6 +48,7 @@ import Experience from '@/experience/Experience.js';
 import { RESOURCES, INTEREST_POINTS } from "@/experience/ASSETS.js";
 import nipplejs from 'nipplejs';
 import { getPseudoRandomNumber } from "@/assets/utils.js";
+import { useSettingStore } from "@/store/setting.js";
 
 
 
@@ -56,6 +57,7 @@ export default {
     setup() {
         let experience = null;
         const isExperienceReady = ref(false);
+        const settingStore = useSettingStore();
 
         const homeEl = ref(null);
         const swiperSlides = ref([]);
@@ -191,7 +193,7 @@ export default {
                     const keys = direction;
                     keys.forEach((key) => {
                         keys[key] = true;
-                        experience.world.keys[key] = true;
+                        experience.world.keys[key] = true; // TODO check
                     });
                 }
 
@@ -236,6 +238,8 @@ export default {
 
         const generateNewPlanet = () => {
             const randomSeed = getPseudoRandomNumber(-1000, 1000);
+            settingStore.worldSeed = randomSeed;
+
             experience.world.planet.generateNewPlanet(randomSeed);
         };
 
@@ -243,21 +247,19 @@ export default {
 
         onMounted(() => {
             const randomSeed = getPseudoRandomNumber(-1000, 1000);
-            experience = new Experience(homeEl.value, undefined, RESOURCES, INTEREST_POINTS, randomSeed);
+            // store seed update when worker inits
+            experience = new Experience(homeEl.value, RESOURCES, INTEREST_POINTS, randomSeed);
 
             experience.on('loaded', () => {
-                // wait for logo transition ends
-                const timeout = setTimeout(() => {
-                    setKeysControl();
-                    setJoypadControl();
+                setKeysControl();
+                setJoypadControl();
 
 
-                    console.log('LFG')
+                console.log('LFG')
 
 
-                    isExperienceReady.value = true;
-                    clearTimeout(timeout);
-                }, 300);
+                isExperienceReady.value = true;
+                settingStore.isExperienceReady = true;
 
                 experience.world.on('intersectInterest', ({ detail }) => {
                     swiperSlides.value.unshift(detail);

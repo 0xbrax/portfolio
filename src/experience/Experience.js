@@ -4,13 +4,14 @@ import Config from "./Config.js";
 import Loader from "./Loader.js";
 import World from "./World.js";
 import { DEBUG } from "@/experience/Debug.js";
+import { useSettingStore } from "@/store/setting.js";
 
 
 
 let instance = null;
 
 export default class Experience extends EventEmitter {
-    constructor(container, loading, resources, interestPoints, seed) {
+    constructor(container, resources, interestPoints, seed) {
         if (instance) return instance;
         super();
         instance = this;
@@ -18,10 +19,16 @@ export default class Experience extends EventEmitter {
         this.isReady = false;
 
         this.container = container;
-        //this.loading = loading;
         this.resources = resources;
         this.interestPoints = interestPoints;
         this.seed = seed; // good result between -1000 and 1000
+        this.assetsLoader = {
+            assetsLoaded: null,
+            assetsTotal: null,
+            workersCount: 0,
+            progress: 0
+        };
+        this.settingStore = useSettingStore();
 
 
 
@@ -44,26 +51,51 @@ export default class Experience extends EventEmitter {
     }
 
     updateSeed(seed) {
-        this.seed;
+        this.seed = seed;
     }
 
     init() {
         this.loader.start();
-        this.loader.on('complete', () => {
-            this.assets = this.loader.assets;
 
+        this.loader.on('progress', ({ detail }) => {
+            const { assetsLoaded, assetsTotal } = detail;
+            const progress = assetsLoaded / assetsTotal;
+
+            console.log('PROGRESS - - -', progress)
+            this.settingStore.loaderProgress = progress;
+
+            this.assetsLoader.assetsLoaded = assetsLoaded;
+            this.assetsLoader.assetsTotal = assetsTotal;
+            this.assetsLoader.progress = progress;
+        });
+
+        this.loader.on('complete', ({ detail }) => {
+            const { workersCount } = detail;
+            this.assetsLoader.workersCount = workersCount;
+
+            this.assets = this.loader.assets;
             this.start();
         }, { once: true });
-        this.loader.on('error', (e) => {
-            // TODO fix and handle message
-            console.log(`Asset load error: ${JSON.stringify(e)}`);
+        this.loader.on('error', ({ detail }) => {
+            console.error(`ERROR --> ${detail.error}`);
         }, { once: true });
     }
 
     start() {
         this.world = new World();
 
+        this.settingStore.worldSeed = this.seed;
+
+        // wait for worker and pre-render
         this.world.on('loadComplete', () => {
+            this.assetsLoader.assetsLoaded++;
+            const progress = this.assetsLoader.assetsLoaded / this.assetsLoader.assetsTotal;
+
+            console.log('PROGRESS 2 - - -', progress)
+            this.settingStore.loaderProgress = progress;
+
+            this.assetsLoader.progress = progress;
+
             console.time('t FINAL RENDER')
 
             window.requestAnimationFrame(() => {
@@ -71,9 +103,9 @@ export default class Experience extends EventEmitter {
                 if (window.location.hash === '#debug') this.DEBUG = DEBUG();
                 ////////
 
-                this.emit('loaded');
                 this.tick();
                 this.isReady = true;
+                this.emit('loaded');
 
                 console.timeEnd('t FINAL RENDER')
             });

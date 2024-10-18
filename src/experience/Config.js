@@ -25,7 +25,6 @@ export default class Config {
     setRenderer() {
         this.renderer = new THREE.WebGLRenderer({
             antialias: this.pixelRatio !== 1,
-            //alpha: true
         });
         this.renderer.setSize(this.width, this.height);
         this.renderer.setPixelRatio(this.pixelRatio);
@@ -33,7 +32,7 @@ export default class Config {
 
         //this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
         //this.renderer.toneMappingExposure = 1.5;
-        this.renderer.setClearColor('#424242');
+        this.renderer.setClearColor('#00e8ff');
     }
 
     setCamera() {
