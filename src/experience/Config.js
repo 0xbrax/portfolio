@@ -30,14 +30,14 @@ export default class Config {
         this.renderer.setPixelRatio(this.pixelRatio);
         this.experienceInstance.container.appendChild(this.renderer.domElement);
 
-        //this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        //this.renderer.toneMappingExposure = 1.5;
+        this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        this.renderer.toneMappingExposure = 1;
         this.renderer.setClearColor('#00e8ff');
     }
 
     setCamera() {
         this.camera = new THREE.PerspectiveCamera(35, this.width / this.height, 0.1, 100);
-        this.camera.position.set(12, 4, 8);
+        this.camera.position.set(18, 6, 12);
 
         this.scene.add(this.camera);
     }
@@ -47,10 +47,10 @@ export default class Config {
         this.controls.target.set(0, 0, 0);
 
         this.controls.enableDamping = true;
-        //this.controls.enablePan = false;
-        //this.controls.rotateSpeed = 0.5;
-        //this.controls.minDistance = 1;
-        //this.controls.maxDistance = 10;
+        this.controls.enablePan = false;
+        this.controls.rotateSpeed = 0.5;
+        this.controls.minDistance = 1;
+        this.controls.maxDistance = 30;
     }
 
     resize() {

@@ -1,8 +1,24 @@
 <template>
     <div id="home" ref="homeEl" class="h-full relative">
+        <div id="fpv-transition" class="h-full w-full absolute z-[100] pointer-events-none">
+            <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <mask id="fpv-transition__svg-mask">
+                        <rect width="100%" height="100%" fill="white"/>
+                        <circle ref="fpvTransitionCircleEl" cx="50%" cy="50%" r="100%" fill="black"/>
+                    </mask>
+                </defs>
+
+                <rect width="100%" height="100%" fill="#fff248" mask="url(#fpv-transition__svg-mask)"/>
+            </svg>
+        </div>
+
         <div id="buttons" class="absolute left-[1rem] top-[50%] translate-y-[-50%]">
-            <button :class="['btn btn-outline btn-primary btn-circle', { 'btn-active': isFPVActive }]">
-                <LucidePlane @click="setUnsetFPV()" />
+            <button
+                :class="['btn btn-outline btn-primary btn-circle', { 'btn-active': isFPVActive }]"
+                :disabled="isFPVTransitionActive"
+            >
+                <LucidePlane @click="startFPVTransition()" />
             </button>
         </div>
 
@@ -51,6 +67,7 @@ import { RESOURCES, INTEREST_POINTS } from "@/experience/ASSETS.js";
 import nipplejs from 'nipplejs';
 import { $isMobile, getPseudoRandomNumber } from "@/assets/utils.js";
 import { useSettingStore } from "@/store/setting.js";
+import { gsap } from "gsap";
 
 
 
@@ -64,6 +81,8 @@ export default {
         const homeEl = ref(null);
         const swiperSlides = ref([]);
         const isFPVActive = ref(false);
+        const isFPVTransitionActive = ref(false);
+        const fpvTransitionCircleEl = ref(null);
 
         const inputKeys = reactive({
             KeyW: false,
@@ -104,7 +123,6 @@ export default {
                 return angle;
             }
         };
-
         const getDirection = (angle, angleSection, directions) => {
             const angleNormalized = normalizeZeroAngle(angle, angleSection);
 
@@ -114,7 +132,6 @@ export default {
                 }
             }
         };
-
         const getPower = (distance, joypadSize) => {
             const maxDistance = joypadSize / 2;
             if (distance < (maxDistance / 3) * 2) {
@@ -266,6 +283,30 @@ export default {
             isFPVActive.value = !isFPVActive.value;
             experience.world.setUnsetFPV();
         };
+        const startFPVTransition = () => {
+            isFPVTransitionActive.value = true;
+
+            const animation1 = gsap.to(fpvTransitionCircleEl.value, {
+                r: "0%",
+                duration: 0.6,
+                ease: "power2.inOut",
+                onComplete: () => {
+                    animation1.kill();
+                    setUnsetFPV();
+                    animation2.play();
+                }
+            });
+            const animation2 = gsap.to(fpvTransitionCircleEl.value, {
+                r: "100%",
+                duration: 0.6,
+                ease: "power2.inOut",
+                paused: true,
+                onComplete: () => {
+                    animation2.kill();
+                    isFPVTransitionActive.value = false;
+                }
+            });
+        };
 
 
 
@@ -299,19 +340,21 @@ export default {
             }, { once: true });
         });
 
+
+
         onUnmounted(() => {
             if (experience) experience.destroy();
             if (joypad) joypad.destroy();
         });
 
-
-
         return {
             homeEl,
             swiperSlides,
             inputKeys,
-            setUnsetFPV,
-            isFPVActive
+            isFPVActive,
+            isFPVTransitionActive,
+            fpvTransitionCircleEl,
+            startFPVTransition
         }
     }
 }

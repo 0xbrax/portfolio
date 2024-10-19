@@ -76,7 +76,7 @@ export default class World extends EventEmitter {
         this.ambientLight = new THREE.AmbientLight('#ffffff', 1);
         this.experienceInstance.config.scene.add(this.ambientLight);
 
-        this.directionalLight = new THREE.DirectionalLight('#ffffff', 3);
+        this.directionalLight = new THREE.DirectionalLight('#ffffff', 2);
         this.directionalLight.position.set(5, 10, 5);
         this.experienceInstance.config.scene.add(this.directionalLight);
     }
