@@ -126,16 +126,16 @@ export default class World extends EventEmitter {
         this.plane.instanceGroup.rotation.z -= deltaTime * this.phiSpeed;
     }
 
-    updateInterestPointsOrientation() {
-        // TODO Check if there are some bugs - planet quaterion
-        const cameraPosition = this.experienceInstance.config.camera.position.clone();
+    // TODO Upgrade: orientation to camera
+    /*updateInterestPointsOrientation() {
+        //const cameraPosition = this.experienceInstance.config.camera.position.clone();
 
         this.interestPoints.instanceGroup.children.forEach((object) => {
-            const direction = new THREE.Vector3().subVectors(cameraPosition, object.position).normalize();
-            const angleZ = Math.atan2(direction.z, direction.x);
-            object.rotation.z = angleZ + (Math.PI * -0.5);
+            const cameraDirection = new THREE.Vector3().subVectors(cameraPosition, object.position).normalize();
+            const angleZ = Math.atan2(cameraDirection.x, cameraDirection.y);
+            object.rotation.z = angleZ + Math.PI;
         });
-    }
+    }*/
 
     setUnsetFPV() {
         if (!this.isFPVActive) {
@@ -173,7 +173,7 @@ export default class World extends EventEmitter {
         this.planet.subModel.material.uniforms.uTime.value = this.experienceInstance.elapsedTime;
         this.plane.animation.mixer.update(this.experienceInstance.deltaTime);
         this.updatePlaneOrbit(this.experienceInstance.deltaTime);
-        this.updateInterestPointsOrientation();
+        //this.updateInterestPointsOrientation();
 
 
 

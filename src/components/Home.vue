@@ -320,10 +320,6 @@ export default {
                 setKeysControl();
                 setJoypadControl();
 
-
-                console.log('LFG')
-
-
                 isExperienceReady.value = true;
                 settingStore.isExperienceReady = true;
 

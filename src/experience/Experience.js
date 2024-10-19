@@ -142,7 +142,12 @@ export default class Experience extends EventEmitter {
 
 
     destroy() {
-        // TODO not once events clean up using off
+        // clean up not once events
+        this.off('newPlanetReady');
+        this.loader.off('progress');
+        this.world.off('intersectInterest');
+        this.world.off('unIntersectInterest');
+        this.world.planet.off('newPlanetWorkerComplete');
 
         this.config.scene.traverse((child) => {
             if (child instanceof THREE.Mesh) {

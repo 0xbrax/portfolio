@@ -2,6 +2,7 @@
     <div id="navbar" class="navbar absolute left-0 top-0 z-[500] p-4">
             <div class="navbar-start relative">
                 <transition name="fade">
+                    <!-- TODO logo -->
                     <span v-show="!isMenuVisible" class="text-xl font-bold text-accent">LOGO</span>
                 </transition>
             </div>

@@ -73,6 +73,9 @@ export default class InterestPoints {
         const up = new THREE.Vector3(0, 0, 1);
         const quaternion = new THREE.Quaternion().setFromUnitVectors(up, direction);
         object.quaternion.copy(quaternion);
+
+        const angleZ = Math.random() * 2 * Math.PI;
+        object.rotation.z = angleZ;
     }
 
     createTextTexture(text, width, height) {
