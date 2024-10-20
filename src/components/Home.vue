@@ -47,7 +47,7 @@
 
         <transition name="fade">
             <swiper-container
-                v-show="swiperSlides.length"
+                v-show="!isFPVActive && swiperSlides.length"
                 effect="cards"
                 class="h-32 w-4/5 md:w-96 absolute z-10 left-[50%] bottom-0 translate-x-[-50%]"
             >
