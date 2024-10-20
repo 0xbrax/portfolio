@@ -7,12 +7,16 @@ import * as THREE from "three";
 export const DEBUG = () => {
     const experienceInstance = new Experience();
     const DEBUG = new GUI({ title: 'DEBUG', closeFolders: true });
+    DEBUG.close();
 
     const rendererFolder = DEBUG.addFolder('renderer');
     const planetFolder = DEBUG.addFolder('planet');
 
 
 
+    experienceInstance.config.controls.enablePan = true;
+
+    experienceInstance.config.renderer.setClearColor('#626262');
     rendererFolder.add(experienceInstance.config.renderer, 'toneMapping', {
         No: THREE.NoToneMapping,
         Linear: THREE.LinearToneMapping,
@@ -30,6 +34,7 @@ export const DEBUG = () => {
 
     experienceInstance.world.robot.circlecaster.visible = true;
     experienceInstance.world.plane.orbit.visible = true;
+    experienceInstance.world.clouds.orbit.visible = true;
 
 
 

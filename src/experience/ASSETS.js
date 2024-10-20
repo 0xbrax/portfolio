@@ -3,7 +3,7 @@ export const RESOURCES = {
         {
             name: 'robot',
             type: 'gltf',
-            path: '/models/cute-bot_compressed.glb'
+            path: '/models/cute-bot_compressed-2k.glb'
         },
         {
             name: 'plane',
@@ -14,6 +14,21 @@ export const RESOURCES = {
             name: 'duck',
             type: 'gltf',
             path: '/models/rubber-duck_compressed.glb'
+        },
+        {
+            name: 'cloud_1',
+            type: 'gltf',
+            path: '/models/cloud-01_compressed.glb'
+        },
+        {
+            name: 'cloud_2',
+            type: 'gltf',
+            path: '/models/cloud-02_compressed.glb'
+        },
+        {
+            name: 'cloud_3',
+            type: 'gltf',
+            path: '/models/cloud-03_compressed.glb'
         }
     ]
 };

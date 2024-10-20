@@ -5,6 +5,7 @@ import Robot from "@/experience/Robot.js";
 import Planet from "@/experience/Planet.js";
 import InterestPoints from "@/experience/InterestPoints.js";
 import Plane from "@/experience/Plane.js";
+import Clouds from "@/experience/Clouds.js";
 import { gsap } from "gsap";
 
 
@@ -24,8 +25,10 @@ export default class World extends EventEmitter {
         };
         this.planetRotationSpeed = 0.6;
 
-        this.thetaSpeed = 0.02;
-        this.phiSpeed = 0.4;
+        this.planeThetaSpeed = 0.02;
+        this.planePhiSpeed = 0.4;
+        this.cloudsThetaSpeed = 0.008;
+        this.cloudsPhiSpeed = 0.003;
 
         this.isFPVActive = false;
         this.cameraPositionBeforeFPV = null;
@@ -44,13 +47,17 @@ export default class World extends EventEmitter {
         await this.loadObject('robot', Robot);
         console.timeEnd('t ROBOT');
 
-        console.time('t POINT');
+        console.time('t POINTS');
         await this.loadObject('interestPoints', InterestPoints, selectedPoints);
-        console.timeEnd('t POINT');
+        console.timeEnd('t POINTS');
 
         console.time('t PLANE');
         await this.loadObject('plane', Plane);
         console.timeEnd('t PLANE');
+
+        console.time('t CLOUDS');
+        await this.loadObject('clouds', Clouds);
+        console.timeEnd('t CLOUDS');
 
         this.emit('loadComplete');
     }
@@ -122,20 +129,14 @@ export default class World extends EventEmitter {
     }
 
     updatePlaneOrbit(deltaTime) {
-        this.plane.instanceGroup.rotation.x -= deltaTime * this.thetaSpeed;
-        this.plane.instanceGroup.rotation.z -= deltaTime * this.phiSpeed;
+        this.plane.instanceGroup.rotation.x -= deltaTime * this.planeThetaSpeed;
+        this.plane.instanceGroup.rotation.z -= deltaTime * this.planePhiSpeed;
     }
 
-    // TODO Upgrade: orientation to camera
-    /*updateInterestPointsOrientation() {
-        //const cameraPosition = this.experienceInstance.config.camera.position.clone();
-
-        this.interestPoints.instanceGroup.children.forEach((object) => {
-            const cameraDirection = new THREE.Vector3().subVectors(cameraPosition, object.position).normalize();
-            const angleZ = Math.atan2(cameraDirection.x, cameraDirection.y);
-            object.rotation.z = angleZ + Math.PI;
-        });
-    }*/
+    updateCloudsOrbit(deltaTime) {
+        this.clouds.instanceGroup.rotation.x += deltaTime * this.cloudsThetaSpeed;
+        this.clouds.instanceGroup.rotation.z += deltaTime * this.cloudsPhiSpeed;
+    }
 
     setUnsetFPV() {
         if (!this.isFPVActive) {
@@ -165,6 +166,17 @@ export default class World extends EventEmitter {
         this.isFPVActive = !this.isFPVActive;
     }
 
+    // TODO Upgrade: orientation to camera
+    /*updateInterestPointsOrientation() {
+        //const cameraPosition = this.experienceInstance.config.camera.position.clone();
+
+        this.interestPoints.instanceGroup.children.forEach((object) => {
+            const cameraDirection = new THREE.Vector3().subVectors(cameraPosition, object.position).normalize();
+            const angleZ = Math.atan2(cameraDirection.x, cameraDirection.y);
+            object.rotation.z = angleZ + Math.PI;
+        });
+    }*/
+
 
     
     update() {
@@ -173,6 +185,7 @@ export default class World extends EventEmitter {
         this.planet.subModel.material.uniforms.uTime.value = this.experienceInstance.elapsedTime;
         this.plane.animation.mixer.update(this.experienceInstance.deltaTime);
         this.updatePlaneOrbit(this.experienceInstance.deltaTime);
+        this.updateCloudsOrbit(this.experienceInstance.deltaTime);
         //this.updateInterestPointsOrientation();
 
 

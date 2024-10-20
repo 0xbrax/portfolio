@@ -1,6 +1,5 @@
 import * as THREE from "three";
 import Experience from "@/experience/Experience.js";
-import { TextGeometry } from "three/addons";
 
 export default class InterestPoints {
     constructor(selectedPoints) {
@@ -9,7 +8,7 @@ export default class InterestPoints {
         this.experienceInstance.world.planet.instanceGroup.add(this.instanceGroup);
 
         this.interestPoints = this.experienceInstance.interestPoints;
-        this.selectedPoints = selectedPoints
+        this.selectedPoints = selectedPoints;
 
         this.createPoints(this.selectedPoints);
     }

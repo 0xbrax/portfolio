@@ -23,17 +23,17 @@
         </div>
 
         <div v-show="!$isMobile.value" id="keys" class="absolute z-20 left-[1rem] bottom-[1rem] flex items-center gap-4">
-            <kbd :class="['kbd', { 'opacity-50': !inputKeys.Space }]">space</kbd>
             <div>
                 <div class="flex w-full justify-center mb-2">
                     <kbd :class="['kbd', { 'opacity-50': !inputKeys.KeyW }]">W</kbd>
                 </div>
-                <div class="flex w-full justify-center gap-4">
+                <div class="flex w-full justify-center gap-2">
                     <kbd :class="['kbd', { 'opacity-50': !inputKeys.KeyA }]">A</kbd>
                     <kbd :class="['kbd', { 'opacity-50': !inputKeys.KeyS }]">S</kbd>
                     <kbd :class="['kbd', { 'opacity-50': !inputKeys.KeyD }]">D</kbd>
                 </div>
             </div>
+            <kbd :class="['kbd', { 'opacity-50': !inputKeys.Space }]">space</kbd>
         </div>
 
         <div v-show="$isMobile.value" id="joypad" class="absolute z-20 left-[1rem] bottom-[1rem] h-[100px] aspect-square rounded-full"></div>
@@ -65,7 +65,7 @@ import { onMounted, onUnmounted, reactive, ref } from "vue";
 import Experience from '@/experience/Experience.js';
 import { RESOURCES, INTEREST_POINTS } from "@/experience/ASSETS.js";
 import nipplejs from 'nipplejs';
-import { $isMobile, getPseudoRandomNumber } from "@/assets/utils.js";
+import { $isMobile, getPseudoRandomInt } from "@/assets/utils.js";
 import { useSettingStore } from "@/store/setting.js";
 import { gsap } from "gsap";
 
@@ -286,33 +286,36 @@ export default {
         const startFPVTransition = () => {
             isFPVTransitionActive.value = true;
 
-            const animation1 = gsap.to(fpvTransitionCircleEl.value, {
+            const animation_1 = gsap.to(fpvTransitionCircleEl.value, {
                 r: "0%",
                 duration: 0.6,
                 ease: "power2.inOut",
+                paused: true,
                 onComplete: () => {
-                    animation1.kill();
+                    animation_1.kill();
                     setUnsetFPV();
-                    animation2.play();
+                    animation_2.play();
                 }
             });
-            const animation2 = gsap.to(fpvTransitionCircleEl.value, {
+            const animation_2 = gsap.to(fpvTransitionCircleEl.value, {
                 r: "100%",
                 duration: 0.6,
                 ease: "power2.inOut",
                 paused: true,
                 onComplete: () => {
-                    animation2.kill();
+                    animation_2.kill();
                     isFPVTransitionActive.value = false;
                 }
             });
+
+            animation_1.play();
         };
 
 
 
         onMounted(() => {
-            const randomSeed = getPseudoRandomNumber(-1000, 1000);
-            // store seed update when worker inits
+            const randomSeed = getPseudoRandomInt(-1000, 1000);
+            // store seed updated when worker inits
             experience = new Experience(homeEl.value, RESOURCES, INTEREST_POINTS, randomSeed);
             settingStore.experienceRef = experience;
 

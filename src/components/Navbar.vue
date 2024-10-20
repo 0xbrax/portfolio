@@ -1,9 +1,8 @@
 <template>
-    <div id="navbar" class="navbar absolute left-0 top-0 z-[500] p-4">
-            <div class="navbar-start relative">
+    <div id="navbar" class="navbar absolute left-0 top-0 z-[500] h-20 px-4">
+            <div class="navbar-start h-full">
                 <transition name="fade">
-                    <!-- TODO logo -->
-                    <span v-show="!isMenuVisible" class="text-xl font-bold text-accent">LOGO</span>
+                    <img v-show="!isMenuVisible" class="h-2/3" src="/images/brax_logo-256.webp" alt="0xbrax.dev" />
                 </transition>
             </div>
 

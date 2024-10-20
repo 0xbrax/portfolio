@@ -99,10 +99,6 @@ export default class Experience extends EventEmitter {
             console.time('t FINAL RENDER')
 
             window.requestAnimationFrame(() => {
-                ////////
-                if (window.location.hash === '#debug') this.DEBUG = DEBUG();
-                ////////
-
                 this.world.planet.on('newPlanetWorkerComplete', ({ detail }) => {
                     const selectedPoints = detail.selectedPoints;
                     this.world.interestPoints.instanceGroup.children.forEach((object, i) => {
@@ -112,11 +108,16 @@ export default class Experience extends EventEmitter {
                     this.emit('newPlanetReady');
                 });
 
-                this.tick();
-                this.isReady = true;
                 this.emit('loaded');
+                this.tick(); // render takes few milliseconds because of pre-rendered elements, it's after emit to catch first intersectInterest
+                this.isReady = true;
 
                 console.timeEnd('t FINAL RENDER')
+
+                ////////
+                // DEBUG
+                if (window.location.hash === '#debug') this.DEBUG = DEBUG();
+                ////////
             });
         }, { once: true });
     }

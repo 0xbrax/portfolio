@@ -1,7 +1,7 @@
 <template>
-    <div id="menu" class="h-full w-full p-4 absolute z-[499] left-0 top-0 flex justify-center items-center">
+    <div id="menu" class="h-full w-full p-4 pt-20 absolute z-[499] left-0 top-0 flex justify-center items-center">
         <div class="h-full text-center flex flex-col justify-around items-center gap-2">
-            <div class="flex flex-col items-center gap-4 mt-6">
+            <div class="flex flex-col items-center gap-4">
                 <div>
                     <span>Do you wanna change the world?</span>
                     <br />
@@ -35,6 +35,7 @@
             </div>
 
             <div>
+                <!-- TODO music -->
                 VOLUME
             </div>
 
@@ -54,7 +55,7 @@
 <script>
 import { ref, watch } from "vue";
 import { useSettingStore } from "@/store/setting.js";
-import { getPseudoRandomNumber } from "@/assets/utils.js";
+import { getPseudoRandomInt } from "@/assets/utils.js";
 
 export default {
     name: "Menu",
@@ -78,7 +79,7 @@ export default {
         };
 
         const getRandomWorldSeed = () => {
-            const randomNumber = getPseudoRandomNumber(-1000, 1000);
+            const randomNumber = getPseudoRandomInt(-1000, 1000);
             currentWorldSeed.value = randomNumber;
         };
 

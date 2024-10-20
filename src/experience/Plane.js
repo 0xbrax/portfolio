@@ -5,7 +5,8 @@ export default class Plane {
     constructor() {
         this.experienceInstance = new Experience();
         this.instanceGroup = new THREE.Group();
-        this.experienceInstance.world.planet.instanceGroup.add(this.instanceGroup);
+        this.instanceGroup.position.y = -2;
+        this.experienceInstance.config.scene.add(this.instanceGroup);
 
         this.subInstanceGroup = new THREE.Group();
         this.subInstanceGroup.position.y = 7;

@@ -35,12 +35,6 @@ export default {
 
         const isLoaderActive = ref(true);
 
-
-
-        window.addEventListener('click', () => {
-            console.log('TODO - - - CPU CLICK TEST - - -')
-        });
-
         return {
             isLoaderActive,
             isMenuVisible

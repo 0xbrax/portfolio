@@ -3,7 +3,7 @@
         <div class="flex flex-col items-center gap-6 text-center">
             <div>
                 BETA TEST<br />
-                it may has some bugs
+                it may not be perfect
             </div>
 
             <div v-if="!settingStore.isExperienceReady" class="text-primary font-bold text-6xl">{{ Math.round(settingStore.loaderProgress * 100).toString() }}<span class="text-2xl">%</span></div>
