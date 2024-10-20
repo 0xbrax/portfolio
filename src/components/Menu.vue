@@ -61,7 +61,7 @@ export default {
     name: "Menu",
     setup() {
         const settingStore = useSettingStore();
-        const currentWorldSeed = ref(settingStore.worldSeed);
+        const currentWorldSeed = ref(null);
 
         const checkWorldSeed = (value) => {
             if (value === '') {
@@ -85,8 +85,11 @@ export default {
 
         watch(
             () => settingStore.worldSeed,
-            (val) => {
-                currentWorldSeed.value = val;
+            (value) => {
+                currentWorldSeed.value = value;
+            },
+            {
+                immediate: true
             }
         );
 

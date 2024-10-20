@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { useLocalStorage } from "@vueuse/core";
 
 export const useSettingStore = defineStore("settingStore", {
   state: () => ({
@@ -7,6 +8,8 @@ export const useSettingStore = defineStore("settingStore", {
     loaderProgress: 0,
     worldSeed: null,
     isNewPlanetReady: true,
+    isFirstTimeVisit: useLocalStorage('setting-isFirstTimeVisit', true),
+    isInfoModalNeeded: false
   }),
   actions: {
     generateNewPlanet(randomSeed) {

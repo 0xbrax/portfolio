@@ -13,12 +13,19 @@
             </svg>
         </div>
 
-        <div id="buttons" class="absolute left-[1rem] top-[50%] translate-y-[-50%]">
+        <div id="buttons" class="absolute right-[1rem] top-[50%] translate-y-[-50%] flex flex-col gap-4">
             <button
                 :class="['btn btn-outline btn-primary btn-circle', { 'btn-active': isFPVActive }]"
                 :disabled="isFPVTransitionActive"
             >
                 <LucidePlane @click="startFPVTransition()" />
+            </button>
+
+            <button
+                class="btn btn-outline btn-accent btn-circle"
+                @click="infoModalEl.showModal()"
+            >
+                <LucideInfo />
             </button>
         </div>
 
@@ -57,11 +64,31 @@
                 </swiper-slide>
             </swiper-container>
         </transition>
+
+        <dialog id="info-modal" ref="infoModalEl" class="modal">
+            <div class="modal-box overflow-visible">
+                <h3 class="text-lg font-bold flex items-center gap-2"><LucideInfo />Info</h3>
+                <ul class="py-4">
+                    <li class="mb-1">Walk around the planet</li>
+                    <li class="mb-1">
+                        Reach interest points to show details to the bottom, tap <LucideSquareArrowUpRight class="inline" /> to open project in a new window. If you are close to more interest points you can swipe the bottom cards<br />
+                    </li>
+                    <li class="mb-1">Try FPV view</li>
+                    <li class="mb-1">Open hamburger menu to generate different worlds using your favourit seed number</li>
+                    <li>Enjoy</li>
+                </ul>
+                <div class="modal-action mt-2 relative">
+                    <form method="dialog" class="absolute top-[1.5rem] left-[50%] translate-y-[-50%] translate-x-[-50%]">
+                        <button class="btn btn-lg btn-active">Got it !</button>
+                    </form>
+                </div>
+            </div>
+        </dialog>
     </div>
 </template>
 
 <script>
-import { onMounted, onUnmounted, reactive, ref } from "vue";
+import { onMounted, onUnmounted, reactive, ref, watch } from "vue";
 import Experience from '@/experience/Experience.js';
 import { RESOURCES, INTEREST_POINTS } from "@/experience/ASSETS.js";
 import nipplejs from 'nipplejs';
@@ -83,6 +110,7 @@ export default {
         const isFPVActive = ref(false);
         const isFPVTransitionActive = ref(false);
         const fpvTransitionCircleEl = ref(null);
+        const infoModalEl = ref(null);
 
         const inputKeys = reactive({
             KeyW: false,
@@ -337,6 +365,17 @@ export default {
                     settingStore.isNewPlanetReady = true;
                 });
             }, { once: true });
+
+
+
+            watch(
+                () => settingStore.isInfoModalNeeded,
+                (value) => {
+                    if (value) {
+                        infoModalEl.value.showModal();
+                    }
+                }
+            );
         });
 
 
@@ -353,7 +392,8 @@ export default {
             isFPVActive,
             isFPVTransitionActive,
             fpvTransitionCircleEl,
-            startFPVTransition
+            startFPVTransition,
+            infoModalEl
         }
     }
 }

@@ -2,7 +2,7 @@
     <Navbar />
 
     <transition name="fade-out">
-        <Loader v-if="isLoaderActive" @onStart="isLoaderActive = false" />
+        <Loader v-if="isLoaderActive" @onStart="onStart()" />
     </transition>
 
     <transition name="fade">
@@ -21,6 +21,7 @@ import Navbar from "@/components/Navbar.vue";
 import Menu from "@/components/Menu.vue";
 import Loader from "@/components/Loader.vue";
 import { ref, provide } from "vue";
+import { useSettingStore } from "@/store/setting.js";
 
 export default {
     name: "App",
@@ -30,14 +31,25 @@ export default {
         Loader
     },
     setup() {
+        const settingStore = useSettingStore();
+
         const isMenuVisible = ref(false);
         provide('isMenuVisible', isMenuVisible);
-
         const isLoaderActive = ref(true);
+
+        const onStart = () => {
+            isLoaderActive.value = false;
+
+            if (settingStore.isFirstTimeVisit) {
+                settingStore.isFirstTimeVisit = false;
+                settingStore.isInfoModalNeeded = true;
+            }
+        };
 
         return {
             isLoaderActive,
-            isMenuVisible
+            isMenuVisible,
+            onStart
         }
     }
 }

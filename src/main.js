@@ -13,7 +13,8 @@ import {
     LucideDices,
     LucideSquareArrowUpRight,
     LucideVolume2,
-    LucideVolumeX
+    LucideVolumeX,
+    LucideInfo
 } from "lucide-vue-next";
 
 
@@ -32,6 +33,7 @@ app.component('LucideDices', LucideDices);
 app.component('LucideSquareArrowUpRight', LucideSquareArrowUpRight);
 app.component('LucideVolume2', LucideVolume2);
 app.component('LucideVolumeX', LucideVolumeX);
+app.component('LucideInfo', LucideInfo);
 
 
 

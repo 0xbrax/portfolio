@@ -25,10 +25,10 @@ export default class World extends EventEmitter {
         };
         this.planetRotationSpeed = 0.6;
 
-        this.planeThetaSpeed = 0.02;
+        this.planeThetaSpeed = 0.03;
         this.planePhiSpeed = 0.4;
-        this.cloudsThetaSpeed = 0.008;
-        this.cloudsPhiSpeed = 0.003;
+        this.cloudsThetaSpeed = 0.01;
+        this.cloudsPhiSpeed = 0.008;
 
         this.isFPVActive = false;
         this.cameraPositionBeforeFPV = null;

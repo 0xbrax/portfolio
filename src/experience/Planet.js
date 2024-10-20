@@ -31,7 +31,7 @@ export default class Planet extends EventEmitter {
         this.debugObject = {};
         this.debugObject.colorWaterDeep = '#2a5fc5';
         this.debugObject.colorWaterSurface = '#35cdff';
-        this.debugObject.colorWaterFoam = '#68daff';
+        this.debugObject.colorWaterFoam = '#84eaff';
         this.debugObject.colorSand = '#ffe894';
         this.debugObject.colorGrass = '#85d534';
         this.debugObject.colorRock = '#bfbd8d';
