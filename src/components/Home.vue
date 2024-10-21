@@ -29,7 +29,7 @@
             </button>
         </div>
 
-        <div v-show="!$isMobile.value" id="keys" class="absolute z-20 left-[1rem] bottom-[1rem] flex items-center gap-4">
+        <div v-show="!$isMobile.value && !isFPVActive" id="keys" class="absolute z-20 left-[1rem] bottom-[1rem] flex items-center gap-4">
             <div>
                 <div class="flex w-full justify-center mb-2">
                     <kbd :class="['kbd', { 'opacity-50': !inputKeys.KeyW }]">W</kbd>
@@ -43,7 +43,7 @@
             <kbd :class="['kbd', { 'opacity-50': !inputKeys.Space }]">space</kbd>
         </div>
 
-        <div v-show="$isMobile.value" id="joypad" class="absolute z-20 left-[1rem] bottom-[1rem] h-[100px] aspect-square rounded-full"></div>
+        <div v-show="$isMobile.value && !isFPVActive" id="joypad" class="absolute z-20 left-[1rem] bottom-[1rem] h-[100px] aspect-square rounded-full"></div>
 
         <transition name="fade">
             <swiper-container
@@ -68,15 +68,10 @@
         <dialog id="info-modal" ref="infoModalEl" class="modal">
             <div class="modal-box overflow-visible">
                 <h3 class="text-lg font-bold flex items-center gap-2"><LucideInfo />Info</h3>
-                <ul class="py-4">
-                    <li class="mb-1">Walk around the planet</li>
-                    <li class="mb-1">
-                        Reach interest points to show details to the bottom, tap <LucideSquareArrowUpRight class="inline" /> to open project in a new window. If you are close to more interest points you can swipe the bottom cards<br />
-                    </li>
-                    <li class="mb-1">Try FPV view</li>
-                    <li class="mb-1">Open hamburger menu to generate different worlds using your favourit seed number</li>
-                    <li>Enjoy</li>
-                </ul>
+                <p class="py-4">
+                    Walk around the planet and reach interest points to show details to the bottom, tap <LucideSquareArrowUpRight class="inline" /> to open project in a new window.<br />
+                    If you are close to more than one interest point you can swipe the bottom cards.
+                </p>
                 <div class="modal-action mt-2 relative">
                     <form method="dialog" class="absolute top-[1.5rem] left-[50%] translate-y-[-50%] translate-x-[-50%]">
                         <button class="btn btn-lg btn-active">Got it !</button>
@@ -102,7 +97,6 @@ export default {
     name: "Home",
     setup() {
         let experience = null;
-        const isExperienceReady = ref(false);
         const settingStore = useSettingStore();
 
         const homeEl = ref(null);
@@ -310,6 +304,9 @@ export default {
         const setUnsetFPV = () => {
             isFPVActive.value = !isFPVActive.value;
             experience.world.setUnsetFPV();
+
+            if (isFPVActive.value) experience.assets.sounds.planeIdleFX.play();
+            else experience.assets.sounds.planeIdleFX.stop();
         };
         const startFPVTransition = () => {
             isFPVTransitionActive.value = true;
@@ -351,7 +348,6 @@ export default {
                 setKeysControl();
                 setJoypadControl();
 
-                isExperienceReady.value = true;
                 settingStore.isExperienceReady = true;
 
                 experience.world.on('intersectInterest', ({ detail }) => {
@@ -369,10 +365,13 @@ export default {
 
 
             watch(
-                () => settingStore.isInfoModalNeeded,
+                () => settingStore.hasExperienceEntered,
                 (value) => {
                     if (value) {
-                        infoModalEl.value.showModal();
+                        experience.assets.sounds.background.play();
+
+                        if (settingStore.isInfoModalNeeded) infoModalEl.value.showModal();
+
                     }
                 }
             );

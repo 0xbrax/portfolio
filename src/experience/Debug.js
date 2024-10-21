@@ -10,11 +10,23 @@ export const DEBUG = () => {
     DEBUG.close();
 
     const rendererFolder = DEBUG.addFolder('renderer');
+    const ambientLightFolder = DEBUG.addFolder('ambientLight');
+    const directionaLightFolder_1 = DEBUG.addFolder('directionaLight_1');
+    const directionaLightFolder_2 = DEBUG.addFolder('directionaLight_2');
     const planetFolder = DEBUG.addFolder('planet');
 
 
 
     experienceInstance.config.controls.enablePan = true;
+
+    const raycasterHelper = new THREE.ArrowHelper(experienceInstance.world.robot.raycaster.ray.direction, experienceInstance.world.robot.raycaster.ray.origin, experienceInstance.world.robot.raycaster.far, '#ff0000');
+    experienceInstance.config.scene.add(raycasterHelper);
+
+    experienceInstance.world.robot.circlecaster.visible = true;
+    experienceInstance.world.plane.orbit.visible = true;
+    experienceInstance.world.clouds.orbit.visible = true;
+
+
 
     experienceInstance.config.renderer.setClearColor('#626262');
     rendererFolder.add(experienceInstance.config.renderer, 'toneMapping', {
@@ -26,15 +38,23 @@ export const DEBUG = () => {
     });
     rendererFolder.add(experienceInstance.config.renderer, 'toneMappingExposure').min(0).max(10).step(0.01);
 
-    const directionalLightHelper = new THREE.DirectionalLightHelper(experienceInstance.world.directionalLight);
-    experienceInstance.config.scene.add(directionalLightHelper);
 
-    const raycasterHelper = new THREE.ArrowHelper(experienceInstance.world.robot.raycaster.ray.direction, experienceInstance.world.robot.raycaster.ray.origin, experienceInstance.world.robot.raycaster.far, '#00ff00');
-    experienceInstance.config.scene.add(raycasterHelper);
 
-    experienceInstance.world.robot.circlecaster.visible = true;
-    experienceInstance.world.plane.orbit.visible = true;
-    experienceInstance.world.clouds.orbit.visible = true;
+    ambientLightFolder.add(experienceInstance.world.ambientLight, 'intensity').min(0).max(5).step(0.1);
+
+    directionaLightFolder_1.add(experienceInstance.world.directionalLight_1, 'intensity').min(0).max(5).step(0.1);
+    directionaLightFolder_1.add(experienceInstance.world.directionalLight_1.position, 'x').min(-10).max(10).step(1);
+    directionaLightFolder_1.add(experienceInstance.world.directionalLight_1.position, 'y').min(-10).max(10).step(1);
+    directionaLightFolder_1.add(experienceInstance.world.directionalLight_1.position, 'z').min(-10).max(10).step(1);
+    const directionalLightHelper_1 = new THREE.DirectionalLightHelper(experienceInstance.world.directionalLight_1);
+    experienceInstance.config.scene.add(directionalLightHelper_1);
+
+    directionaLightFolder_2.add(experienceInstance.world.directionalLight_2, 'intensity').min(0).max(5).step(0.1);
+    directionaLightFolder_2.add(experienceInstance.world.directionalLight_2.position, 'x').min(-10).max(10).step(1);
+    directionaLightFolder_2.add(experienceInstance.world.directionalLight_2.position, 'y').min(-10).max(10).step(1);
+    directionaLightFolder_2.add(experienceInstance.world.directionalLight_2.position, 'z').min(-10).max(10).step(1);
+    const directionalLightHelper_2 = new THREE.DirectionalLightHelper(experienceInstance.world.directionalLight_2);
+    experienceInstance.config.scene.add(directionalLightHelper_2);
 
 
 

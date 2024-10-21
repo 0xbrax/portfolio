@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { DRACOLoader, GLTFLoader } from "three/addons";
+import { Howl } from "howler";
 import EventEmitter from "./EventEmitter.js";
 import Experience from "./Experience.js";
 
@@ -20,15 +21,18 @@ export default class Loader extends EventEmitter {
         this.gltfLoader.setDRACOLoader(dracoLoader);
         this.gltfLoader.setCrossOrigin('anonymous');
 
-        this.audioTotalAssets = this.resources['audio'] ? this.resources['audio'].length : 0;
-        this.audioLoadedAssets = 0;
+        this.assetsTotal = null;
+        this.assetsLoaded = null;
+
+        this.soundsTotal = this.resources['sounds'] ? this.resources['sounds'].length : 0;
+        this.soundsLoaded = 0;
         this.workersCount = 1;
 
         this.loadingManager.onProgress = (_, itemsLoaded, itemsTotal) => {
-            const assetsLoaded = itemsLoaded;
-            const assetsTotal = itemsTotal + this.audioLoadedAssets + this.workersCount;
+            this.assetsLoaded = itemsLoaded;
+            this.assetsTotal = itemsTotal + this.workersCount;
 
-            this.emit('progress', { assetsLoaded, assetsTotal });
+            this.emit('progress', { assetsLoaded: this.assetsLoaded, assetsTotal: this.assetsTotal });
         };
         this.loadingManager.onLoad = () => {
             this.emit('complete', { workersCount: this.workersCount });
@@ -36,9 +40,12 @@ export default class Loader extends EventEmitter {
     }
 
     onLoadAsset() {
-        this.audioLoadedAssets++;
+        this.assetsLoaded++;
+        this.soundsLoaded++;
 
-        if (this.audioLoadedAssets === this.audioTotalAssets) {
+        this.emit('progress', { assetsLoaded: this.assetsLoaded, assetsTotal: this.assetsTotal });
+
+        if (this.soundsLoaded === this.soundsTotal) {
             this.loadingManager.onLoad();
         }
     }
@@ -57,11 +64,11 @@ export default class Loader extends EventEmitter {
                     }, undefined, (error) => {
                         this.emit('error', { error });
                     });
-                } else if (asset.type === 'audio') {
-                    const sound = new Howl({
+                } else if (asset.type === 'mp3') {
+                    const file = new Howl({
                         src: [asset.path],
                         onload: () => {
-                            this.assets[key][asset.name] = sound;
+                            this.assets[key][asset.name] = file;
                             this.onLoadAsset();
                         },
                         onloaderror: (error) => {

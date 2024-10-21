@@ -81,11 +81,16 @@ export default class World extends EventEmitter {
 
     createLight() {
         this.ambientLight = new THREE.AmbientLight('#ffffff', 1);
-        this.experienceInstance.config.scene.add(this.ambientLight);
 
-        this.directionalLight = new THREE.DirectionalLight('#ffffff', 2);
-        this.directionalLight.position.set(5, 10, 5);
-        this.experienceInstance.config.scene.add(this.directionalLight);
+        this.directionalLight_1 = new THREE.DirectionalLight('#ffffff', 1.25);
+        this.directionalLight_1.position.set(8, 4, 8);
+        this.directionalLight_1.target.position.set(0, 0, 0);
+
+        this.directionalLight_2 = new THREE.DirectionalLight('#ffffff', 0.75);
+        this.directionalLight_2.position.set(-7, -5, -9);
+        this.directionalLight_2.target.position.set(0, -2, 0);
+
+        this.experienceInstance.config.scene.add(this.ambientLight, this.directionalLight_1, this.directionalLight_2);
     }
 
     rotatePlanet(deltaTime) {

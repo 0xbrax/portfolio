@@ -5,6 +5,7 @@ import Loader from "./Loader.js";
 import World from "./World.js";
 import { DEBUG } from "@/experience/Debug.js";
 import { useSettingStore } from "@/store/setting.js";
+import Stats from 'stats.js'
 
 
 
@@ -15,8 +16,6 @@ export default class Experience extends EventEmitter {
         if (instance) return instance;
         super();
         instance = this;
-
-        this.isReady = false; // not used
 
         this.container = container;
         this.resources = resources;
@@ -74,11 +73,20 @@ export default class Experience extends EventEmitter {
             this.assetsLoader.workersCount = workersCount;
 
             this.assets = this.loader.assets;
+            this.audioMixer();
             this.start();
         }, { once: true });
         this.loader.on('error', ({ detail }) => {
             console.error(`ERROR --> ${detail.error}`);
         }, { once: true });
+    }
+
+    audioMixer() {
+        this.assets.sounds.background.volume(0.75);
+        this.assets.sounds.background.loop(true);
+
+        this.assets.sounds.planeIdleFX.volume(0.5);
+        this.assets.sounds.planeIdleFX.loop(true);
     }
 
     start() {
@@ -110,13 +118,18 @@ export default class Experience extends EventEmitter {
 
                 this.emit('loaded');
                 this.tick(); // render takes few milliseconds because of pre-rendered elements, it's after emit to catch first intersectInterest
-                this.isReady = true;
 
                 console.timeEnd('t FINAL RENDER')
 
                 ////////
                 // DEBUG
-                if (window.location.hash === '#debug') this.DEBUG = DEBUG();
+                if (window.location.hash === '#debug') {
+                    this.DEBUG = DEBUG();
+
+                    this.STATS = new Stats();
+                    this.STATS.showPanel(0); // 0 --> FPS
+                    document.body.appendChild(this.STATS.dom);
+                }
                 ////////
             });
         }, { once: true });
@@ -127,6 +140,8 @@ export default class Experience extends EventEmitter {
     }
 
     tick() {
+        if (this.STATS) this.STATS.begin();
+
         this.elapsedTime = this.clock.getElapsedTime();
         this.deltaTime = this.elapsedTime - this.previousTime;
         this.previousTime = this.elapsedTime;
@@ -134,7 +149,11 @@ export default class Experience extends EventEmitter {
         this.world.update();
 
         if (!this.world.isFPVActive) this.config.controls.update();
+
         this.config.renderer.render(this.config.scene, this.config.camera);
+
+        if (this.STATS) this.STATS.end();
+
         window.requestAnimationFrame(() => {
             this.tick();
         });

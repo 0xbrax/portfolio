@@ -37,9 +37,10 @@ export default class Planet extends EventEmitter {
         this.debugObject.colorRock = '#bfbd8d';
         this.debugObject.colorSnow = '#ffffff';
 
-        // TODO check inset shadows & all geometries attributes not used
         this.createWater();
         this.createPlanet(this.experienceInstance.seed, true);
+
+        // if it uses shadows provide customDepthMaterial
     }
 
     createPlanet(seed, isInit) {
@@ -188,11 +189,11 @@ export default class Planet extends EventEmitter {
     }
 
     createWater() {
-        const geometry = new THREE.IcosahedronGeometry(3 + 0.012, 15);
+        const geometry = new THREE.IcosahedronGeometry(3 + 0.005, 30);
 
         const uniformsObject = {
             uTime: new THREE.Uniform(0),
-            uFrequency: new THREE.Uniform(new THREE.Vector2(3, 1.5)),
+            uFrequency: new THREE.Uniform(2.25),
             uColorWaterSurface: new THREE.Uniform(new THREE.Color(this.debugObject.colorWaterSurface)),
             uColorWaterFoam: new THREE.Uniform(new THREE.Color(this.debugObject.colorWaterFoam))
         };

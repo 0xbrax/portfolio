@@ -1,3 +1,9 @@
-## https://0xbrax.dev
+# https://0xbrax.dev
 
-work in progress
+## DEV
+Yup
+
+```bash
+npm i
+npm run xoxo
+```

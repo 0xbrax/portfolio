@@ -14,7 +14,7 @@ export default class InterestPoints {
     }
 
     createPoints(selectedPoints) {
-        const poleGeometry = new THREE.CylinderGeometry(0.05, 0.05, 2.5, 12);
+        const poleGeometry = new THREE.CylinderGeometry(0.05, 0.05, 1.5, 12);
         poleGeometry.rotateX(Math.PI * -0.5);
         const poleMaterial = new THREE.MeshStandardMaterial({
             color: '#c56c16'
@@ -26,16 +26,14 @@ export default class InterestPoints {
         });
 
         const plateTextGeometry = new THREE.PlaneGeometry(1, 0.7, 1, 1);
-
         const pixelsPerUnit = 256;
-
-
 
         this.interestPoints.forEach((el, i) => {
             const pointGroup = new THREE.Group();
             this.setSphericalPosition(pointGroup, selectedPoints[i]);
 
             const pole = new THREE.Mesh(poleGeometry, poleMaterial);
+            pole.position.z = -0.5;
 
             const plateGroup = new THREE.Group();
             const plateBody = new THREE.Mesh(plateBodyGeometry, plateBodyMaterial);

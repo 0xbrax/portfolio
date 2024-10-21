@@ -1,14 +1,14 @@
 <template>
-    <div id="navbar" class="navbar absolute left-0 top-0 z-[500] h-20 px-4">
+    <div id="navbar" class="navbar absolute left-0 top-0 z-[500] h-20 p-4">
             <div class="navbar-start h-full">
                 <transition name="fade">
-                    <img v-show="!isMenuVisible" class="h-2/3" src="/images/brax_logo-256.webp" alt="0xbrax.dev" />
+                    <img v-show="!isMenuVisible" class="h-full" src="/images/brax_logo-256.webp" alt="Brax" />
                 </transition>
             </div>
 
         <div class="navbar-end">
             <label class="btn btn-outline btn-circle swap swap-rotate">
-                <input @change="($event) => isMenuVisible = $event.target.checked" type="checkbox" />
+                <input v-model="isMenuVisible" type="checkbox" />
 
                 <svg
                     class="swap-off fill-current"

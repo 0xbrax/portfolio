@@ -31,8 +31,12 @@ export default class Config {
         this.experienceInstance.container.appendChild(this.renderer.domElement);
 
         this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        this.renderer.toneMappingExposure = 1;
+        this.renderer.toneMappingExposure = 1.5;
         this.renderer.setClearColor('#00e8ff');
+
+        this.renderer.shadowMap.autoUpdate = false; // call needsUpdate manually
+
+        // NO SHADOWS - Better performance
     }
 
     setCamera() {

@@ -30,6 +30,18 @@ export const RESOURCES = {
             type: 'gltf',
             path: '/models/cloud-03_compressed.glb'
         }
+    ],
+    sounds: [
+        {
+            name: 'background',
+            type: 'mp3',
+            path: '/sounds/sfmusic-positive-pop_128.mp3'
+        },
+        {
+            name: 'planeIdleFX',
+            type: 'mp3',
+            path: '/sounds/airplane-idle-fx_128.mp3'
+        }
     ]
 };
 
@@ -39,16 +51,16 @@ export const INTEREST_POINTS = [
     {
         id: 0,
         title: `Fruit Cocktail`,
-        url: ''
+        url: 'https://fruitcocktail.0xbrax.dev'
     },
     {
         id: 1,
         title: `NoK.Army`,
-        url: ''
+        url: 'https://nok.army'
     },
     {
         id: 2,
         title: `Pika Ride`,
-        url: ''
+        url: '/asdf-lol'
     }
 ];

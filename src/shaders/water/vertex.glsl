@@ -1,16 +1,16 @@
-precision lowp float;
-
 uniform float uTime;
-uniform vec2 uFrequency;
+uniform float uFrequency;
 
 varying vec3 vPosition;
 
 void main() {
     vec3 newPosition = csm_Position;
 
-    float elevation = sin((newPosition.x * uFrequency.x) - uTime) * 0.1;
-    elevation += sin((newPosition.y * uFrequency.y) - uTime) * 0.1;
-    newPosition.z += elevation * 0.1;
+    float elevation = sin((newPosition.x * uFrequency) - uTime) * 0.1;
+    elevation += sin((newPosition.y * uFrequency) - uTime) * 0.1;
+    elevation += sin((newPosition.z * uFrequency) - uTime) * 0.1;
+
+    newPosition += normalize(newPosition) * elevation * 0.025;
 
     csm_Position = newPosition;
 

@@ -5,11 +5,13 @@ export const useSettingStore = defineStore("settingStore", {
   state: () => ({
     experienceRef: null,
     isExperienceReady: false,
+    hasExperienceEntered: false,
     loaderProgress: 0,
     worldSeed: null,
     isNewPlanetReady: true,
     isFirstTimeVisit: useLocalStorage('setting-isFirstTimeVisit', true),
-    isInfoModalNeeded: false
+    isInfoModalNeeded: false,
+    isAudioActive: useLocalStorage('setting-isAudioActive', true)
   }),
   actions: {
     generateNewPlanet(randomSeed) {

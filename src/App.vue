@@ -2,7 +2,7 @@
     <Navbar />
 
     <transition name="fade-out">
-        <Loader v-if="isLoaderActive" @onStart="onStart()" />
+        <Loader v-if="isLoaderActive && $route.path === '/'" @onStart="onStart()" />
     </transition>
 
     <transition name="fade">
@@ -39,6 +39,7 @@ export default {
 
         const onStart = () => {
             isLoaderActive.value = false;
+            settingStore.hasExperienceEntered = true;
 
             if (settingStore.isFirstTimeVisit) {
                 settingStore.isFirstTimeVisit = false;
