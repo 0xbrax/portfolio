@@ -82,7 +82,7 @@ export default class Experience extends EventEmitter {
     }
 
     audioMixer() {
-        this.assets.sounds.background.volume(0.75);
+        this.assets.sounds.background.volume(1);
         this.assets.sounds.background.loop(true);
 
         this.assets.sounds.planeIdleFX.volume(0.5);

@@ -35,7 +35,7 @@ export const RESOURCES = {
         {
             name: 'background',
             type: 'mp3',
-            path: '/sounds/sfmusic-positive-pop_128.mp3'
+            path: '/sounds/magma-sounds_background-house.mp3'
         },
         {
             name: 'planeIdleFX',
