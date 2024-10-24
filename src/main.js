@@ -16,7 +16,8 @@ import {
     LucideEarth,
     LucideDices,
     LucideSquareArrowUpRight,
-    LucideInfo
+    LucideInfo,
+    LucideMoveDown
 } from "lucide-vue-next";
 
 
@@ -37,6 +38,7 @@ app.component('LucideEarth', LucideEarth);
 app.component('LucideDices', LucideDices);
 app.component('LucideSquareArrowUpRight', LucideSquareArrowUpRight);
 app.component('LucideInfo', LucideInfo);
+app.component('LucideMoveDown', LucideMoveDown);
 
 
 

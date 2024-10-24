@@ -13,17 +13,30 @@
             </svg>
         </div>
 
-        <div id="buttons" class="absolute right-[1rem] top-[50%] translate-y-[-50%] flex flex-col gap-4">
+        <div id="buttons" class="absolute right-[1rem] top-[50%] translate-y-[-50%] flex flex-col items-end gap-4">
             <button
                 :class="['btn btn-outline btn-primary btn-circle', { 'btn-active': isFPVActive }]"
                 :disabled="isFPVTransitionActive"
+                @click="startFPVTransition()"
             >
-                <LucidePlane @click="startFPVTransition()" />
+                <LucidePlane />
             </button>
+
+            <div class="flex flex-col items-end gap-2">
+                <button
+                    class="btn btn-outline btn-primary btn-circle"
+                    :disabled="!settingStore.isNewPlanetReady"
+                    @click="settingStore.generateNewPlanet()"
+                >
+                    <LucideDices />
+                </button>
+
+                <div class="badge badge-primary"><LucideEarth class="h-4 w-4 mr-2" /> {{ settingStore.worldSeed }}</div>
+            </div>
 
             <button
                 class="btn btn-outline btn-accent btn-circle"
-                @click="infoModalEl.showModal()"
+                @click="openInfoModal()"
             >
                 <LucideInfo />
             </button>
@@ -41,31 +54,43 @@
                 </div>
             </div>
             <kbd :class="['kbd', { 'opacity-50': !inputKeys.Space }]">space</kbd>
+
+            <div v-show="isInfoModalOpen" class="absolute left-[4rem] top-[-8rem] text-primary rotate-[15deg]">
+                <LucideMoveDown class="h-32 w-32  animate-bounce" />
+            </div>
         </div>
 
-        <div v-show="$isMobile.value && !isFPVActive" id="joypad" class="absolute z-20 left-[1rem] bottom-[1rem] h-[100px] aspect-square rounded-full"></div>
+        <div v-show="$isMobile.value && !isFPVActive" id="joypad" class="absolute z-20 left-[1rem] bottom-[8rem] h-[100px] aspect-square rounded-full">
+            <div v-show="isInfoModalOpen" class="absolute z-20 left-[2rem] top-[4rem] text-primary rotate-[165deg]">
+                <LucideMoveDown class="h-32 w-32  animate-bounce" />
+            </div>
+        </div>
 
         <transition name="fade">
             <swiper-container
                 v-show="!isFPVActive && swiperSlides.length"
                 effect="cards"
-                class="h-32 w-4/5 md:w-96 absolute z-10 left-[50%] bottom-0 translate-x-[-50%]"
+                class="h-28 w-4/5 md:w-96 absolute z-10 left-[50%] bottom-0 translate-x-[-50%]"
             >
                 <swiper-slide
                     v-for="slide in swiperSlides"
                     :key="slide.id"
-                    class="card glass flex justify-center items-center"
+                    class="card glass flex justify-center items-center p-4"
                 >
-                    <div class="flex items-center gap-4">
-                        <span class="grow">{{ slide.title }}</span>
-
-                        <a :href="slide.url" target="_blank"><LucideSquareArrowUpRight /></a>
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="flex items-center gap-2 text-xl font-bold">
+                            <span class="grow">{{ slide.title }}</span>
+                            <a :href="slide.url" target="_blank"><LucideSquareArrowUpRight class="h-7 w-7" /></a>
+                        </div>
+                        <div v-if="slide.description" class="text-center text-sm">
+                            {{ slide.description }}
+                        </div>
                     </div>
                 </swiper-slide>
             </swiper-container>
         </transition>
 
-        <dialog id="info-modal" ref="infoModalEl" class="modal">
+        <dialog @close="closeInfoModal()" id="info-modal" ref="infoModalEl" class="modal">
             <div class="modal-box overflow-visible">
                 <h3 class="text-lg font-bold flex items-center gap-2"><LucideInfo />Info</h3>
                 <p class="py-4">
@@ -105,6 +130,7 @@ export default {
         const isFPVTransitionActive = ref(false);
         const fpvTransitionCircleEl = ref(null);
         const infoModalEl = ref(null);
+        const isInfoModalOpen = ref(false);
 
         const inputKeys = reactive({
             KeyW: false,
@@ -205,6 +231,20 @@ export default {
                         }
 
                         experience.world.robot.animation.isPlaying = true;
+
+                        gsap.killTweensOf(experience.config.camera.position);
+                        experience.config.controls.enabled = false;
+                        const animation = gsap.to(experience.config.camera.position, {
+                            x: 0,
+                            y: 6,
+                            z: -21,
+                            duration: 0.9,
+                            ease: "power2.inOut",
+                            onComplete: () => {
+                                animation.kill();
+                                experience.config.controls.enabled = true;
+                            }
+                        });
                     }
                     if (experience.world.robot.animation.isPlaying && experience.world.robot.animation.name !== 'run' && inputKeys.Space) {
                         experience.world.robot.animationCrossFade('run');
@@ -225,6 +265,9 @@ export default {
                     if (!anyKeyPressed && experience.world.robot.animation.isPlaying) {
                         experience.world.robot.animationCrossFade('idle');
                         experience.world.robot.animation.isPlaying = false;
+
+                        gsap.killTweensOf(experience.config.camera.position);
+                        experience.config.controls.enabled = true;
                     }
 
                     if (experience.world.robot.animation.isPlaying && experience.world.robot.animation.name === 'run' && !inputKeys.Space) {
@@ -275,6 +318,20 @@ export default {
                 const anyKeyPressed = Object.keys(inputKeys).filter(key => key !== 'Space').some(key => inputKeys[key] === true);
                 if (anyKeyPressed && !experience.world.robot.animation.isPlaying) {
                     experience.world.robot.animation.isPlaying = true;
+
+                    gsap.killTweensOf(experience.config.camera.position);
+                    experience.config.controls.enabled = false;
+                    const animation = gsap.to(experience.config.camera.position, {
+                        x: 0,
+                        y: 6,
+                        z: -21,
+                        duration: 0.9,
+                        ease: "power2.inOut",
+                        onComplete: () => {
+                            animation.kill();
+                            experience.config.controls.enabled = true;
+                        }
+                    });
                 }
                 if (experience.world.robot.animation.isPlaying && experience.world.robot.animation.name !== 'run' && inputKeys.Space) {
                     experience.world.robot.animationCrossFade('run');
@@ -296,6 +353,9 @@ export default {
 
                 experience.world.robot.animationCrossFade('idle');
                 experience.world.robot.animation.isPlaying = false;
+
+                gsap.killTweensOf(experience.config.camera.position);
+                experience.config.controls.enabled = true;
             });
         };
 
@@ -336,6 +396,14 @@ export default {
             animation_1.play();
         };
 
+        const openInfoModal = () => {
+            infoModalEl.value.showModal();
+            isInfoModalOpen.value = true;
+        };
+        const closeInfoModal = () => {
+            isInfoModalOpen.value = false;
+        };
+
 
 
         onMounted(() => {
@@ -370,8 +438,7 @@ export default {
                     if (value) {
                         experience.assets.sounds.background.play();
 
-                        if (settingStore.isInfoModalNeeded) infoModalEl.value.showModal();
-
+                        if (settingStore.isInfoModalNeeded) openInfoModal();
                     }
                 }
             );
@@ -392,13 +459,20 @@ export default {
             isFPVTransitionActive,
             fpvTransitionCircleEl,
             startFPVTransition,
-            infoModalEl
+            infoModalEl,
+            isInfoModalOpen,
+            openInfoModal,
+            closeInfoModal,
+            settingStore
         }
     }
 }
 </script>
 
 <style>
+#joypad .nipple {
+    z-index: 10 !important;
+}
 #joypad .back,
 #joypad .front {
     border-width: 1px;

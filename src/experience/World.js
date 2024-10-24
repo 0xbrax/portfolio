@@ -175,10 +175,10 @@ export default class World extends EventEmitter {
     /*updateInterestPointsOrientation() {
         //const cameraPosition = this.experienceInstance.config.camera.position.clone();
 
-        this.interestPoints.instanceGroup.children.forEach((object) => {
-            const cameraDirection = new THREE.Vector3().subVectors(cameraPosition, object.position).normalize();
+        this.interestPoints.instanceGroup.children.forEach((child) => {
+            const cameraDirection = new THREE.Vector3().subVectors(cameraPosition, child.position).normalize();
             const angleZ = Math.atan2(cameraDirection.x, cameraDirection.y);
-            object.rotation.z = angleZ + Math.PI;
+            child.rotation.z = angleZ + Math.PI;
         });
     }*/
 
@@ -195,7 +195,7 @@ export default class World extends EventEmitter {
 
 
 
-        if (this.planet.model) {
+        if (this.experienceInstance.isReady && this.planet.model) {
             const intersects = this.robot.raycaster.intersectObject(this.planet.model);
             if (intersects.length > 0) {
                 const intersect = intersects[0];

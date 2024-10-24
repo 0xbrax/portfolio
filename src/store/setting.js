@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { useLocalStorage } from "@vueuse/core";
+import { getPseudoRandomInt } from "@/assets/utils.js";
 
 export const useSettingStore = defineStore("settingStore", {
   state: () => ({
@@ -14,10 +15,14 @@ export const useSettingStore = defineStore("settingStore", {
     isAudioActive: useLocalStorage('setting-isAudioActive', true)
   }),
   actions: {
-    generateNewPlanet(randomSeed) {
+    generateNewPlanet(randomSeed = null) {
+      let seed = randomSeed;
+
+      if (seed == null) seed = getPseudoRandomInt(-1000, 1000);
+
       this.isNewPlanetReady = false;
-      this.worldSeed = randomSeed;
-      this.experienceRef.world.planet.generateNewPlanet(randomSeed);
+      this.worldSeed = seed;
+      this.experienceRef.generateNewPlanet(seed);
     }
   }
 });

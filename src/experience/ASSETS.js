@@ -50,17 +50,44 @@ export const RESOURCES = {
 export const INTEREST_POINTS = [
     {
         id: 0,
-        title: `Fruit Cocktail`,
-        url: 'https://fruitcocktail.0xbrax.dev'
+        url: 'https://nok.army',
+        title: `NoK.Army`,
+        description: `Marketplace, Ecommerce, Academy, 3D configurator, CRM, Back office, Events.`
     },
     {
         id: 1,
-        title: `NoK.Army`,
-        url: 'https://nok.army'
+        url: 'https://0xij-rev27wasb.vercel.app',
+        title: `3D configurator`,
+        description: null
     },
     {
         id: 2,
+        url: 'https://fruitcocktail.0xbrax.dev',
+        title: `Fruit Cocktail`,
+        description: `Slot machine.`
+    },
+    {
+        id: 3,
+        url: 'https://spinwatch.0xbrax.dev',
+        title: `Spin Watch`,
+        description: `Mini slot machine for smart watches.`
+    },
+    {
+        id: 4,
+        url: 'https://pikaride.0xbrax.dev',
         title: `Pika Ride`,
-        url: '/asdf-lol'
+        description: `I know it's a bit dumb, but it's here to remind me where I started from.`
+    },
+    {
+        id: 5,
+        url: 'https://trusto.foo',
+        title: `Trusto.foo`,
+        description: `Hybrid WEB2-WEB3 voting platform based on Solana blockchain.`
+    },
+    {
+        id: 6,
+        url: 'https://holographicdragon.0xbrax.dev',
+        title: `Holographic Dragon`,
+        description: null
     }
 ];

@@ -68,6 +68,16 @@
             </div>
 
             <img class="h-32" src="/images/dreampool_256.webp" alt="Dreampool">
+
+
+
+            <div v-if="$route.path === '/'" class="w-full md:w-1/2 bg-base-200 mt-8 p-2 italic">
+                <p class="font-bold">CREDITS</p>
+
+                <ul class="mt-2">
+                    <li>ciao mondo</li>
+                </ul>
+            </div>
         </div>
     </div>
 </template>

@@ -6,7 +6,7 @@
     </transition>
 
     <transition name="fade">
-        <Menu v-show="isMenuVisible" />
+        <Menu v-if="isMenuVisible" />
     </transition>
 
     <router-view v-slot="{ Component }">

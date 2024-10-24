@@ -17,6 +17,8 @@ export default class Experience extends EventEmitter {
         super();
         instance = this;
 
+        this.isReady = false;
+
         this.container = container;
         this.resources = resources;
         this.interestPoints = interestPoints;
@@ -112,12 +114,18 @@ export default class Experience extends EventEmitter {
                     this.world.interestPoints.instanceGroup.children.forEach((object, i) => {
                         this.world.interestPoints.setSphericalPosition(object, selectedPoints[i]);
                     });
+                    this.world.clouds.generateNewClouds();
 
                     this.emit('newPlanetReady');
+
+                    window.requestAnimationFrame(() => {
+                        this.isReady = true;
+                    });
                 });
 
                 this.emit('loaded');
                 this.tick(); // render takes few milliseconds because of pre-rendered elements, it's after emit to catch first intersectInterest
+                this.isReady = true;
 
                 console.timeEnd('t FINAL RENDER')
 
@@ -136,6 +144,7 @@ export default class Experience extends EventEmitter {
     }
 
     generateNewPlanet(seed) {
+        this.isReady = false;
         this.world.planet.generateNewPlanet(seed);
     }
 

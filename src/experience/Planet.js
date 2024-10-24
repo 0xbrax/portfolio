@@ -222,6 +222,7 @@ export default class Planet extends EventEmitter {
         this.instanceGroup.remove(this.model);
         this.model.material.dispose();
         this.model.geometry.dispose();
+        this.model = null;
     }
 
     generateNewPlanet(seed) {

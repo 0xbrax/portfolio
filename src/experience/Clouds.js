@@ -9,6 +9,9 @@ export default class Clouds {
         this.instanceGroup.position.y = -2;
         this.experienceInstance.config.scene.add(this.instanceGroup);
 
+        this.subInstanceGroup = new THREE.Group();
+        this.instanceGroup.add(this.subInstanceGroup);
+
         this.createOrbit();
         this.createClouds();
     }
@@ -27,7 +30,7 @@ export default class Clouds {
         this.clouds = {};
         const cloudsNumber = getPseudoRandomInt(3, 12);
 
-        for (let i = 0; i < cloudsNumber; i++) {
+        for (let i = 1; i <= cloudsNumber; i++) {
             let randomIndex = getPseudoRandomInt(0, this.orbit.geometry.attributes.position.count - 1);
             while (randomIndex in this.clouds) {
                 randomIndex = getPseudoRandomInt(0, this.orbit.geometry.attributes.position.count - 1);
@@ -46,7 +49,7 @@ export default class Clouds {
             this.clouds[randomIndex].scale.setScalar(0.2);
 
             this.setSphericalPosition(this.clouds[randomIndex], selectedPoint);
-            this.instanceGroup.add(this.clouds[randomIndex]);
+            this.subInstanceGroup.add(this.clouds[randomIndex]);
         }
     }
 
@@ -58,5 +61,31 @@ export default class Clouds {
         const up = new THREE.Vector3(0, -1, 0);
         const quaternion = new THREE.Quaternion().setFromUnitVectors(up, direction);
         object.quaternion.copy(quaternion);
+    }
+
+    destroyClouds() {
+        Object.keys(this.clouds).forEach((key) => {
+            this.clouds[key].children.forEach((child) => {
+                if (child instanceof THREE.Mesh) {
+                    child.geometry.dispose();
+
+                    for (const key in child.material) {
+                        const value = child.material[key];
+
+                        if (value && typeof value.dispose === 'function') {
+                            value.dispose();
+                        }
+                    }
+                }
+            });
+
+            this.subInstanceGroup.remove(this.clouds[key]);
+            this.clouds[key] = null;
+        });
+    }
+
+    generateNewClouds() {
+        this.destroyClouds();
+        this.createClouds();
     }
 }

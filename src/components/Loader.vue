@@ -13,8 +13,8 @@
 
             <div class="text-accent">
                 <span class="inline-block mr-2">Your world seed is</span>
-                <span class="inline-block px-2 bg-accent text-white">{{ settingStore.worldSeed !== null ? settingStore.worldSeed : '...' }}</span>
-                <span v-show="settingStore.worldSeed !== null"><br/>You can change it later</span>
+                <span class="inline-block px-2 bg-accent text-white">{{ settingStore.worldSeed != null ? settingStore.worldSeed : '...' }}</span>
+                <span v-show="settingStore.worldSeed != null"><br/>You can change it later</span>
             </div>
         </div>
     </div>
