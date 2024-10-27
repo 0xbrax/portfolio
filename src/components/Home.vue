@@ -55,13 +55,13 @@
             </div>
             <kbd :class="['kbd', { 'opacity-50': !inputKeys.Space }]">space</kbd>
 
-            <div v-show="isInfoModalOpen" class="absolute left-[4rem] top-[-8rem] text-primary rotate-[15deg]">
+            <div v-show="isInfoModalOpen" class="absolute left-[4rem] top-[-8rem] text-primary rotate-[15deg] pointer-events-none">
                 <LucideMoveDown class="h-32 w-32  animate-bounce" />
             </div>
         </div>
 
         <div v-show="$isMobile.value && !isFPVActive" id="joypad" class="absolute z-20 left-[1rem] bottom-[8rem] h-[100px] aspect-square rounded-full">
-            <div v-show="isInfoModalOpen" class="absolute z-20 left-[2rem] top-[4rem] text-primary rotate-[165deg]">
+            <div v-show="isInfoModalOpen" class="absolute z-20 left-[2rem] top-[4rem] text-primary rotate-[165deg] pointer-events-none">
                 <LucideMoveDown class="h-32 w-32  animate-bounce" />
             </div>
         </div>
@@ -70,7 +70,7 @@
             <swiper-container
                 v-show="!isFPVActive && swiperSlides.length"
                 effect="cards"
-                class="h-28 w-4/5 md:w-96 absolute z-10 left-[50%] bottom-0 translate-x-[-50%]"
+                class="h-28 md:h-32 w-4/5 md:w-96 absolute z-10 left-[50%] bottom-0 translate-x-[-50%]"
             >
                 <swiper-slide
                     v-for="slide in swiperSlides"
@@ -78,11 +78,15 @@
                     class="card glass flex justify-center items-center p-4"
                 >
                     <div class="flex flex-col items-center gap-2">
-                        <div class="flex items-center gap-2 text-xl font-bold">
+                        <a
+                            :href="slide.url"
+                            target="_blank"
+                            class="flex items-center gap-2 md:text-xl font-bold cursor-pointer"
+                        >
                             <span class="grow">{{ slide.title }}</span>
-                            <a :href="slide.url" target="_blank"><LucideSquareArrowUpRight class="h-7 w-7" /></a>
-                        </div>
-                        <div v-if="slide.description" class="text-center text-sm">
+                            <LucideSquareArrowUpRight class="h-6 md:h-7 w-6 md:w-7" />
+                        </a>
+                        <div v-if="slide.description" class="text-center text-xs md:text-sm">
                             {{ slide.description }}
                         </div>
                     </div>
@@ -94,8 +98,9 @@
             <div class="modal-box overflow-visible">
                 <h3 class="text-lg font-bold flex items-center gap-2"><LucideInfo />Info</h3>
                 <p class="py-4">
-                    Walk around the planet and reach interest points to show details to the bottom, tap <LucideSquareArrowUpRight class="inline" /> to open project in a new window.<br />
-                    If you are close to more than one interest point you can swipe the bottom cards.
+                    Walk around the planet and reach interest points.<br />
+                    Try different world seed numbers.<br/>
+                    Enjoy FPV plane mode.
                 </p>
                 <div class="modal-action mt-2 relative">
                     <form method="dialog" class="absolute top-[1.5rem] left-[50%] translate-y-[-50%] translate-x-[-50%]">
@@ -265,9 +270,6 @@ export default {
                     if (!anyKeyPressed && experience.world.robot.animation.isPlaying) {
                         experience.world.robot.animationCrossFade('idle');
                         experience.world.robot.animation.isPlaying = false;
-
-                        gsap.killTweensOf(experience.config.camera.position);
-                        experience.config.controls.enabled = true;
                     }
 
                     if (experience.world.robot.animation.isPlaying && experience.world.robot.animation.name === 'run' && !inputKeys.Space) {
@@ -353,9 +355,6 @@ export default {
 
                 experience.world.robot.animationCrossFade('idle');
                 experience.world.robot.animation.isPlaying = false;
-
-                gsap.killTweensOf(experience.config.camera.position);
-                experience.config.controls.enabled = true;
             });
         };
 
@@ -401,7 +400,16 @@ export default {
             isInfoModalOpen.value = true;
         };
         const closeInfoModal = () => {
-            isInfoModalOpen.value = false;
+            if (settingStore.isFirstTimeVisit) {
+                settingStore.isFirstTimeVisit = false;
+
+                const timeout = setTimeout(() => {
+                    if (!infoModalEl.value.open) isInfoModalOpen.value = false;
+                    clearTimeout(timeout);
+                }, 2_500);
+            } else {
+                isInfoModalOpen.value = false;
+            }
         };
 
 
@@ -438,7 +446,7 @@ export default {
                     if (value) {
                         experience.assets.sounds.background.play();
 
-                        if (settingStore.isInfoModalNeeded) openInfoModal();
+                        if (settingStore.isFirstTimeVisit) openInfoModal();
                     }
                 }
             );

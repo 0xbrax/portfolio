@@ -71,7 +71,7 @@ export default class InterestPoints {
         const quaternion = new THREE.Quaternion().setFromUnitVectors(up, direction);
         object.quaternion.copy(quaternion);
 
-        const angleZ = Math.random() * 2 * Math.PI;
+        const angleZ = Math.random() * Math.PI * 2;
         object.rotation.z = angleZ;
     }
 
@@ -81,7 +81,7 @@ export default class InterestPoints {
         canvas.height = height;
 
         const ctx = canvas.getContext('2d');
-        const fontSize = 36;
+        const fontSize = 32;
         ctx.font = `bold ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace`;
         ctx.fillStyle = '#ffffff';
         ctx.textAlign = 'center';

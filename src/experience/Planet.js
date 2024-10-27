@@ -97,7 +97,7 @@ export default class Planet extends EventEmitter {
                 // update CPU data with GPU texture data
                 const positionsArray = new Float32Array(gpgpu.size * gpgpu.size * 4);
                 const originalPositionsArray = new Float32Array(gpgpu.count * 3);
-                const wobblesArray = new Float32Array(gpgpu.count);
+                const elevationsArray = new Float32Array(gpgpu.count);
 
                 this.experienceInstance.config.renderer.readRenderTargetPixels(
                     gpgpu.computation.getCurrentRenderTarget(gpgpu.positionsVariable),
@@ -109,10 +109,10 @@ export default class Planet extends EventEmitter {
                     step: 2,
                     positionsBuffer: positionsArray.buffer,
                     originalPositionsBuffer: originalPositionsArray.buffer,
-                    wobblesBuffer: wobblesArray.buffer,
+                    elevationsBuffer: elevationsArray.buffer,
                     sphereRadius: this.sphereRadius,
                     interestPointsLength: this.interestPointsLength
-                }, [positionsArray.buffer, originalPositionsArray.buffer, wobblesArray.buffer]);
+                }, [positionsArray.buffer, originalPositionsArray.buffer, elevationsArray.buffer]);
 
                 return;
             }
@@ -120,15 +120,15 @@ export default class Planet extends EventEmitter {
 
 
             // step 2
-            const { originalPositionsBuffer, positionsGeometryBuffer, wobblesBuffer, selectedPoints } = event.data;
+            const { originalPositionsBuffer, positionsGeometryBuffer, elevationsBuffer, selectedPoints } = event.data;
             const originalPositionsArray = new Float32Array(originalPositionsBuffer);
             const positionsGeometryArray = new Float32Array(positionsGeometryBuffer);
-            const wobblesArray = new Float32Array(wobblesBuffer);
+            const elevationsArray = new Float32Array(elevationsBuffer);
 
             geometry.attributes.position.array = positionsGeometryArray;
             geometry.attributes.position.needsUpdate = true;
             geometry.setAttribute('aOriginalPosition', new THREE.BufferAttribute(originalPositionsArray, 3));
-            geometry.setAttribute('aWobble', new THREE.BufferAttribute(wobblesArray, 1));
+            geometry.setAttribute('aElevation', new THREE.BufferAttribute(elevationsArray, 1));
 
             ////////
             // DEBUG
@@ -189,11 +189,11 @@ export default class Planet extends EventEmitter {
     }
 
     createWater() {
-        const geometry = new THREE.IcosahedronGeometry(3 + 0.005, 30);
+        const geometry = new THREE.IcosahedronGeometry(3 + 0.0024, 30);
 
         const uniformsObject = {
             uTime: new THREE.Uniform(0),
-            uFrequency: new THREE.Uniform(2.25),
+            uStrength: new THREE.Uniform(0.02),
             uColorWaterSurface: new THREE.Uniform(new THREE.Color(this.debugObject.colorWaterSurface)),
             uColorWaterFoam: new THREE.Uniform(new THREE.Color(this.debugObject.colorWaterFoam))
         };

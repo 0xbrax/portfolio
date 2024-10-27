@@ -173,7 +173,7 @@ export default class World extends EventEmitter {
 
     // TODO Upgrade: orientation to camera
     /*updateInterestPointsOrientation() {
-        //const cameraPosition = this.experienceInstance.config.camera.position.clone();
+        const cameraPosition = this.experienceInstance.config.camera.position.clone();
 
         this.interestPoints.instanceGroup.children.forEach((child) => {
             const cameraDirection = new THREE.Vector3().subVectors(cameraPosition, child.position).normalize();

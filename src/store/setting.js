@@ -11,7 +11,6 @@ export const useSettingStore = defineStore("settingStore", {
     worldSeed: null,
     isNewPlanetReady: true,
     isFirstTimeVisit: useLocalStorage('setting-isFirstTimeVisit', true),
-    isInfoModalNeeded: false,
     isAudioActive: useLocalStorage('setting-isAudioActive', true)
   }),
   actions: {

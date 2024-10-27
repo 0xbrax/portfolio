@@ -34,7 +34,7 @@ self.onmessage = (event) => {
         positionsTextureBuffer,
         positionsBuffer,
         originalPositionsBuffer,
-        wobblesBuffer,
+        elevationsBuffer,
         sphereRadius,
         interestPointsLength
     } = event.data;
@@ -50,7 +50,7 @@ self.onmessage = (event) => {
             positionsTextureArray[i4] = positionsGeometryArray[i3];
             positionsTextureArray[i4 + 1] = positionsGeometryArray[i3 + 1];
             positionsTextureArray[i4 + 2] = positionsGeometryArray[i3 + 2];
-            positionsTextureArray[i4 + 3] = 0; // data channel will be used for wobble value
+            positionsTextureArray[i4 + 3] = 0; // data channel will be used for elevation value
         }
 
         
@@ -76,7 +76,7 @@ self.onmessage = (event) => {
     // step 2
     const positionsArray = new Float32Array(positionsBuffer);
     const originalPositionsArray = new Float32Array(originalPositionsBuffer);
-    const wobblesArray = new Float32Array(wobblesBuffer);
+    const elevationsArray = new Float32Array(elevationsBuffer);
 
     for (let i = 0; i < workerData.gpgpuCount; i++) {
         const i3 = i * 3; // xyz
@@ -94,7 +94,7 @@ self.onmessage = (event) => {
         workerData.positionsGeometryArray[i3] = x;
         workerData.positionsGeometryArray[i3 + 1] = y;
         workerData.positionsGeometryArray[i3 + 2] = z;
-        wobblesArray[i] = w;
+        elevationsArray[i] = w;
     }
 
     
@@ -165,13 +165,13 @@ self.onmessage = (event) => {
         {
             originalPositionsBuffer: originalPositionsArray.buffer,
             positionsGeometryBuffer: workerData.positionsGeometryArray.buffer,
-            wobblesBuffer: wobblesArray.buffer,
+            elevationsBuffer: elevationsArray.buffer,
             selectedPoints
         },
         [
             originalPositionsArray.buffer,
             workerData.positionsGeometryArray.buffer,
-            wobblesArray.buffer
+            elevationsArray.buffer
         ]
     );
 };

@@ -40,11 +40,6 @@ export default {
         const onStart = () => {
             isLoaderActive.value = false;
             settingStore.hasExperienceEntered = true;
-
-            if (settingStore.isFirstTimeVisit) {
-                settingStore.isFirstTimeVisit = false;
-                settingStore.isInfoModalNeeded = true;
-            }
         };
 
         return {

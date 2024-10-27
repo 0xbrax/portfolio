@@ -6,7 +6,7 @@ uniform float uStrength;
 
 #include ../includes/simplexNoise4D.glsl
 
-float getWobble(vec3 position) {
+float getElevation(vec3 position) {
     return simplexNoise4D(vec4(vec3(position * uPositionFrequency), uSeed)) * uStrength;
 }
 
@@ -17,8 +17,8 @@ void main() {
 
     vec3 position = texture2D(uPositionsTexture, uv).xyz;
 
-    float wobble = getWobble(position);
-    vec3 newPosition = position + wobble * normalize(position); // normalize(position) = normal
+    float elevation = getElevation(position);
+    vec3 newPosition = position + elevation * normalize(position); // normalize(position) = normal
 
-    gl_FragColor = vec4(newPosition, wobble);
+    gl_FragColor = vec4(newPosition, elevation);
 }

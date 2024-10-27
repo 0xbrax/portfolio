@@ -60,7 +60,7 @@ export default class Robot {
     }
 
     createCirclecaster() {
-        const geometry = new THREE.CircleGeometry(1.5, 12);
+        const geometry = new THREE.CircleGeometry(1.75, 12);
         const material = new THREE.MeshBasicMaterial({ color: '#ff0000', side: THREE.DoubleSide, wireframe: true });
 
         this.circlecaster = new THREE.Mesh(geometry, material);

@@ -52,7 +52,7 @@ export const INTEREST_POINTS = [
         id: 0,
         url: 'https://nok.army',
         title: `NoK.Army`,
-        description: `Marketplace, Ecommerce, Academy, 3D configurator, CRM, Back office, Events.`
+        description: `Marketplace, Ecommerce, Academy, 3D configurator, CRM, Back office.`
     },
     {
         id: 1,
@@ -84,10 +84,4 @@ export const INTEREST_POINTS = [
         title: `Trusto.foo`,
         description: `Hybrid WEB2-WEB3 voting platform based on Solana blockchain.`
     },
-    {
-        id: 6,
-        url: 'https://holographicdragon.0xbrax.dev',
-        title: `Holographic Dragon`,
-        description: null
-    }
 ];
