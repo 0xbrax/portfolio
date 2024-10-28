@@ -52,7 +52,7 @@ export const INTEREST_POINTS = [
         id: 0,
         url: 'https://nok.army',
         title: `NoK.Army`,
-        description: `Marketplace, Ecommerce, Academy, 3D configurator, CRM, Back office.`
+        description: `Marketplace, Ecommerce, Academy, 3D configurator, CRM, Back office, AI.`
     },
     {
         id: 1,
@@ -68,20 +68,17 @@ export const INTEREST_POINTS = [
     },
     {
         id: 3,
-        url: 'https://spinwatch.0xbrax.dev',
-        title: `Spin Watch`,
-        description: `Mini slot machine for smart watches.`
-    },
-    {
-        id: 4,
         url: 'https://pikaride.0xbrax.dev',
         title: `Pika Ride`,
         description: `I know it's a bit dumb, but it's here to remind me where I started from.`
     },
     {
-        id: 5,
+        id: 4,
         url: 'https://trusto.foo',
         title: `Trusto.foo`,
         description: `Hybrid WEB2-WEB3 voting platform based on Solana blockchain.`
     },
+
+    // SPIN WATCH
+    // HOLO DRAGON FIRE
 ];

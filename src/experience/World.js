@@ -145,7 +145,7 @@ export default class World extends EventEmitter {
 
     setUnsetFPV() {
         if (!this.isFPVActive) {
-            this.plane.subInstanceGroup.rotation.x = 0.75;
+            this.plane.subInstanceGroup.rotation.x = 0.55;
             this.robot.animationCrossFade('dance');
 
             this.experienceInstance.config.controls.enabled = false;
@@ -154,7 +154,7 @@ export default class World extends EventEmitter {
             this.plane.instanceGroup.add(this.experienceInstance.config.camera);
 
             this.cameraPositionBeforeFPV = this.experienceInstance.config.camera.position.clone();
-            this.experienceInstance.config.camera.position.set(0.3, 8.5, 0);
+            this.experienceInstance.config.camera.position.set(0, 9.75, 0);
             this.experienceInstance.config.camera.rotation.set(Math.PI * 1.5, 5.95, Math.PI * 1.5);
         } else {
             this.plane.subInstanceGroup.rotation.x = 0;
@@ -165,7 +165,7 @@ export default class World extends EventEmitter {
             this.plane.instanceGroup.remove(this.experienceInstance.config.camera);
             this.experienceInstance.config.scene.add(this.experienceInstance.config.camera);
             this.experienceInstance.config.camera.position.copy(this.cameraPositionBeforeFPV);
-            this.experienceInstance.config.controls.target.set(0, 0, 0);
+            this.experienceInstance.config.controls.target.set(0, 0.5, 0);
         }
 
         this.isFPVActive = !this.isFPVActive;

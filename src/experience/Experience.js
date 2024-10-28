@@ -62,7 +62,7 @@ export default class Experience extends EventEmitter {
             const { assetsLoaded, assetsTotal } = detail;
             const progress = assetsLoaded / assetsTotal;
 
-            console.log('PROGRESS - - -', progress)
+            console.log('PROGRESS 1 - - -', progress)
             this.settingStore.loaderProgress = progress;
 
             this.assetsLoader.assetsLoaded = assetsLoaded;

@@ -58,25 +58,125 @@
             </label>
 
             <div class="flex flex-col md:flex-row">
-                <a href="https://github.com/0xbrax" target="_blank"><div class="badge badge-neutral">GitHub</div></a>
+                <a href="https://github.com/0xbrax" target="_blank" rel="noopener noreferrer"><div class="badge badge-neutral">GitHub</div></a>
                 <div class="divider m-0 md:divider-horizontal"></div>
-                <a href="https://www.linkedin.com/in/marco-braccini" target="_blank"><div class="badge badge-neutral">LinkedIn</div></a>
+                <a href="https://www.linkedin.com/in/marco-braccini" target="_blank" rel="noopener noreferrer"><div class="badge badge-neutral">LinkedIn</div></a>
                 <div class="divider m-0 md:divider-horizontal"></div>
-                <a href="https://x.com/0xbrax" target="_blank"><div class="badge badge-neutral">X</div></a>
+                <a href="https://x.com/0xbrax" target="_blank" rel="noopener noreferrer"><div class="badge badge-neutral">X</div></a>
                 <div class="divider m-0 md:divider-horizontal"></div>
-                <a href="https://www.instagram.com/0xbrax" target="_blank"><div class="badge badge-neutral">Instagram</div></a>
+                <a href="https://www.instagram.com/0xbrax" target="_blank" rel="noopener noreferrer"><div class="badge badge-neutral">Instagram</div></a>
             </div>
 
             <img class="h-32" src="/images/dreampool_256.webp" alt="Dreampool">
 
 
 
-            <div v-if="$route.path === '/'" class="w-full md:w-1/2 bg-base-200 mt-8 p-2 italic">
-                <p class="font-bold">CREDITS</p>
+            <div v-if="$route.path === '/'" class="w-full md:w-1/2 bg-base-200 mt-8 p-2">
+                <p class="bg-secondary font-bold text-lg">PROJECTS</p>
 
                 <ul class="mt-2">
-                    <li>ciao mondo</li>
+                    <li
+                        v-for="(project, index) in INTEREST_POINTS"
+                        :key="index"
+                    >
+                        <a class="text-primary font-bold" :href="project.url" target="_blank" rel="noopener noreferrer">
+                            <LucideSquareArrowUpRight class="inline" /> {{ project.title }}
+                        </a>
+                        {{ !project.description ? '' : `| ${project.description}` }}
+                    </li>
                 </ul>
+            </div>
+
+            <div v-if="$route.path === '/'" class="w-full md:w-1/2 bg-base-200 mt-8 p-2 italic">
+                <p class="bg-secondary font-bold">CREDITS</p>
+
+                <ul class="mt-2 text-sm">
+                    <li>
+                        Plane | 3D model by
+                        <a class="text-primary" href="https://sketchfab.com/oscar.lopez.riviello" target="_blank" rel="noopener noreferrer">
+                            Chistodrako._.
+                        </a> available on
+                        <a class="text-primary" href="https://sketchfab.com/3d-models/plane-3f90a4ebbc3c4b0397de76dcb09c96a0" target="_blank" rel="noopener noreferrer">
+                            Sketchfab
+                        </a> under the
+                        <a class="text-primary" href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">
+                            CC BY 4.0
+                        </a> license.
+                    </li>
+
+                    <li>
+                        Rubber Duck | 3D model by
+                        <a class="text-primary" href="https://sketchfab.com/EEVVEENN" target="_blank" rel="noopener noreferrer">
+                            Darien
+                        </a> available on
+                        <a class="text-primary" href="https://sketchfab.com/3d-models/rubber-duck-ccd424db8bae480bbdc1a4a2f812c0e8" target="_blank" rel="noopener noreferrer">
+                            Sketchfab
+                        </a> under the
+                        <a class="text-primary" href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">
+                            CC BY 4.0
+                        </a> license.
+                    </li>
+
+                    <li>
+                        Cloud 1 | 3D model by
+                        <a class="text-primary" href="https://sketchfab.com/kyan0s" target="_blank" rel="noopener noreferrer">
+                            Kyan0s
+                        </a> available on
+                        <a class="text-primary" href="https://sketchfab.com/3d-models/cloud-01-blacksmiths-workshop-assets-efdaa8f34aa74a9c81ef2f5032d04268" target="_blank" rel="noopener noreferrer">
+                            Sketchfab
+                        </a> under the
+                        <a class="text-primary" href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">
+                            CC BY 4.0
+                        </a> license.
+                    </li>
+                    <li>
+                        Cloud 2 | 3D model by
+                        <a class="text-primary" href="https://sketchfab.com/kyan0s" target="_blank" rel="noopener noreferrer">
+                            Kyan0s
+                        </a> available on
+                        <a class="text-primary" href="https://sketchfab.com/3d-models/cloud-02-blacksmiths-workshop-assets-f6c7dfa350b349bc90e84bb6e674fdf2" target="_blank" rel="noopener noreferrer">
+                            Sketchfab
+                        </a> under the
+                        <a class="text-primary" href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">
+                            CC BY 4.0
+                        </a> license.
+                    </li>
+                    <li>
+                        Cloud 3 | 3D model by
+                        <a class="text-primary" href="https://sketchfab.com/kyan0s" target="_blank" rel="noopener noreferrer">
+                            Kyan0s
+                        </a> available on
+                        <a class="text-primary" href="https://sketchfab.com/3d-models/cloud-02-blacksmiths-workshop-assets-f6c7dfa350b349bc90e84bb6e674fdf2" target="_blank" rel="noopener noreferrer">
+                            Sketchfab
+                        </a> under the
+                        <a class="text-primary" href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">
+                            CC BY 4.0
+                        </a> license.
+                    </li>
+
+                    <li>
+                        Robot | 3D model purchased with full commercial rights, available on
+                        <a class="text-primary" href="https://sketchfab.com/3d-models/cutebot-absocute-d36bc5c6c6ba475097e98b876fce5209" target="_blank" rel="noopener noreferrer">
+                            Sketchfab
+                        </a>
+                        .
+                    </li>
+
+                    <li>
+                        Background Music | Audio purchased with full commercial rights, available on
+                        <a class="text-primary" href="https://audiojungle.net/item/background-luxury-house/51028570" target="_blank" rel="noopener noreferrer">
+                            AudioJungle
+                        </a>.
+                    </li>
+                    <li>
+                        Plane SFX | Audio purchased with full commercial rights, available on
+                        <a class="text-primary" href="/asdf" target="_blank" rel="noopener noreferrer">
+                            ...
+                        </a>
+                        .
+                    </li>
+                </ul>
+
             </div>
         </div>
     </div>
@@ -87,6 +187,7 @@ import { ref, watch } from "vue";
 import { useSettingStore } from "@/store/setting.js";
 import { getPseudoRandomInt } from "@/assets/utils.js";
 import { Howler } from "howler";
+import { INTEREST_POINTS } from "@/experience/ASSETS.js";
 
 export default {
     name: "Menu",
@@ -139,7 +240,8 @@ export default {
             settingStore,
             currentWorldSeed,
             checkWorldSeed,
-            getRandomWorldSeed
+            getRandomWorldSeed,
+            INTEREST_POINTS
         }
     }
 }

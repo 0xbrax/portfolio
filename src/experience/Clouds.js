@@ -6,8 +6,9 @@ export default class Clouds {
     constructor() {
         this.experienceInstance = new Experience();
         this.instanceGroup = new THREE.Group();
-        this.instanceGroup.position.y = -2;
-        this.experienceInstance.config.scene.add(this.instanceGroup);
+        //this.instanceGroup.position.y = -2;
+        //this.experienceInstance.config.scene.add(this.instanceGroup);
+        this.experienceInstance.world.planet.instanceGroup.add(this.instanceGroup);
 
         this.subInstanceGroup = new THREE.Group();
         this.instanceGroup.add(this.subInstanceGroup);

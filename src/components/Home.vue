@@ -82,6 +82,7 @@
                             :href="slide.url"
                             target="_blank"
                             class="flex items-center gap-2 md:text-xl font-bold cursor-pointer"
+                            rel="noopener noreferrer"
                         >
                             <span class="grow">{{ slide.title }}</span>
                             <LucideSquareArrowUpRight class="h-6 md:h-7 w-6 md:w-7" />
