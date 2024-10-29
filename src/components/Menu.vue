@@ -91,90 +91,17 @@
                 <p class="bg-secondary font-bold">CREDITS</p>
 
                 <ul class="mt-2 text-sm">
-                    <li>
-                        Plane | 3D model by
-                        <a class="text-primary" href="https://sketchfab.com/oscar.lopez.riviello" target="_blank" rel="noopener noreferrer">
-                            Chistodrako._.
-                        </a> available on
-                        <a class="text-primary" href="https://sketchfab.com/3d-models/plane-3f90a4ebbc3c4b0397de76dcb09c96a0" target="_blank" rel="noopener noreferrer">
-                            Sketchfab
-                        </a> under the
-                        <a class="text-primary" href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">
-                            CC BY 4.0
-                        </a> license.
-                    </li>
+                    <li>Plane | 3D model by <a class="text-primary" href="https://sketchfab.com/oscar.lopez.riviello" target="_blank" rel="noopener noreferrer">Chistodrako._.</a> available on <a class="text-primary" href="https://sketchfab.com/3d-models/plane-3f90a4ebbc3c4b0397de76dcb09c96a0" target="_blank" rel="noopener noreferrer">Sketchfab</a> under the <a class="text-primary" href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a> license.</li>
+                    <li>Rubber Duck | 3D model by <a class="text-primary" href="https://sketchfab.com/EEVVEENN" target="_blank" rel="noopener noreferrer">Darien</a> available on <a class="text-primary" href="https://sketchfab.com/3d-models/rubber-duck-ccd424db8bae480bbdc1a4a2f812c0e8" target="_blank" rel="noopener noreferrer">Sketchfab</a> under the <a class="text-primary" href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a> license.</li>
 
-                    <li>
-                        Rubber Duck | 3D model by
-                        <a class="text-primary" href="https://sketchfab.com/EEVVEENN" target="_blank" rel="noopener noreferrer">
-                            Darien
-                        </a> available on
-                        <a class="text-primary" href="https://sketchfab.com/3d-models/rubber-duck-ccd424db8bae480bbdc1a4a2f812c0e8" target="_blank" rel="noopener noreferrer">
-                            Sketchfab
-                        </a> under the
-                        <a class="text-primary" href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">
-                            CC BY 4.0
-                        </a> license.
-                    </li>
+                    <li>Cloud 1 | 3D model by <a class="text-primary" href="https://sketchfab.com/kyan0s" target="_blank" rel="noopener noreferrer">Kyan0s</a> available on <a class="text-primary" href="https://sketchfab.com/3d-models/cloud-01-blacksmiths-workshop-assets-efdaa8f34aa74a9c81ef2f5032d04268" target="_blank" rel="noopener noreferrer">Sketchfab</a> under the <a class="text-primary" href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a> license.</li>
+                    <li>Cloud 2 | 3D model by <a class="text-primary" href="https://sketchfab.com/kyan0s" target="_blank" rel="noopener noreferrer">Kyan0s</a> available on <a class="text-primary" href="https://sketchfab.com/3d-models/cloud-02-blacksmiths-workshop-assets-f6c7dfa350b349bc90e84bb6e674fdf2" target="_blank" rel="noopener noreferrer">Sketchfab</a> under the <a class="text-primary" href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a> license.</li>
+                    <li>Cloud 3 | 3D model by <a class="text-primary" href="https://sketchfab.com/kyan0s" target="_blank" rel="noopener noreferrer">Kyan0s</a> available on <a class="text-primary" href="https://sketchfab.com/3d-models/cloud-02-blacksmiths-workshop-assets-f6c7dfa350b349bc90e84bb6e674fdf2" target="_blank" rel="noopener noreferrer">Sketchfab</a> under the <a class="text-primary" href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a> license.</li>
 
-                    <li>
-                        Cloud 1 | 3D model by
-                        <a class="text-primary" href="https://sketchfab.com/kyan0s" target="_blank" rel="noopener noreferrer">
-                            Kyan0s
-                        </a> available on
-                        <a class="text-primary" href="https://sketchfab.com/3d-models/cloud-01-blacksmiths-workshop-assets-efdaa8f34aa74a9c81ef2f5032d04268" target="_blank" rel="noopener noreferrer">
-                            Sketchfab
-                        </a> under the
-                        <a class="text-primary" href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">
-                            CC BY 4.0
-                        </a> license.
-                    </li>
-                    <li>
-                        Cloud 2 | 3D model by
-                        <a class="text-primary" href="https://sketchfab.com/kyan0s" target="_blank" rel="noopener noreferrer">
-                            Kyan0s
-                        </a> available on
-                        <a class="text-primary" href="https://sketchfab.com/3d-models/cloud-02-blacksmiths-workshop-assets-f6c7dfa350b349bc90e84bb6e674fdf2" target="_blank" rel="noopener noreferrer">
-                            Sketchfab
-                        </a> under the
-                        <a class="text-primary" href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">
-                            CC BY 4.0
-                        </a> license.
-                    </li>
-                    <li>
-                        Cloud 3 | 3D model by
-                        <a class="text-primary" href="https://sketchfab.com/kyan0s" target="_blank" rel="noopener noreferrer">
-                            Kyan0s
-                        </a> available on
-                        <a class="text-primary" href="https://sketchfab.com/3d-models/cloud-02-blacksmiths-workshop-assets-f6c7dfa350b349bc90e84bb6e674fdf2" target="_blank" rel="noopener noreferrer">
-                            Sketchfab
-                        </a> under the
-                        <a class="text-primary" href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">
-                            CC BY 4.0
-                        </a> license.
-                    </li>
+                    <li>Robot | 3D model purchased with full commercial rights, available on <a class="text-primary" href="https://sketchfab.com/3d-models/cutebot-absocute-d36bc5c6c6ba475097e98b876fce5209" target="_blank" rel="noopener noreferrer">Sketchfab</a>.</li>
 
-                    <li>
-                        Robot | 3D model purchased with full commercial rights, available on
-                        <a class="text-primary" href="https://sketchfab.com/3d-models/cutebot-absocute-d36bc5c6c6ba475097e98b876fce5209" target="_blank" rel="noopener noreferrer">
-                            Sketchfab
-                        </a>
-                        .
-                    </li>
-
-                    <li>
-                        Background Music | Audio purchased with full commercial rights, available on
-                        <a class="text-primary" href="https://audiojungle.net/item/background-luxury-house/51028570" target="_blank" rel="noopener noreferrer">
-                            AudioJungle
-                        </a>.
-                    </li>
-                    <li>
-                        Plane SFX | Audio purchased with full commercial rights, available on
-                        <a class="text-primary" href="/asdf" target="_blank" rel="noopener noreferrer">
-                            ...
-                        </a>
-                        .
-                    </li>
+                    <li>Background Music | Audio purchased with full commercial rights, available on <a class="text-primary" href="https://audiojungle.net/item/background-luxury-house/51028570" target="_blank" rel="noopener noreferrer">AudioJungle</a>.</li>
+                    <li>Plane SFX | Audio purchased with full commercial rights, available on <a class="text-primary" href="https://audiojungle.net/item/airplane-idle-53031/25932918" target="_blank" rel="noopener noreferrer">AudioJungle</a>.</li>
                 </ul>
 
             </div>

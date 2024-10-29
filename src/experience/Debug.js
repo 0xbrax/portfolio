@@ -18,6 +18,11 @@ export const DEBUG = () => {
 
 
     experienceInstance.config.controls.enablePan = true;
+    const axesHelper = new THREE.AxesHelper(10);
+    axesHelper.position.x = 0.1;
+    experienceInstance.config.scene.add(axesHelper);
+
+
 
     const raycasterHelper = new THREE.ArrowHelper(experienceInstance.world.robot.raycaster.ray.direction, experienceInstance.world.robot.raycaster.ray.origin, experienceInstance.world.robot.raycaster.far, '#ff0000');
     experienceInstance.config.scene.add(raycasterHelper);

@@ -25,6 +25,7 @@ export default class World extends EventEmitter {
         };
         this.planetRotationSpeed = 0.6;
 
+        // TODO Upgrade: plane controls
         this.planeThetaSpeed = 0.03;
         this.planePhiSpeed = 0.4;
         this.cloudsThetaSpeed = 0.01;

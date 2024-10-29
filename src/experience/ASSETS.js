@@ -8,7 +8,7 @@ export const RESOURCES = {
         {
             name: 'plane',
             type: 'gltf',
-            path: '/models/plane_edit_compressed.glb'
+            path: '/models/plane_edit_compressed-1k.glb'
         },
         {
             name: 'duck',

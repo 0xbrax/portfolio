@@ -58,6 +58,7 @@ export default class InterestPoints {
             plateGroup.add(plateBody, plateText);
             pointGroup.cProps = { ...el };
             pointGroup.add(pole, plateGroup);
+            pointGroup.rotation
             this.instanceGroup.add(pointGroup);
         });
     }
@@ -65,6 +66,7 @@ export default class InterestPoints {
     setSphericalPosition(object, selectedPoint) {
         const position = new THREE.Vector3(...Object.values(selectedPoint));
         object.position.copy(position);
+        object.position.y = 4
 
         const direction = new THREE.Vector3().subVectors(new THREE.Vector3(0, 0, 0), position).normalize();
         const up = new THREE.Vector3(0, 0, 1);
