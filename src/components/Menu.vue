@@ -9,20 +9,21 @@
                 </div>
 
                 <label class="input input-bordered w-64 flex items-center gap-2">
+                    <span>Seed number</span>
                     <input
                         v-model="currentWorldSeed"
                         @input="checkWorldSeed($event.target.value)"
                         type="number"
                         min="-1000"
                         max="1000"
-                        class="grow"
+                        class="grow text-center"
                         placeholder="World seed"
                     />
-                    <LucideDices @click="getRandomWorldSeed()" />
+                    <LucideDices @pointerdown.prevent="getRandomWorldSeed()" />
                 </label>
 
                 <button
-                    @click="settingStore.generateNewPlanet(currentWorldSeed)"
+                    @pointerdown="settingStore.generateNewPlanet(currentWorldSeed)"
                     :disabled="!settingStore.isNewPlanetReady"
                     class="btn btn-primary"
                 >
@@ -71,7 +72,7 @@
 
 
 
-            <div v-if="$route.path === '/'" class="w-full md:w-1/2 bg-base-200 mt-8 p-2">
+            <div v-if="$route.path === '/'" class="w-full md:w-1/2 bg-base-200 mt-4 p-2">
                 <p class="bg-secondary font-bold text-lg">PROJECTS</p>
 
                 <ul class="mt-2">

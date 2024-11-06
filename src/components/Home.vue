@@ -17,7 +17,7 @@
             <button
                 :class="['btn btn-outline btn-primary btn-circle', { 'btn-active': isFPVActive }]"
                 :disabled="isFPVTransitionActive"
-                @click="startFPVTransition()"
+                @pointerdown="startFPVTransition()"
             >
                 <LucidePlane />
             </button>
@@ -26,7 +26,7 @@
                 <button
                     class="btn btn-outline btn-primary btn-circle"
                     :disabled="!settingStore.isNewPlanetReady"
-                    @click="settingStore.generateNewPlanet()"
+                    @pointerdown="settingStore.generateNewPlanet()"
                 >
                     <LucideDices />
                 </button>
@@ -36,7 +36,7 @@
 
             <button
                 class="btn btn-outline btn-accent btn-circle"
-                @click="openInfoModal()"
+                @pointerdown="openInfoModal()"
             >
                 <LucideInfo />
             </button>
@@ -60,7 +60,7 @@
             </div>
         </div>
 
-        <div v-show="$isMobile.value && !isFPVActive" id="joypad" class="absolute z-20 left-[1rem] bottom-[8rem] h-[100px] aspect-square rounded-full">
+        <div v-show="$isMobile.value && !isFPVActive" id="joystick" class="absolute z-20 left-[2rem] bottom-[8rem] h-[100px] aspect-square rounded-full">
             <div v-show="isInfoModalOpen" class="absolute z-20 left-[2rem] top-[4rem] text-primary rotate-[165deg] pointer-events-none">
                 <LucideMoveDown class="h-32 w-32  animate-bounce" />
             </div>
@@ -146,14 +146,15 @@ export default {
             Space: false
         });
 
-        let joypad = null;
-        const joypadOptions = {
+        let joystick = null;
+        const joystickOptions = {
             zone: null,
             position: { left: '50%', top: '50%' },
             mode: 'static',
             color: '#fff248',
             restOpacity: 0.75,
-            size: 100
+            size: 100,
+            fadeTime: 300,
         };
 
         const angleSection = Math.PI / 8;
@@ -186,8 +187,8 @@ export default {
                 }
             }
         };
-        const getPower = (distance, joypadSize) => {
-            const maxDistance = joypadSize / 2;
+        const getPower = (distance, joystickSize) => {
+            const maxDistance = joystickSize / 2;
             if (distance < (maxDistance / 3) * 2) {
                 return 'low';
             } else {
@@ -281,11 +282,11 @@ export default {
             });
         };
 
-        const setJoypadControl = () => {
-            joypadOptions.zone = document.getElementById('joypad');
-            joypad = nipplejs.create(joypadOptions);
+        const setJoystickControl = () => {
+            joystickOptions.zone = document.getElementById('joystick');
+            joystick = nipplejs.create(joystickOptions);
 
-            joypad.on('move', (_, nipple) => {
+            joystick.on('move', (_, data) => {
                 if (!$isMobile.value) return;
 
                 Object.keys(inputKeys).forEach((key) => {
@@ -295,8 +296,8 @@ export default {
 
                 if (experience.world.isFPVActive) return;
 
-                const direction = getDirection(nipple.angle.radian, angleSection, directions);
-                const power = getPower(nipple.distance, joypadOptions.size)
+                const direction = getDirection(data.angle.radian, angleSection, directions);
+                const power = getPower(data.distance, joystickOptions.size)
 
                 if (direction.length === 1) {
                     const directionKey = direction[0];
@@ -344,7 +345,7 @@ export default {
                     experience.world.planetRotationSpeed = 0.6;
                 }
             });
-            joypad.on('end', () => {
+            joystick.on('end', () => {
                 if (!$isMobile.value) return;
 
                 Object.keys(inputKeys).forEach((key) => {
@@ -423,7 +424,7 @@ export default {
 
             experience.on('loaded', () => {
                 setKeysControl();
-                setJoypadControl();
+                setJoystickControl();
 
                 settingStore.isExperienceReady = true;
 
@@ -457,7 +458,7 @@ export default {
 
         onUnmounted(() => {
             if (experience) experience.destroy();
-            if (joypad) joypad.destroy();
+            if (joystick) joystick.destroy();
         });
 
         return {
@@ -479,19 +480,19 @@ export default {
 </script>
 
 <style>
-#joypad .nipple {
+#joystick .nipple {
     z-index: 10 !important;
 }
-#joypad .back,
-#joypad .front {
+#joystick .back,
+#joystick .front {
     border-width: 1px;
     border-color: var(--fallback-bc, oklch(var(--bc) / var(--tw-border-opacity)));
     --tw-border-opacity: 0.2;
 }
-#joypad .back {
+#joystick .back {
     opacity: 0.5 !important;
 }
-#joypad .front {
+#joystick .front {
     opacity: 1 !important;
 }
 
