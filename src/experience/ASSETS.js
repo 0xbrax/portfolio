@@ -74,7 +74,7 @@ export const INTEREST_POINTS = [
     },
     {
         id: 4,
-        url: 'https:trusto-foo.vercel.app', //'https://trusto.foo',
+        url: 'https://trusto-foo.vercel.app', //'https://trusto.foo',
         title: `Trusto.foo`,
         description: `Hybrid WEB2-WEB3 voting platform based on Solana blockchain.`
     },
