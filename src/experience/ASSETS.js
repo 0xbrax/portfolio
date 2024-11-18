@@ -52,7 +52,7 @@ export const INTEREST_POINTS = [
         id: 0,
         url: 'https://nok.army',
         title: `NoK.Army`,
-        description: `Marketplace, Ecommerce, Academy, 3D configurator, CRM, Back office, AI.`
+        description: `Marketplace, Ecommerce, Academy, 3D configurator, CRM, Back office.`
     },
     {
         id: 1,
@@ -74,9 +74,15 @@ export const INTEREST_POINTS = [
     },
     {
         id: 4,
-        url: 'https://trusto-foo.vercel.app', //'https://trusto.foo',
-        title: `Trusto.foo`,
-        description: `Hybrid WEB2-WEB3 voting platform based on Solana blockchain.`
+        url: 'https://trusto-foo.vercel.app',
+        title: `Trusto`,
+        description: `Hybrid Web2-Web3 voting platform based on Solana blockchain.`
+    },
+    {
+        id: 5,
+        url: 'https://asko-foo.vercel.app',
+        title: `Asko`,
+        description: `OpenAI custom assistant about 'Basecamp - Getting Real'.`
     },
 
     // SPIN WATCH

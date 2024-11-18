@@ -13,7 +13,7 @@
             </svg>
         </div>
 
-        <div id="buttons" class="absolute right-[1rem] top-[50%] translate-y-[-50%] flex flex-col items-end gap-4">
+        <div id="buttons" class="absolute right-[1rem] top-1/2 -translate-y-1/2 flex flex-col items-end gap-4">
             <button
                 :class="['btn btn-outline btn-primary btn-circle', { 'btn-active': isFPVActive }]"
                 :disabled="isFPVTransitionActive"
@@ -70,12 +70,12 @@
             <swiper-container
                 v-show="!isFPVActive && swiperSlides.length"
                 effect="cards"
-                class="h-28 md:h-32 w-4/5 md:w-96 absolute z-10 left-[50%] bottom-0 translate-x-[-50%]"
+                class="h-28 md:h-32 w-4/5 md:w-96 absolute z-10 left-1/2 bottom-0 -translate-x-1/2"
             >
                 <swiper-slide
                     v-for="slide in swiperSlides"
                     :key="slide.id"
-                    class="card glass flex justify-center items-center p-4"
+                    class="card glass bg-base-100 flex justify-center items-center p-4"
                 >
                     <div class="flex flex-col items-center gap-2">
                         <a
@@ -104,7 +104,7 @@
                     Enjoy FPV plane mode.
                 </p>
                 <div class="modal-action mt-2 relative">
-                    <form method="dialog" class="absolute top-[1.5rem] left-[50%] translate-y-[-50%] translate-x-[-50%]">
+                    <form method="dialog" class="absolute top-[1.5rem] left-1/2 -translate-y-1/2 -translate-x-1/2">
                         <button class="btn btn-lg btn-active">Got it !</button>
                     </form>
                 </div>

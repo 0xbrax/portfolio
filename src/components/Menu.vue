@@ -72,7 +72,7 @@
 
 
 
-            <div v-if="$route.path === '/'" class="w-full md:w-1/2 bg-base-200 mt-4 p-2">
+            <div v-if="$route.path === '/'" class="w-full md:w-1/2 bg-base-100 mt-4 p-2">
                 <p class="bg-secondary font-bold text-lg">PROJECTS</p>
 
                 <ul class="mt-2">
@@ -88,7 +88,7 @@
                 </ul>
             </div>
 
-            <div v-if="$route.path === '/'" class="w-full md:w-1/2 bg-base-200 mt-8 p-2 italic">
+            <div v-if="$route.path === '/'" class="w-full md:w-1/2 bg-base-100 mt-8 p-2 italic">
                 <p class="bg-secondary font-bold">CREDITS</p>
 
                 <ul class="mt-2 text-sm">
