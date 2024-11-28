@@ -56,7 +56,7 @@ export const INTEREST_POINTS = [
     },
     {
         id: 1,
-        url: 'https://0xij-rev27wasb.vercel.app',
+        url: 'https://nokkable-test-v2-oifw.vercel.app',
         title: `3D configurator`,
         description: null
     },
