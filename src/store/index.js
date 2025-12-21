@@ -1,7 +1,7 @@
-import { createPinia } from "pinia";
+import {createPinia} from 'pinia';
 
 export const store = () => {
-    const pinia = createPinia();
+  const pinia = createPinia();
 
-    return pinia;
+  return pinia;
 };

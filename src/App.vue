@@ -1,34 +1,34 @@
 <template>
-    <Navbar />
+    <Navbar/>
 
     <transition name="fade-out">
-        <Loader v-if="isLoaderActive && $route.path === '/'" @onStart="onStart()" />
+        <Loader v-if="isLoaderActive && $route.path === '/'" @onStart="onStart()"/>
     </transition>
 
     <transition name="fade">
-        <Menu v-if="isMenuVisible" />
+        <Menu v-if="isMenuVisible"/>
     </transition>
 
     <router-view v-slot="{ Component }">
         <transition name="fade">
-            <component :is="Component" />
+            <component :is="Component"/>
         </transition>
     </router-view>
 </template>
 
 <script>
-import Navbar from "@/components/Navbar.vue";
-import Menu from "@/components/Menu.vue";
-import Loader from "@/components/Loader.vue";
-import { ref, provide } from "vue";
-import { useSettingStore } from "@/store/setting.js";
+import Navbar from '@/components/Navbar.vue';
+import Menu from '@/components/Menu.vue';
+import Loader from '@/components/Loader.vue';
+import {ref, provide} from 'vue';
+import {useSettingStore} from '@/store/setting.js';
 
 export default {
-    name: "App",
+    name: 'App',
     components: {
         Navbar,
         Menu,
-        Loader
+        Loader,
     },
     setup() {
         const settingStore = useSettingStore();
@@ -45,8 +45,8 @@ export default {
         return {
             isLoaderActive,
             isMenuVisible,
-            onStart
-        }
-    }
-}
+            onStart,
+        };
+    },
+};
 </script>

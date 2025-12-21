@@ -1,40 +1,46 @@
 <template>
     <div id="loader" class="w-full h-full fixed left-0 top-0 z-[1000] flex justify-center items-center">
         <div class="flex flex-col items-center gap-6 text-center">
-            <h1>Hello BRAX's world</h1>
+            <h1 class="font-bold">Hello BRAX's world</h1>
 
-            <div v-if="!settingStore.isExperienceReady" class="text-primary font-bold text-6xl">{{ Math.round(settingStore.loaderProgress * 100).toString() }}<span class="text-2xl">%</span></div>
-            <button v-if="settingStore.isExperienceReady" @pointerdown="$emit('onStart')" class="btn btn-primary btn-lg">Start</button>
+            <div v-if="!settingStore.isExperienceReady" class="text-primary font-bold text-6xl">
+                {{ Math.round(settingStore.loaderProgress * 100).toString() }}<span class="text-2xl">%</span></div>
+            <button v-if="settingStore.isExperienceReady" @pointerdown="$emit('onStart')"
+                    class="btn btn-primary btn-lg">Start
+            </button>
 
-            <progress class="progress progress-secondary w-56" :value="Math.round(settingStore.loaderProgress * 100).toString()" max="100"></progress>
+            <progress class="progress progress-secondary w-56"
+                      :value="Math.round(settingStore.loaderProgress * 100).toString()" max="100"></progress>
 
             <div class="text-accent">
-                <span class="inline-block mr-2">Your world seed is</span>
-                <span class="inline-block px-2 bg-accent text-white">{{ settingStore.worldSeed != null ? settingStore.worldSeed : '...' }}</span>
-                <span v-show="settingStore.worldSeed != null"><br/>You can change it later</span>
+                <span class="inline-block mr-2">World generation number</span>
+                <span class="inline-block px-2 bg-accent text-white">{{
+                        settingStore.worldSeed != null ? settingStore.worldSeed : '...'
+                    }}</span>
+                <span v-show="settingStore.worldSeed != null" class="text-sm"><br/>You can edit it later</span>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-import { useSettingStore } from "@/store/setting.js";
+import {useSettingStore} from '@/store/setting.js';
 
 export default {
-    name: "Loader",
+    name: 'Loader',
     setup() {
         const settingStore = useSettingStore();
 
         return {
-            settingStore
-        }
-    }
-}
+            settingStore,
+        };
+    },
+};
 </script>
 
 <style>
 #loader {
-    background-image: repeating-linear-gradient(45deg,var(--fallback-b1,oklch(var(--b1))),var(--fallback-b1,oklch(var(--b1))) 13px,var(--fallback-b2,oklch(var(--b2))) 13px,var(--fallback-b2,oklch(var(--b2))) 14px);
+    background-image: repeating-linear-gradient(45deg, var(--fallback-b1, oklch(var(--b1))), var(--fallback-b1, oklch(var(--b1))) 13px, var(--fallback-b2, oklch(var(--b2))) 13px, var(--fallback-b2, oklch(var(--b2))) 14px);
     background-size: 40px 40px;
 }
 </style>

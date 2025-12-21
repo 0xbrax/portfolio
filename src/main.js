@@ -1,25 +1,24 @@
-import { createApp } from 'vue';
+import {createApp} from 'vue';
 import './assets/style.css';
-import { register } from 'swiper/element/bundle';
-import { Howler } from "howler";
+import {register} from 'swiper/element/bundle';
+import {Howler} from 'howler';
 
 import App from './App.vue';
-import router from "@/router.js";
-import { store } from '@/store/index.js';
-import { useSettingStore } from "@/store/setting.js";
-import { $isMobile } from "@/assets/utils.js";
+import router from '@/router.js';
+import {store} from '@/store/index.js';
+import {useSettingStore} from '@/store/setting.js';
+import {$isMobile} from '@/assets/utils.js';
 
 import {
-    LucideHouse,
-    LucideRabbit,
-    LucidePlane,
-    LucideEarth,
-    LucideDices,
-    LucideSquareArrowUpRight,
-    LucideInfo,
-    LucideMoveDown
-} from "lucide-vue-next";
-
+  LucideHouse,
+  LucideRabbit,
+  LucidePlane,
+  LucideEarth,
+  LucideDices,
+  LucideSquareArrowUpRight,
+  LucideInfo,
+  LucideMoveDown,
+} from 'lucide-vue-next';
 
 
 register();
@@ -32,7 +31,7 @@ const settingStore = useSettingStore();
 app.config.globalProperties.$isMobile = $isMobile;
 
 app.component('LucideHouse', LucideHouse);
-app.component('LucideRabbit',LucideRabbit);
+app.component('LucideRabbit', LucideRabbit);
 app.component('LucidePlane', LucidePlane);
 app.component('LucideEarth', LucideEarth);
 app.component('LucideDices', LucideDices);
@@ -41,16 +40,15 @@ app.component('LucideInfo', LucideInfo);
 app.component('LucideMoveDown', LucideMoveDown);
 
 
-
 // INIT
 app.mount('#app');
 
 document.addEventListener('contextmenu', event => event.preventDefault());
 
 document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') {
-        if (settingStore.isAudioActive) Howler.mute(false);
-    } else {
-        if (settingStore.isAudioActive) Howler.mute(true);
-    }
+  if (document.visibilityState === 'visible') {
+    if (settingStore.isAudioActive) Howler.mute(false);
+  } else {
+    if (settingStore.isAudioActive) Howler.mute(true);
+  }
 });

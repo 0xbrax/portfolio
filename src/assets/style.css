@@ -3,7 +3,6 @@
 @tailwind utilities;
 
 
-
 html,
 body {
   overflow: hidden;
@@ -18,13 +17,11 @@ body {
 }
 
 
-
 #app {
   height: 100%;
   width: 100%;
   position: relative;
 }
-
 
 
 .fade-enter-active,
@@ -37,4 +34,12 @@ body {
 .fade-leave-to,
 .fade-out-leave-to {
   opacity: 0;
+}
+
+
+#debug-planet-info {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  z-index: 9999;
 }

@@ -19,7 +19,7 @@
                 :disabled="isFPVTransitionActive"
                 @pointerdown="startFPVTransition()"
             >
-                <LucidePlane />
+                <LucidePlane/>
             </button>
 
             <div class="flex flex-col items-end gap-2">
@@ -28,21 +28,25 @@
                     :disabled="!settingStore.isNewPlanetReady"
                     @pointerdown="settingStore.generateNewPlanet()"
                 >
-                    <LucideDices />
+                    <LucideDices/>
                 </button>
 
-                <div class="badge badge-primary"><LucideEarth class="h-4 w-4 mr-2" /> {{ settingStore.worldSeed }}</div>
+                <div class="badge badge-primary">
+                    <LucideEarth class="h-4 w-4 mr-2"/>
+                    {{ settingStore.worldSeed }}
+                </div>
             </div>
 
             <button
                 class="btn btn-outline btn-accent btn-circle"
                 @pointerdown="openInfoModal()"
             >
-                <LucideInfo />
+                <LucideInfo/>
             </button>
         </div>
 
-        <div v-show="!$isMobile.value && !isFPVActive" id="keys" class="absolute z-20 left-[1rem] bottom-[1rem] flex items-center gap-4">
+        <div v-show="!$isMobile.value && !isFPVActive" id="keys"
+             class="absolute z-20 left-[1rem] bottom-[1rem] flex items-center gap-4">
             <div>
                 <div class="flex w-full justify-center mb-2">
                     <kbd :class="['kbd', { 'opacity-50': !inputKeys.KeyW }]">W</kbd>
@@ -55,14 +59,17 @@
             </div>
             <kbd :class="['kbd', { 'opacity-50': !inputKeys.Space }]">space</kbd>
 
-            <div v-show="isInfoModalOpen" class="absolute left-[4rem] top-[-8rem] text-primary rotate-[15deg] pointer-events-none">
-                <LucideMoveDown class="h-32 w-32  animate-bounce" />
+            <div v-show="isInfoModalOpen"
+                 class="absolute left-[4rem] top-[-8rem] text-primary rotate-[15deg] pointer-events-none">
+                <LucideMoveDown class="h-32 w-32  animate-bounce"/>
             </div>
         </div>
 
-        <div v-show="$isMobile.value && !isFPVActive" id="joystick" class="absolute z-20 left-[2rem] bottom-[8rem] h-[100px] aspect-square rounded-full">
-            <div v-show="isInfoModalOpen" class="absolute z-20 left-[2rem] top-[4rem] text-primary rotate-[165deg] pointer-events-none">
-                <LucideMoveDown class="h-32 w-32  animate-bounce" />
+        <div v-show="$isMobile.value && !isFPVActive" id="joystick"
+             class="absolute z-20 left-[2rem] bottom-[8rem] h-[100px] aspect-square rounded-full">
+            <div v-show="isInfoModalOpen"
+                 class="absolute z-20 left-[2rem] top-[4rem] text-primary rotate-[165deg] pointer-events-none">
+                <LucideMoveDown class="h-32 w-32  animate-bounce"/>
             </div>
         </div>
 
@@ -85,7 +92,7 @@
                             rel="noopener noreferrer"
                         >
                             <span class="grow">{{ slide.title }}</span>
-                            <LucideSquareArrowUpRight class="h-6 md:h-7 w-6 md:w-7" />
+                            <LucideSquareArrowUpRight class="h-6 md:h-7 w-6 md:w-7"/>
                         </a>
                         <div v-if="slide.description" class="text-center text-xs md:text-sm">
                             {{ slide.description }}
@@ -97,10 +104,13 @@
 
         <dialog @close="closeInfoModal()" id="info-modal" ref="infoModalEl" class="modal">
             <div class="modal-box overflow-visible">
-                <h3 class="text-lg font-bold flex items-center gap-2"><LucideInfo />Info</h3>
+                <h3 class="text-lg font-bold flex items-center gap-2">
+                    <LucideInfo/>
+                    Info
+                </h3>
                 <p class="py-4">
-                    Walk around the planet and reach interest points.<br />
-                    Try different world seed numbers.<br/>
+                    Walk around the planet and reach interest points.<br/>
+                    Try different world generation numbers.<br/>
                     Enjoy FPV plane mode.
                 </p>
                 <div class="modal-action mt-2 relative">
@@ -114,18 +124,17 @@
 </template>
 
 <script>
-import { onMounted, onUnmounted, reactive, ref, watch } from "vue";
+import {onMounted, onUnmounted, reactive, ref, watch} from 'vue';
 import Experience from '@/experience/Experience.js';
-import { RESOURCES, INTEREST_POINTS } from "@/experience/ASSETS.js";
+import {RESOURCES, INTEREST_POINTS} from '@/experience/ASSETS.js';
 import nipplejs from 'nipplejs';
-import { $isMobile, getPseudoRandomInt } from "@/assets/utils.js";
-import { useSettingStore } from "@/store/setting.js";
-import { gsap } from "gsap";
-
+import {$isMobile, getPseudoRandomInt} from '@/assets/utils.js';
+import {useSettingStore} from '@/store/setting.js';
+import {gsap} from 'gsap';
 
 
 export default {
-    name: "Home",
+    name: 'Home',
     setup() {
         let experience = null;
         const settingStore = useSettingStore();
@@ -143,13 +152,13 @@ export default {
             KeyS: false,
             KeyA: false,
             KeyD: false,
-            Space: false
+            Space: false,
         });
 
         let joystick = null;
         const joystickOptions = {
             zone: null,
-            position: { left: '50%', top: '50%' },
+            position: {left: '50%', top: '50%'},
             mode: 'static',
             color: '#fff248',
             restOpacity: 0.75,
@@ -159,16 +168,15 @@ export default {
 
         const angleSection = Math.PI / 8;
         const directions = [
-            { keys: ['KeyW'], start: (Math.PI * 0.5) - angleSection, end: (Math.PI * 0.5) + angleSection },
-            { keys: ['KeyW', 'KeyD'], start: (Math.PI * 0.25) - angleSection, end: (Math.PI * 0.25) + angleSection },
-            { keys: ['KeyD'], start: (Math.PI * 2) - angleSection, end: (Math.PI * 2) + angleSection },
-            { keys: ['KeyS', 'KeyD'], start: (Math.PI * 1.75) - angleSection, end: (Math.PI * 1.75) + angleSection },
-            { keys: ['KeyS'], start: (Math.PI * 1.5) - angleSection, end: (Math.PI * 1.5) + angleSection },
-            { keys: ['KeyS', 'KeyA'], start: (Math.PI * 1.25) - angleSection, end: (Math.PI * 1.25) + angleSection },
-            { keys: ['KeyA'], start: Math.PI - angleSection, end: Math.PI + angleSection }, // 300° to 360°
-            { keys: ['KeyW', 'KeyA'], start: (Math.PI * 0.75) - angleSection, end: (Math.PI * 0.75) + angleSection },
+            {keys: ['KeyW'], start: (Math.PI * 0.5) - angleSection, end: (Math.PI * 0.5) + angleSection},
+            {keys: ['KeyW', 'KeyD'], start: (Math.PI * 0.25) - angleSection, end: (Math.PI * 0.25) + angleSection},
+            {keys: ['KeyD'], start: (Math.PI * 2) - angleSection, end: (Math.PI * 2) + angleSection},
+            {keys: ['KeyS', 'KeyD'], start: (Math.PI * 1.75) - angleSection, end: (Math.PI * 1.75) + angleSection},
+            {keys: ['KeyS'], start: (Math.PI * 1.5) - angleSection, end: (Math.PI * 1.5) + angleSection},
+            {keys: ['KeyS', 'KeyA'], start: (Math.PI * 1.25) - angleSection, end: (Math.PI * 1.25) + angleSection},
+            {keys: ['KeyA'], start: Math.PI - angleSection, end: Math.PI + angleSection}, // 300° to 360°
+            {keys: ['KeyW', 'KeyA'], start: (Math.PI * 0.75) - angleSection, end: (Math.PI * 0.75) + angleSection},
         ];
-
 
 
         const normalizeZeroAngle = (angle, angleSection) => {
@@ -195,7 +203,6 @@ export default {
                 return 'high';
             }
         };
-
 
 
         const setKeysControl = () => {
@@ -231,8 +238,7 @@ export default {
                         if (inputKeys.Space) {
                             experience.world.robot.animationCrossFade('run');
                             experience.world.planetRotationSpeed = 0.8;
-                        }
-                        else {
+                        } else {
                             experience.world.robot.animationCrossFade('walk');
                             experience.world.planetRotationSpeed = 0.6;
                         }
@@ -246,11 +252,11 @@ export default {
                             y: 6,
                             z: -21,
                             duration: 0.9,
-                            ease: "power2.inOut",
+                            ease: 'power2.inOut',
                             onComplete: () => {
                                 animation.kill();
                                 experience.config.controls.enabled = true;
-                            }
+                            },
                         });
                     }
                     if (experience.world.robot.animation.isPlaying && experience.world.robot.animation.name !== 'run' && inputKeys.Space) {
@@ -297,7 +303,7 @@ export default {
                 if (experience.world.isFPVActive) return;
 
                 const direction = getDirection(data.angle.radian, angleSection, directions);
-                const power = getPower(data.distance, joystickOptions.size)
+                const power = getPower(data.distance, joystickOptions.size);
 
                 if (direction.length === 1) {
                     const directionKey = direction[0];
@@ -330,11 +336,11 @@ export default {
                         y: 6,
                         z: -21,
                         duration: 0.9,
-                        ease: "power2.inOut",
+                        ease: 'power2.inOut',
                         onComplete: () => {
                             animation.kill();
                             experience.config.controls.enabled = true;
-                        }
+                        },
                     });
                 }
                 if (experience.world.robot.animation.isPlaying && experience.world.robot.animation.name !== 'run' && inputKeys.Space) {
@@ -361,7 +367,6 @@ export default {
         };
 
 
-
         const setUnsetFPV = () => {
             isFPVActive.value = !isFPVActive.value;
             experience.world.setUnsetFPV();
@@ -373,25 +378,25 @@ export default {
             isFPVTransitionActive.value = true;
 
             const animation_1 = gsap.to(fpvTransitionCircleEl.value, {
-                r: "0%",
+                r: '0%',
                 duration: 0.6,
-                ease: "power2.inOut",
+                ease: 'power2.inOut',
                 paused: true,
                 onComplete: () => {
                     animation_1.kill();
                     setUnsetFPV();
                     animation_2.play();
-                }
+                },
             });
             const animation_2 = gsap.to(fpvTransitionCircleEl.value, {
-                r: "100%",
+                r: '100%',
                 duration: 0.6,
-                ease: "power2.inOut",
+                ease: 'power2.inOut',
                 paused: true,
                 onComplete: () => {
                     animation_2.kill();
                     isFPVTransitionActive.value = false;
-                }
+                },
             });
 
             animation_1.play();
@@ -415,7 +420,6 @@ export default {
         };
 
 
-
         onMounted(() => {
             const randomSeed = getPseudoRandomInt(-1000, 1000);
             // store seed updated when worker inits
@@ -428,18 +432,21 @@ export default {
 
                 settingStore.isExperienceReady = true;
 
-                experience.world.on('intersectInterest', ({ detail }) => {
+                experience.world.on('intersectInterest', ({detail}) => {
                     swiperSlides.value.unshift(detail);
                 });
-                experience.world.on('unIntersectInterest', ({ detail }) => {
+                experience.world.on('unIntersectInterest', ({detail}) => {
                     swiperSlides.value = swiperSlides.value.filter(el => el.id !== detail.id);
                 });
 
                 experience.on('newPlanetReady', () => {
                     settingStore.isNewPlanetReady = true;
                 });
-            }, { once: true });
+            }, {once: true});
 
+
+            ////////
+            experience.init();
 
 
             watch(
@@ -450,10 +457,9 @@ export default {
 
                         if (settingStore.isFirstTimeVisit) openInfoModal();
                     }
-                }
+                },
             );
         });
-
 
 
         onUnmounted(() => {
@@ -473,25 +479,28 @@ export default {
             isInfoModalOpen,
             openInfoModal,
             closeInfoModal,
-            settingStore
-        }
-    }
-}
+            settingStore,
+        };
+    },
+};
 </script>
 
 <style>
 #joystick .nipple {
     z-index: 10 !important;
 }
+
 #joystick .back,
 #joystick .front {
     border-width: 1px;
     border-color: var(--fallback-bc, oklch(var(--bc) / var(--tw-border-opacity)));
     --tw-border-opacity: 0.2;
 }
+
 #joystick .back {
     opacity: 0.5 !important;
 }
+
 #joystick .front {
     opacity: 1 !important;
 }

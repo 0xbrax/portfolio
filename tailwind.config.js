@@ -1,24 +1,24 @@
 module.exports = {
-    content: [
-        './index.html',
-        './src/**/*.{vue,js,ts,jsx,tsx}'
-    ],
-    theme: {
-        extend: {
-            /*fontFamily: {
-                sans: ['Inter', 'sans-serif'],
-            },*/
-        },
+  content: [
+    './index.html',
+    './src/**/*.{vue,js,ts,jsx,tsx}',
+  ],
+  theme: {
+    extend: {
+      /*fontFamily: {
+          sans: ['Inter', 'sans-serif'],
+      },*/
     },
-    plugins: [
-        require('daisyui'),
+  },
+  plugins: [
+    require('daisyui'),
+  ],
+  daisyui: {
+    themes: [
+      'cyberpunk',
+      /*{
+          mytheme: {},
+      },*/
     ],
-    daisyui: {
-        themes: [
-            'cyberpunk',
-            /*{
-                mytheme: {},
-            },*/
-        ]
-    },
-}
+  },
+};
