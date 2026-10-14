@@ -53,7 +53,7 @@ export default class Planet extends EventEmitter {
     if (window.location.hash === '#debug' && !this.debugPlanetInfo) {
       this.debugPlanetInfo = document.createElement('div');
       this.debugPlanetInfo.id = 'debug-planet-info';
-      this.debugPlanetInfo.className = 'p-2 bg-white/50 text-black pointer-events-none text-sm text-right';
+      this.debugPlanetInfo.className = 'p-2 bg-white/80 text-black pointer-events-none text-xs text-right';
       this.debugPlanetInfo.innerHTML = `
                 Planet position count</br>
                  
@@ -76,17 +76,6 @@ export default class Planet extends EventEmitter {
     const positionsTexture = this.gpgpu.computation.createTexture();
     const positionsGeometryArray = geometry.attributes.position.array;
     const positionsTextureArray = positionsTexture.image.data;
-
-    /*this.gpgpu.debug2 = new THREE.Mesh(
-        new THREE.PlaneGeometry(3, 3),
-        new THREE.MeshBasicMaterial({
-            map: positionsTexture//this.gpgpu.computation.getCurrentRenderTarget(this.gpgpu.positionsVariable).texture
-            // transparent: true
-        })
-    );
-    this.gpgpu.debug2.position.x = 5;
-    this.gpgpu.debug2.position.y = 2;
-    this.experienceInstance.config.scene.add(this.gpgpu.debug2);*/
 
 
     worker.postMessage({
@@ -153,26 +142,52 @@ export default class Planet extends EventEmitter {
 
 
       ////////
-      // DEBUG TODO debug texture is with original data, not new data
-      /*if (window.location.hash === '#debug') {
-          console.log('LOG - - -', this.gpgpu.computation);
+      // DEBUG
+      if (window.location.hash === '#debug') {
+        const uStrengthVal = 0.6;
 
-          this.gpgpu.debug = new THREE.Mesh(
-              new THREE.PlaneGeometry(3, 3),
-              new THREE.MeshBasicMaterial({
-                  map: this.gpgpu.computation.getCurrentRenderTarget(this.gpgpu.positionsVariable).texture
-                  // transparent: true
-              })
+        this.gpgpu.debug = new THREE.Mesh(
+          new THREE.PlaneGeometry(3, 3),
+          new THREE.MeshBasicMaterial({
+            map: this.gpgpu.computation.getCurrentRenderTarget(this.gpgpu.positionsVariable).texture,
+            transparent: true,
+          }),
+        );
+        this.gpgpu.debug.material.onBeforeCompile = (shader) => {
+          shader.fragmentShader = shader.fragmentShader.replace(
+            '#include <map_fragment>',
+            `
+            #ifdef USE_MAP
+              vec4 sampledDiffuseColor = texture2D( map, vMapUv );
+              float elevation = sampledDiffuseColor.w;
+              float t = clamp((elevation / (2.0 * ${uStrengthVal.toFixed(4)})) + 0.5, 0.0, 1.0);
+
+              // Grayscale heightmap: 0.0 = deep ocean / valleys, 1.0 = peaks
+              sampledDiffuseColor.rgb = vec3(t);
+              sampledDiffuseColor.a = t;
+              diffuseColor *= sampledDiffuseColor;
+            #endif
+            `,
           );
-          this.gpgpu.debug.position.x = -5;
-          this.gpgpu.debug.position.y = 2;
-          this.experienceInstance.config.scene.add(this.gpgpu.debug);
-      } else {
-          this.gpgpu.computation.dispose(); // remove gpgpu dispose to debug
-      }*/
-      ////////
+        };
+        this.gpgpu.debug.position.x = -5;
+        this.gpgpu.debug.position.y = 2;
+        this.experienceInstance.config.scene.add(this.gpgpu.debug);
 
-      this.gpgpu.computation.dispose();
+        this.gpgpu.debugBack = new THREE.Mesh(
+          new THREE.PlaneGeometry(3, 3),
+          new THREE.MeshBasicMaterial({
+            color: '#0000ff',
+          }),
+        );
+        this.gpgpu.debugBack.position.x = -5;
+        this.gpgpu.debugBack.position.y = 2;
+        this.gpgpu.debugBack.position.z = -0.001;
+        this.experienceInstance.config.scene.add(this.gpgpu.debugBack);
+      } else {
+        this.gpgpu.computation.dispose();
+      }
+      ////////
 
 
       uniformsObject = {
@@ -249,14 +264,21 @@ export default class Planet extends EventEmitter {
     this.model.geometry.dispose();
     this.model = null;
 
-    /*if (window.location.hash === '#debug') {
-        this.gpgpu.debug.geometry.dispose();
-        this.gpgpu.debug.material.dispose();
-        this.experienceInstance.config.scene.remove(this.gpgpu.debug);
-        this.gpgpu.debug = null;
+    if (window.location.hash === '#debug' && this.gpgpu?.debug) {
+      this.gpgpu.debug.geometry.dispose();
+      this.gpgpu.debug.material.dispose();
+      this.experienceInstance.config.scene.remove(this.gpgpu.debug);
+      this.gpgpu.debug = null;
 
-        this.gpgpu.computation.dispose();
-    }*/
+      if (this.gpgpu.debugBack) {
+        this.gpgpu.debugBack.geometry.dispose();
+        this.gpgpu.debugBack.material.dispose();
+        this.experienceInstance.config.scene.remove(this.gpgpu.debugBack);
+        this.gpgpu.debugBack = null;
+      }
+
+      this.gpgpu.computation?.dispose();
+    }
   }
 
   generateNewPlanet(seed) {
